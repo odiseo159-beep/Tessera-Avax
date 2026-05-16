@@ -12,9 +12,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "EquityAccess",
+  title: "Tessera · dual asset secondary market on Avalanche",
   description:
-    "Marketplace secundario para equity privado tokenizado en Avalanche",
+    "Mercado secundario dual sobre Avalanche: equity privado latinoamericano (Tessera) + acciones públicas tokenizadas (Dinari). KYC reusable on-chain.",
 };
 
 export default function RootLayout({

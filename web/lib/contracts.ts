@@ -8,8 +8,23 @@ import {
 export type Address = `0x${string}`;
 export const ZERO_ADDRESS: Address = "0x0000000000000000000000000000000000000000";
 
-export const TOKEN_SYMBOLS = ["KVK", "BTS", "CLP", "ARK1"] as const;
-export type TokenSymbol = (typeof TOKEN_SYMBOLS)[number];
+export const PRIVATE_TOKEN_SYMBOLS = ["KVK", "BTS", "CLP", "ARK1"] as const;
+export const PUBLIC_TOKEN_SYMBOLS = [
+  "AAPL",
+  "MSFT",
+  "NVDA",
+  "GOOGL",
+  "AMZN",
+  "META",
+] as const;
+export const TOKEN_SYMBOLS = [
+  ...PRIVATE_TOKEN_SYMBOLS,
+  ...PUBLIC_TOKEN_SYMBOLS,
+] as const;
+
+export type PrivateTokenSymbol = (typeof PRIVATE_TOKEN_SYMBOLS)[number];
+export type PublicTokenSymbol = (typeof PUBLIC_TOKEN_SYMBOLS)[number];
+export type TokenSymbol = PrivateTokenSymbol | PublicTokenSymbol;
 
 /// Next.js inlines `process.env.NEXT_PUBLIC_*` only when the key is referenced
 /// statically. Dynamic `process.env[key]` access leaves undefined in client
@@ -28,6 +43,12 @@ export const contractAddresses = {
     BTS: parseAddress(process.env.NEXT_PUBLIC_TOKEN_BTS),
     CLP: parseAddress(process.env.NEXT_PUBLIC_TOKEN_CLP),
     ARK1: parseAddress(process.env.NEXT_PUBLIC_TOKEN_ARK1),
+    AAPL: parseAddress(process.env.NEXT_PUBLIC_TOKEN_AAPL),
+    MSFT: parseAddress(process.env.NEXT_PUBLIC_TOKEN_MSFT),
+    NVDA: parseAddress(process.env.NEXT_PUBLIC_TOKEN_NVDA),
+    GOOGL: parseAddress(process.env.NEXT_PUBLIC_TOKEN_GOOGL),
+    AMZN: parseAddress(process.env.NEXT_PUBLIC_TOKEN_AMZN),
+    META: parseAddress(process.env.NEXT_PUBLIC_TOKEN_META),
   } satisfies Record<TokenSymbol, Address>,
 } as const;
 

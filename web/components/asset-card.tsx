@@ -1,37 +1,64 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { CompanyMeta } from "@/lib/mock-companies";
 import { formatPercent, formatUsdc } from "@/lib/format";
-import { useLastPrice } from "@/hooks/use-last-price";
-import { tokenAddressOf } from "@/lib/contracts";
+import { useLivePrice } from "@/hooks/use-live-price";
 
 interface AssetCardProps {
   company: CompanyMeta;
 }
 
-export function AssetCard({ company }: AssetCardProps) {
-  const { priceUsdc, fromChain } = useLastPrice(
-    company.symbol,
-    tokenAddressOf(company.symbol)
+function LogoMark({ company }: AssetCardProps) {
+  if (company.universe === "public" && company.dinariLogoUrl) {
+    return (
+      <span
+        className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg bg-white ring-1 ring-border/40"
+      >
+        <Image
+          src={company.dinariLogoUrl}
+          alt={`${company.name} logo`}
+          width={28}
+          height={28}
+          unoptimized
+        />
+      </span>
+    );
+  }
+  return (
+    <span
+      className="flex h-10 w-10 items-center justify-center rounded-lg text-sm font-semibold"
+      style={{ backgroundColor: company.logoBg, color: company.logoColor }}
+    >
+      {company.symbol}
+    </span>
   );
+}
 
-  const positive = company.change24h >= 0;
+export function AssetCard({ company }: AssetCardProps) {
+  const { priceUsdc, change24h, source } = useLivePrice(company);
+  const positive = change24h >= 0;
+
+  const sourceLabel =
+    source === "onchain"
+      ? "On-chain"
+      : source === "dinari"
+        ? "Dinari live"
+        : "Mock";
+
+  const compliance =
+    company.universe === "private" ? "ERC-3643" : "dShare";
 
   return (
     <Card className="group relative overflow-hidden border-border/70 p-5 transition-shadow hover:shadow-sm">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-3">
-          <span
-            className="flex h-10 w-10 items-center justify-center rounded-lg text-sm font-semibold"
-            style={{ backgroundColor: company.logoBg, color: company.logoColor }}
-          >
-            {company.symbol}
-          </span>
+          <LogoMark company={company} />
           <div>
             <p className="text-sm font-semibold text-foreground">{company.name}</p>
             <p className="text-xs text-muted-foreground">
@@ -65,7 +92,7 @@ export function AssetCard({ company }: AssetCardProps) {
               positive ? "text-[#0F6E56]" : "text-[#C03737]"
             )}
           >
-            {formatPercent(company.change24h)}
+            {formatPercent(change24h)}
           </span>
           <span className="text-[10px] text-muted-foreground">24h</span>
         </div>
@@ -73,10 +100,10 @@ export function AssetCard({ company }: AssetCardProps) {
 
       <div className="mt-5 flex items-center justify-between">
         <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
-          {fromChain ? "On-chain" : "Mock"} · ERC-3643
+          {sourceLabel} · {compliance}
         </span>
         <Button asChild size="sm">
-          <Link href={`/trade/${company.slug}`}>Trade</Link>
+          <Link href={`/${company.universe}/trade/${company.slug}`}>Trade</Link>
         </Button>
       </div>
     </Card>

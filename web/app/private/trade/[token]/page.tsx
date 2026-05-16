@@ -13,9 +13,9 @@ interface PageProps {
   params: { token: string };
 }
 
-export default function TradePage({ params }: PageProps) {
+export default function PrivateTradePage({ params }: PageProps) {
   const company = companyBySlug(params.token);
-  if (!company) notFound();
+  if (!company || company.universe !== "private") notFound();
 
   const tokenAddress = tokenAddressOf(company.symbol);
   const series = mockPriceSeries(company);
@@ -45,11 +45,7 @@ export default function TradePage({ params }: PageProps) {
           </p>
         </div>
 
-        <AssetPriceCell
-          symbol={company.symbol}
-          tokenAddress={tokenAddress}
-          fallbackChange24h={company.change24h}
-        />
+        <AssetPriceCell company={company} />
 
         <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
           <Badge variant="outline" className="border-[#0F6E56]/40 bg-[#E7F3F0] text-[#0F6E56]">

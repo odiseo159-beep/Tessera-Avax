@@ -9,6 +9,7 @@ interface FujiDeployment {
     identityRegistry: string;
     orderbook: string;
     securityTokens: Record<"KVK" | "BTS" | "CLP" | "ARK1", string>;
+    publicTokens?: Record<"AAPL" | "MSFT" | "NVDA" | "GOOGL" | "AMZN" | "META", string>;
   };
 }
 
@@ -68,31 +69,22 @@ function main(): void {
     "NEXT_PUBLIC_ORDERBOOK_ADDRESS",
     deployment.contracts.orderbook
   );
-  content = applyUpdate(
-    content,
-    "NEXT_PUBLIC_TOKEN_KVK",
-    deployment.contracts.securityTokens.KVK
-  );
-  content = applyUpdate(
-    content,
-    "NEXT_PUBLIC_TOKEN_BTS",
-    deployment.contracts.securityTokens.BTS
-  );
-  content = applyUpdate(
-    content,
-    "NEXT_PUBLIC_TOKEN_CLP",
-    deployment.contracts.securityTokens.CLP
-  );
-  content = applyUpdate(
-    content,
-    "NEXT_PUBLIC_TOKEN_ARK1",
-    deployment.contracts.securityTokens.ARK1
-  );
+
+  // Private universe
+  for (const [sym, addr] of Object.entries(deployment.contracts.securityTokens)) {
+    content = applyUpdate(content, `NEXT_PUBLIC_TOKEN_${sym}`, addr);
+  }
+
+  // Public universe (Dinari-style mirrors)
+  for (const [sym, addr] of Object.entries(deployment.contracts.publicTokens ?? {})) {
+    content = applyUpdate(content, `NEXT_PUBLIC_TOKEN_${sym}`, addr);
+  }
 
   content = ensureKey(content, "NEXT_PUBLIC_WC_PROJECT_ID", "YOUR_WC_PROJECT_ID");
 
   // KYC issuer = deployer (per deploy.ts). Copy the private key over so the
-  // /api/kyc/verify route can sign claims on behalf of the same address.
+  // /api/kyc/verify route can sign claims with the same address that owns the
+  // IdentityRegistry.
   const deployerKey = readDeployerKey();
   if (deployerKey) {
     content = applyUpdate(content, "KYC_ISSUER_PRIVATE_KEY", deployerKey);
@@ -101,8 +93,7 @@ function main(): void {
   }
 
   writeFileSync(envPath, content);
-  console.log(`Wrote ${envPath}:`);
-  console.log(content);
+  console.log(`Wrote ${envPath}.`);
 }
 
 main();

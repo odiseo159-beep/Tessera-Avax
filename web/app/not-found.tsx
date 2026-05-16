@@ -11,15 +11,19 @@ export default function NotFound() {
         No encontramos esa página.
       </h1>
       <p className="text-sm text-muted-foreground">
-        Quizás el ticker no existe o el enlace está desactualizado. Las cuatro
-        empresas listadas son KVK, BTS, CLP y ARK1.
+        Quizás el ticker no existe o el enlace está desactualizado. En private
+        tenemos KVK, BTS, CLP y ARK1. En public tenemos AAPL, MSFT, NVDA,
+        GOOGL, AMZN y META.
       </p>
       <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
         <Button asChild>
-          <Link href="/">Ir al marketplace</Link>
+          <Link href="/">Ir al inicio</Link>
         </Button>
         <Button asChild variant="outline">
-          <Link href="/portfolio">Ver mi portfolio</Link>
+          <Link href="/private">Private equity</Link>
+        </Button>
+        <Button asChild variant="outline">
+          <Link href="/public">Public equity</Link>
         </Button>
       </div>
     </main>

@@ -1,69 +1,147 @@
-import { AssetCard } from "@/components/asset-card";
-import { COMPANIES, aggregateStats } from "@/lib/mock-companies";
-import { formatInt, formatUsdcCompact } from "@/lib/format";
+import Link from "next/link";
+import { ArrowRight, ShieldCheck, Globe } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
-interface Stat {
-  label: string;
-  value: string;
-  hint?: string;
+interface Product {
+  href: string;
+  eyebrow: string;
+  badge: string;
+  badgeClassName: string;
+  title: string;
+  description: string;
+  bullets: string[];
+  cta: string;
 }
 
-export default function HomePage() {
-  const stats = aggregateStats();
+const PRODUCTS: Product[] = [
+  {
+    href: "/private",
+    eyebrow: "Private equity",
+    badge: "ERC-3643 · LatAm",
+    badgeClassName: "border-[#0F6E56]/40 bg-[#E7F3F0] text-[#0F6E56]",
+    title: "Liquidez secundaria para equity privado latinoamericano",
+    description:
+      "SecurityTokens emitidos por Tessera, settlement atómico en nuestro orderbook on-chain. Kavak, Bitso, Clip y SPV de Arkangeles, deployados a Avalanche Fuji.",
+    bullets: [
+      "4 deals reales tokenizados, valuación pública agregada $63M",
+      "Compliance enforced en `_update` del token (ERC-3643 inspired)",
+      "Orderbook + escrow + fee 0.3% al taker, todo on-chain",
+    ],
+    cta: "Explora private equity",
+  },
+  {
+    href: "/public",
+    eyebrow: "Public equity",
+    badge: "dShare · Powered by Dinari",
+    badgeClassName: "border-[#3C3489]/40 bg-[#ECEAFA] text-[#3C3489]",
+    title: "Acciones públicas US tokenizadas con datos live de Dinari",
+    description:
+      "AAPL, MSFT, NVDA, GOOGL, AMZN, META — precios y metadata directo del sandbox real de Dinari. El secundario corre en nuestro orderbook on-chain con la misma KYC del lado privado.",
+    bullets: [
+      "6 tickers mega-cap con precios y charts del sandbox de Dinari",
+      "Tokens SecurityToken mirror en Fuji para liquidez intra-LatAm",
+      "Misma capa de identidad — verifica una vez, opera en ambos",
+    ],
+    cta: "Explora public equity",
+  },
+];
 
-  const cards: Stat[] = [
-    { label: "TVL", value: formatUsdcCompact(stats.tvl) },
-    { label: "Empresas listadas", value: formatInt(stats.companies) },
-    { label: "Volumen 24h", value: formatUsdcCompact(stats.volume24h) },
-    { label: "Inversionistas", value: formatInt(stats.investors) },
-  ];
-
+export default function LandingPage() {
   return (
-    <main className="mx-auto max-w-7xl px-4 pb-16 pt-10 sm:px-6 lg:px-8">
-      <section className="flex flex-col gap-3 border-b border-border/60 pb-8">
-        <span className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-          Marketplace · Avalanche Fuji
-        </span>
-        <h1 className="max-w-2xl text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-          Compra y vende equity privado tokenizado de empresas latinoamericanas.
+    <main className="mx-auto max-w-7xl px-4 pb-16 pt-12 sm:px-6 lg:px-8">
+      <section className="flex flex-col gap-4 border-b border-border/60 pb-10 text-center sm:text-left">
+        <Badge
+          variant="outline"
+          className="mx-auto self-center border-border/70 bg-card text-[10px] uppercase tracking-[0.18em] text-muted-foreground sm:mx-0"
+        >
+          Avalanche LatAm Institucional · Fuji testnet
+        </Badge>
+        <h1 className="max-w-3xl text-3xl font-semibold tracking-tight text-foreground sm:text-5xl">
+          Una sola identidad. Dos universos de activos. Liquidez en 60 segundos.
         </h1>
-        <p className="max-w-2xl text-sm text-muted-foreground">
-          Inversionistas verificados pueden tomar o ceder posición en empresas
-          privadas en menos de un minuto. KYC reusable on-chain, compliance
-          aplicado a nivel de smart contract.
+        <p className="max-w-2xl text-sm text-muted-foreground sm:text-base">
+          Tessera es una capa de mercado secundario sobre Avalanche. Empleados
+          atrapados en equity privado de Kavak o Bitso se cruzan con
+          inversionistas latinoamericanos que quieren exposure a NVDA o AAPL.
+          La misma verificación KYC abre ambos lados.
         </p>
-
-        <dl className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-          {cards.map((stat) => (
-            <div
-              key={stat.label}
-              className="rounded-lg border border-border/60 bg-card px-4 py-3"
-            >
-              <dt className="text-[11px] uppercase tracking-wide text-muted-foreground">
-                {stat.label}
-              </dt>
-              <dd className="mt-1 text-lg font-semibold tabular-nums text-foreground">
-                {stat.value}
-              </dd>
-            </div>
-          ))}
-        </dl>
+        <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-muted-foreground sm:text-sm">
+          <span className="inline-flex items-center gap-1.5">
+            <ShieldCheck className="h-4 w-4 text-[#0F6E56]" />
+            KYC reusable on-chain
+          </span>
+          <span className="hidden text-border/80 sm:inline">·</span>
+          <span className="inline-flex items-center gap-1.5">
+            <Globe className="h-4 w-4 text-[#3C3489]" />
+            Universo privado + público en la misma cuenta
+          </span>
+        </div>
       </section>
 
-      <section className="pt-8">
-        <div className="mb-4 flex items-end justify-between">
-          <h2 className="text-lg font-semibold tracking-tight text-foreground">
-            Empresas listadas
-          </h2>
-          <p className="text-xs text-muted-foreground">
-            Datos públicos de prensa · precios mock hasta el primer fill
+      <section className="grid gap-6 pt-10 sm:grid-cols-2">
+        {PRODUCTS.map((p) => (
+          <Link
+            key={p.href}
+            href={p.href}
+            className="group flex flex-col gap-4 rounded-xl border border-border/60 bg-card p-6 transition-all hover:-translate-y-0.5 hover:shadow-sm"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                {p.eyebrow}
+              </span>
+              <Badge variant="outline" className={p.badgeClassName}>
+                {p.badge}
+              </Badge>
+            </div>
+
+            <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+              {p.title}
+            </h2>
+            <p className="text-sm text-muted-foreground">{p.description}</p>
+
+            <ul className="mt-1 space-y-2 text-xs text-muted-foreground">
+              {p.bullets.map((b) => (
+                <li key={b} className="flex items-start gap-2">
+                  <span className="mt-1 inline-block h-1 w-1 shrink-0 rounded-full bg-foreground/40" />
+                  <span>{b}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-auto flex items-center gap-1.5 pt-3 text-sm font-medium text-foreground">
+              {p.cta}
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            </div>
+          </Link>
+        ))}
+      </section>
+
+      <section className="mt-12 grid gap-4 rounded-xl border border-border/60 bg-card p-6 sm:grid-cols-3">
+        <div>
+          <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+            1 · Conecta
+          </p>
+          <p className="mt-2 text-sm text-foreground">
+            Core Wallet o MetaMask en Avalanche Fuji.
           </p>
         </div>
-
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {COMPANIES.map((company) => (
-            <AssetCard key={company.symbol} company={company} />
-          ))}
+        <div>
+          <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+            2 · Verifica KYC
+          </p>
+          <p className="mt-2 text-sm text-foreground">
+            3 pasos en /kyc. Tu wallet queda atestada en el IdentityRegistry
+            on-chain. Sirve para ambos universos.
+          </p>
+        </div>
+        <div>
+          <p className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+            3 · Opera
+          </p>
+          <p className="mt-2 text-sm text-foreground">
+            Elige private equity LatAm o public equity US. Mismo orderbook,
+            mismas reglas de compliance.
+          </p>
         </div>
       </section>
     </main>

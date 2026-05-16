@@ -9,10 +9,12 @@ import { useKycStatus } from "@/hooks/use-kyc-status";
 interface NavLink {
   href: string;
   label: string;
+  matchPrefix?: boolean;
 }
 
 const NAV_LINKS: NavLink[] = [
-  { href: "/", label: "Marketplace" },
+  { href: "/private", label: "Private", matchPrefix: true },
+  { href: "/public", label: "Public", matchPrefix: true },
   { href: "/portfolio", label: "Portfolio" },
 ];
 
@@ -64,27 +66,26 @@ export function SiteHeader() {
     <header className="sticky top-0 z-30 border-b border-border/60 bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-7xl items-center gap-6 px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-[#0F6E56] text-xs font-semibold text-white">
-            EA
+          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-[#3C3489] text-xs font-semibold text-white">
+            T
           </span>
           <span className="text-sm font-semibold tracking-tight text-foreground">
-            EquityAccess
+            Tessera
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-4 text-sm md:flex">
+        <nav className="hidden items-center gap-1 text-sm md:flex">
           {NAV_LINKS.map((link) => {
-            const active =
-              link.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(link.href);
+            const active = link.matchPrefix
+              ? pathname.startsWith(link.href)
+              : pathname === link.href;
             return (
               <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "rounded-md px-2 py-1 text-muted-foreground transition-colors hover:text-foreground",
-                  active && "text-foreground"
+                  "rounded-md px-3 py-1.5 text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground",
+                  active && "bg-muted text-foreground"
                 )}
               >
                 {link.label}
