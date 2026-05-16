@@ -1,0 +1,22 @@
+{
+  "network": "fuji",
+  "chainId": 43113,
+  "deployedAt": "2026-05-16T10:24:58.824Z",
+  "deployer": "0x9dcC426CeB93306FD3F9A18ED788c792e1A66acF",
+  "contracts": {
+    "mockUsdc": "0xFaC00CC23F0b840A130A8Cb320d74FBBdcCf8dB6",
+    "identityRegistry": "0x4d698C6f9e68C1cf6e3095e994114A44d8F6Ea96",
+    "orderbook": "0x830e07b0545461E279b0d24EB923937Ed4ECE042",
+    "securityTokens": {
+      "KVK": "0x8d1933d5Dbb734f0D8CF47d7eC2E0dB4327F1B17",
+      "BTS": "0x3021d1739f1adE03BBC4b4208f8Ec3AEB04b3002",
+      "CLP": "0x09d0Ffe48526e7068aAd600626Bb3003feACEF13",
+      "ARK1": "0xAC9BC752FF3D9DaA15e89bEBAE81D103D62F9c28"
+    }
+  },
+  "config": {
+    "lockupEnd": 0,
+    "totalSupplyPerToken": "1000000000000000000000000",
+    "feeBps": 30
+  }
+}

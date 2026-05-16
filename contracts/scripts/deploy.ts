@@ -118,11 +118,15 @@ async function main() {
   const orderbookAddress = await orderbook.getAddress();
   console.log(`Orderbook         -> ${orderbookAddress}`);
 
-  // 5. Compliance: orderbook must be in IdentityRegistry to escrow tokens.
-  console.log("\nVerifying orderbook in IdentityRegistry...");
-  const tx = await registry.addIdentity(orderbookAddress, "");
-  await tx.wait();
-  console.log(`tx ${tx.hash}`);
+  // 5. Compliance: orderbook must be in IdentityRegistry to escrow tokens, and
+  //    the deployer must be verified to receive tokens back from cancels/fills.
+  console.log("\nVerifying orderbook + deployer in IdentityRegistry...");
+  const txOrderbook = await registry.addIdentity(orderbookAddress, "");
+  await txOrderbook.wait();
+  console.log(`  orderbook tx ${txOrderbook.hash}`);
+  const txDeployer = await registry.addIdentity(deployer.address, "MX");
+  await txDeployer.wait();
+  console.log(`  deployer  tx ${txDeployer.hash}`);
 
   const deployment: FujiDeployment = {
     network: network.name,
