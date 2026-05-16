@@ -1,4 +1,4 @@
-# Pitch deck + demo script — EquityAccess
+# Pitch deck + demo script — Tessera
 
 Material listo para grabar el video de 2 minutos y armar el deck en
 Tome / Pitch / Google Slides en menos de 30 minutos.
@@ -8,175 +8,185 @@ Tome / Pitch / Google Slides en menos de 30 minutos.
 ## Slide outline (8 láminas)
 
 ### 1 · Hero
-**Visual**: nombre + logo a la izquierda, screenshot grande de la trading view a
-la derecha. Fondo `#F1EFE8`.
+**Visual**: nombre + logo (T morado en cuadro) a la izquierda, screenshot
+grande de la landing page con las dos product cards a la derecha. Fondo
+`#F1EFE8`.
 
-> **EquityAccess**
+> **Tessera**
 >
-> El Nasdaq de las empresas privadas en LatAm.
+> Una sola identidad. Dos universos de activos. Liquidez en 60 segundos.
 >
-> Inversionistas atrapados en rondas pueden salir en 60 segundos. Empresas dan
-> liquidez a empleados sin tender offer caro.
+> Equity privado LatAm y equity público US en un solo marketplace sobre
+> Avalanche, con KYC reusable on-chain.
 
 ---
 
-### 2 · El problema
-**Visual**: 3 columnas de cifras, fondo blanco. Si encuentras una foto de un
-inversionista latino (LinkedIn / press), úsala discreta a la derecha.
+### 2 · El problema (lado dual)
+**Visual**: dos columnas paralelas, una por problema.
 
-> ~2,400 startups LatAm en Series A–C sin liquidez secundaria.
+> **Privado** — ~2,400 startups LatAm en Series A–C sin liquidez. 7–10 años
+> atrapado. Vender en SPV: $50–200k USD y 3–6 meses.
 >
-> 7–10 años atrapado entre la entrada y la salida.
+> **Público** — un inversionista mexicano que quiere AAPL paga ~1.5% al
+> broker, espera T+2, no opera fracciones < 1 acción, suma fricción FX.
 >
-> $50–200k USD y 3–6 meses para vender un secundario en SPV con abogados.
+> Ambos exigen onboarding KYC duplicado en plataformas distintas.
 
 ---
 
 ### 3 · La solución
-**Visual**: tres pasos en una línea cada uno. Iconos minimalistas (lucide).
+**Visual**: tres pasos en una línea cada uno + diagrama mínimo.
 
-> 1. Inversionista verifica su KYC una vez (queda atestado on-chain).
-> 2. Compra fracciones de Kavak / Bitso / Clip / Arkangeles SPV en un orderbook on-chain.
-> 3. Vende cuando quiera. Liquidez en 60 segundos vs 6 meses.
+> 1. Verificas KYC una vez en Tessera → tu wallet queda atestada on-chain.
+> 2. Eliges universo: **Private** (Kavak / Bitso / Clip / SPV Arkangeles) o
+>    **Public** (AAPL / MSFT / NVDA / GOOGL / AMZN / META, powered by Dinari).
+> 3. Operas con el mismo orderbook + las mismas reglas de compliance.
 
 ---
 
 ### 4 · Demo
-**Visual**: screenshot grande del trading view (`/trade/kvk`) con el orderbook,
-chart, y trade panel visibles. Si el video ya está, embed o QR al video.
+**Visual**: dos screenshots side-by-side — `/private/trade/kvk` y
+`/public/trade/aapl`. Caption: "Mismo UX, dos universos."
 
-> Live ahora en Avalanche Fuji. 24 órdenes activas en el orderbook.
->
-> Conecta tu wallet y opera tú mismo: [`tu-deploy.vercel.app`](https://example.com)
+> Live en Avalanche Fuji. **48 órdenes** activas en el orderbook (24
+> private + 24 public). Conecta tu wallet y opera tú mismo:
+> [`tu-deploy.vercel.app`](https://example.com)
 
 ---
 
 ### 5 · Arquitectura técnica
-**Visual**: diagrama de 3 capas (re-dibujar el mermaid del README en
-excalidraw o como SVG nítido).
+**Visual**: diagrama de 3 capas, marcando "shared" en cada capa que se
+reutiliza entre private y public.
 
 ```
-┌──────────────────────────────────────┐
-│   Identity        IdentityRegistry   │
-│   (KYC)           addIdentity        │
-│                   isVerified         │
-├──────────────────────────────────────┤
-│   Compliance      SecurityToken      │
-│   (per token)     _update hook       │
-│                   ERC-3643 inspired  │
-├──────────────────────────────────────┤
-│   Trading         Orderbook          │
-│                   placeOrder         │
-│                   fillOrder (0.3%)   │
-│                   cancelOrder        │
-└──────────────────────────────────────┘
+┌──────────────────────────────────────────────┐
+│ Identity (shared)    IdentityRegistry        │
+│                      addIdentity / isVerified│
+├──────────────────────────────────────────────┤
+│ Compliance (per token) SecurityToken (10x)   │
+│                        _update hook ERC-3643 │
+├──────────────────────────────────────────────┤
+│ Trading (shared)     Orderbook · 0.3% fee    │
+│                      escrow pull-style       │
+├──────────────────────────────────────────────┤
+│ Data layer           Private: on-chain only  │
+│                      Public: Dinari API +    │
+│                              on-chain orderbook│
+└──────────────────────────────────────────────┘
 ```
 
-> Compliance enforced **dentro del token**, no en un proxy. Cada `transfer`
-> consulta el registry. Modelo inspirado en ERC-3643 (Tokeny) y validado por
-> BlackRock + Securitize en sus deals.
+> Compliance enforced **dentro del token**, no en un proxy. La misma
+> IdentityRegistry sirve a los 10 tokens — KYC reusable es el value prop
+> diferenciador.
 
 ---
 
-### 6 · Por qué Avalanche
-**Visual**: 4 chips horizontales con logos de cada feature.
+### 6 · Por qué Dinari + Avalanche
+**Visual**: dos logos arriba (Dinari + Avalanche), tres bullets debajo.
 
-> - **L1 propia**: cada deal grande (Arkangeles, Kavak founders) puede tener
->   su propia subnet con compliance custom.
-> - **eERC20** (encrypted ERC-20): privacy de holdings sin sacrificar
->   compliance.
-> - **ICM** (Inter-Chain Messaging): un investor en C-Chain puede operar contra
->   un orderbook en una L1 sin bridges.
-> - **Core Wallet**: la wallet nativa de Avalanche es la mejor UX para
->   institucionales latinoamericanos.
+> - **Dinari** ya tokeniza ~100 acciones públicas US con cumplimiento SEC
+>   y bridge con un broker real (Alpaca). Tessera proporciona la **capa
+>   secundaria** que les falta para LatAm — surface, KYC institucional,
+>   orderbook en Avalanche.
+> - **Avalanche** ofrece L1 propia (cada deal grande puede tener su
+>   subnet), **eERC20** (privacy de holdings), **ICM** (cross-L1) y **Core
+>   Wallet** (UX top para institucionales LatAm).
+> - **Juntos**: Dinari emite, Tessera distribuye con compliance LatAm,
+>   Avalanche provee la rail. Stack completo para una bolsa privada
+>   regional.
 
 ---
 
 ### 7 · Modelo de negocio
-**Visual**: 3 líneas con el porcentaje + qué cubre.
+**Visual**: 3 fuentes de revenue, tabla simple.
 
-> - **0.3% trading fee** sobre el volumen del orderbook (ya implementado en el
->   contrato, accumula a `feesAccrued`).
-> - **1% listing fee** a las empresas que tokenizan una nueva ronda.
-> - **KYC premium**: $0 para retail, $X/mes para family offices con
->   dashboards y reportes regulatorios.
+> - **0.3% trading fee** sobre el volumen del orderbook (ya implementado;
+>   accumula a `feesAccrued`).
+> - **1% listing fee** a empresas que tokenizan una nueva ronda en el
+>   lado privado.
+> - **Rev-share con Dinari** sobre orders ejecutadas en el lado público.
+> - **Premium tier** para family offices: dashboard, reportes regulatorios,
+>   white-label compliance.
 >
-> Sizing: si capturamos el 10% del mercado secundario LatAm proyectado a
-> 2030 ($XB), el revenue anual recurring es $X M.
+> Sizing: si capturamos 10% del mercado secundario LatAm + 5% del flujo
+> retail LatAm hacia US equities a 2030, el revenue anual es **$XX M
+> recurring**.
 
 ---
 
 ### 8 · Equipo + roadmap + CTA
-**Visual**: foto del equipo + 3 hitos roadmap + un solo botón "Probar la demo".
+**Visual**: foto del equipo + 3 hitos roadmap + un botón "Probar la demo".
 
 > **Equipo**: Daniel (full stack, ex-X), [otros].
 >
 > **Roadmap 90 días**:
 > - Pilot con 1 family office en CDMX (Q3 2026)
-> - Integración Persona/SumSub para KYC real
-> - Lanzar L1 propia con eERC20
+> - Persona/SumSub para KYC real
+> - Migración public side a Dinari nativo cuando ship a Avalanche
 >
-> **CTA**: Pruébalo ahora en `tu-deploy.vercel.app` o escríbenos a
-> daniel@equityaccess.lat para acceso al pilot.
+> **CTA**: Pruébalo en `tu-deploy.vercel.app` o escríbenos a
+> daniel@tessera.lat para acceso al pilot.
 
 ---
 
 ## Demo script — 2 minutos
 
-Graba con OBS o Loom. Una sola toma. Webcam abajo a la derecha (cabeza +
-hombros). Voz directa, sin "uhm". Si te trabas, vuelve a empezar el tramo
-desde la transición previa.
+Graba con OBS o Loom. Una toma. Webcam abajo a la derecha. Voz directa, sin
+"uhm".
 
 ### 0:00 – 0:15 — Hook
-> "Si invertiste en una startup LatAm en 2020, todavía estás esperando tu
-> salida. Inversionistas atrapados 7 a 10 años, sin manera de monetizar
-> hasta una IPO que puede no llegar. EquityAccess resuelve eso en 60
-> segundos."
+> "Si invertiste en Kavak en 2020, todavía estás esperando salir. Si vives
+> en México y quieres exposure a NVIDIA, pagas comisión del broker y
+> esperas T+2. Tessera resuelve ambos en el mismo marketplace, con la
+> misma verificación KYC."
 
-(Pantalla: `/` marketplace con las 4 empresas visibles.)
+(Pantalla: landing `/` con las dos product cards visibles.)
 
-### 0:15 – 0:30 — Wallet + KYC sin
-> "Conecto mi wallet de Avalanche Core. Como ven, mi badge dice 'KYC
-> pendiente' — la wallet nueva no puede operar todavía."
+### 0:15 – 0:30 — Wallet + KYC
+> "Conecto mi wallet de Avalanche Core. Badge dice 'KYC pendiente'.
+> Tres pasos en /kyc y mi address queda atestada en el IdentityRegistry
+> on-chain. Listo, badge verde."
 
-(Click en ConnectButton → conecta Core. Apunta al pill rojo en la topbar.)
+(Click ConnectButton → conecta → KYC pill → llena los 3 pasos → success.)
 
-### 0:30 – 0:50 — KYC flow
-> "Voy a /kyc. Tres pasos: nombre, documento, confirmación. El backend firma
-> la transacción de `addIdentity` y mi address queda atestada en el
-> IdentityRegistry on-chain. Listo, badge verde."
+### 0:30 – 0:50 — Lado privado
+> "Voy a Private. Cuatro empresas reales LatAm tokenizadas. Click en
+> Kavak. Header, stats, chart de 30 días, y un orderbook con seis órdenes
+> on-chain. Coloco una compra de 50 KVK a $17.85."
 
-(Click en KYC pill → llena los 3 pasos rápido → confirmar → "Verificación
-completa" → vuelve al marketplace, badge verde.)
+(Click Private en topbar → marketplace → click Kavak → trade view →
+muestra orderbook por 3 seg → coloca orden → toast.)
 
-### 0:50 – 1:20 — Marketplace + trading view
-> "Marketplace muestra 4 empresas reales tokenizadas: Kavak, Bitso, Clip y
-> un SPV de Arkangeles. Click en Kavak Premium. Esta es la vista que vende
-> el producto: header con último precio on-chain, stats de market cap y
-> volumen, price chart de 30 días, orderbook con bids verdes y asks rojos."
+### 0:50 – 1:15 — Lado público (Dinari)
+> "Ahora voy a Public. Estos son seis tickers US — Apple, Microsoft,
+> NVIDIA, Google, Amazon, Meta. Pero las descripciones y los precios
+> son reales — vienen directo del sandbox de Dinari. Click en NVIDIA.
+> El header tiene el precio live de Dinari, el chart tiene 30 días de
+> historicals reales, y el orderbook secundario corre sobre el mismo
+> contrato en Avalanche que el lado privado."
 
-(Click en AssetCard de KVK → muestra trading view por 5 segundos completos.
-Hover sobre el orderbook para mostrar las depth bars.)
+(Click Public → muestra el grid de 6 cards con logos reales →
+click NVDA → muestra el header con precio live → muestra el chart →
+muestra el orderbook.)
 
-### 1:20 – 1:40 — Place order
-> "Voy a colocar una compra de 50 KVK a $17.85. El panel calcula fee y
-> total en vivo. Confirmo — la wallet pide aprobación de USDC primero,
-> luego placeOrder. En 5 segundos la orden aparece en el orderbook."
+### 1:15 – 1:40 — Place order público + ver settlement
+> "Coloco una compra de NVDA a $223.50. Mismo flow que el privado —
+> approve USDC, placeOrder. Cinco segundos después aparece en el
+> orderbook on-chain. **La misma wallet, la misma KYC, ahora operó en
+> dos universos distintos**. Eso es Tessera."
 
-(Click en una fila de bids para prefill, ajusta cantidad a 50, click
-"Confirmar compra" → aprueba en wallet → confirma orden → muestra el toast
-de éxito → muestra la orden nueva en el orderbook.)
+(Coloca orden en NVDA → confirma en wallet → toast success → muestra
+orderbook actualizado.)
 
 ### 1:40 – 1:55 — Portfolio
-> "Voy a /portfolio. Holdings actualizados — tengo USDC y la orden activa
-> en la sección de abajo. Cuando se ejecute aparece en el historial con
-> link a Snowtrace."
+> "Voy a Portfolio. Veo USDC + holdings de Kavak Y de NVIDIA en una
+> sola tabla. Una sola cuenta, dos universos."
 
-(Click en Portfolio en el header → scroll lento mostrando las 3 secciones.)
+(Click Portfolio → muestra holdings de ambos productos en una tabla.)
 
 ### 1:55 – 2:00 — Cierre
-> "Inversionistas atrapados, ahora liberados. EquityAccess en Avalanche
-> Fuji. Pruébalo tú mismo — link en la descripción."
+> "Tessera: dual asset secondary market sobre Avalanche, powered by
+> Dinari. Pruébalo — link en la descripción."
 
 (Volver a la home. Cortar.)
 
@@ -187,9 +197,9 @@ de éxito → muestra la orden nueva en el orderbook.)
 - [ ] Wallet conectada en Core con AVAX para gas (~0.05 AVAX)
 - [ ] Wallet **sin verificar** todavía (para que el KYC flow se vea)
 - [ ] `pnpm dev` corriendo en `localhost:3500`
-- [ ] Browser en **modo incógnito** o limpia el localStorage para que el
-      ConnectButton arranque desconectado
+- [ ] Browser en **modo incógnito** o limpia el localStorage
 - [ ] Pantalla 1920×1080, browser zoom al 100%, dock/taskbar oculto
 - [ ] Devtools cerrados, sin notificaciones del sistema
 - [ ] OBS configurado a 1080p 30fps, mic con noise gate
-- [ ] Si grabas en Mac: `Hide Menu Bar` activado
+- [ ] Dinari credentials en `web/.env.local` para que los precios live
+      funcionen durante la demo

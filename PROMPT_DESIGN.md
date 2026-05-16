@@ -1,9 +1,18 @@
-# Design brief — EquityAccess
+# Design brief — Tessera (formerly EquityAccess)
 
 Pega este archivo entero como prompt al iniciar una sesión con el skill
 `frontend-design` (o `design-taste-frontend`). Toda la funcionalidad ya está
 construida y enchufada a contratos vivos en Avalanche Fuji — tu trabajo es
 **redibujar la UI** sobre esa base sin tocar la capa de datos.
+
+> **Update 2026-05-16**: el producto pivotó a **Tessera**, una plataforma
+> dual con dos tabs (Private equity LatAm + Public equity US powered by
+> Dinari). El landing en `/` es nuevo (choose-your-adventure), las páginas
+> anteriores quedan bajo `/private/*` y `/public/*` espeja la estructura.
+> Lee la sección "4 · Las 5 páginas" abajo — ahora son 5 productivas
+> + el landing. El bullet 4.1 del marketplace ahora se aplica a las DOS
+> rutas (private y public). Todo lo demás del brief (paleta, tipografía,
+> motion, hooks, restricciones) sigue válido.
 
 ---
 
