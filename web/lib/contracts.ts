@@ -11,21 +11,23 @@ export const ZERO_ADDRESS: Address = "0x0000000000000000000000000000000000000000
 export const TOKEN_SYMBOLS = ["KVK", "BTS", "CLP", "ARK1"] as const;
 export type TokenSymbol = (typeof TOKEN_SYMBOLS)[number];
 
-function readAddress(envKey: string): Address {
-  const raw = process.env[envKey];
+/// Next.js inlines `process.env.NEXT_PUBLIC_*` only when the key is referenced
+/// statically. Dynamic `process.env[key]` access leaves undefined in client
+/// bundles, so every address must be read with a literal key here.
+function parseAddress(raw: string | undefined): Address {
   if (!raw || !raw.startsWith("0x") || raw.length !== 42) return ZERO_ADDRESS;
   return raw.toLowerCase() as Address;
 }
 
 export const contractAddresses = {
-  usdc: readAddress("NEXT_PUBLIC_USDC_ADDRESS"),
-  identityRegistry: readAddress("NEXT_PUBLIC_IDENTITY_REGISTRY"),
-  orderbook: readAddress("NEXT_PUBLIC_ORDERBOOK_ADDRESS"),
+  usdc: parseAddress(process.env.NEXT_PUBLIC_USDC_ADDRESS),
+  identityRegistry: parseAddress(process.env.NEXT_PUBLIC_IDENTITY_REGISTRY),
+  orderbook: parseAddress(process.env.NEXT_PUBLIC_ORDERBOOK_ADDRESS),
   tokens: {
-    KVK: readAddress("NEXT_PUBLIC_TOKEN_KVK"),
-    BTS: readAddress("NEXT_PUBLIC_TOKEN_BTS"),
-    CLP: readAddress("NEXT_PUBLIC_TOKEN_CLP"),
-    ARK1: readAddress("NEXT_PUBLIC_TOKEN_ARK1"),
+    KVK: parseAddress(process.env.NEXT_PUBLIC_TOKEN_KVK),
+    BTS: parseAddress(process.env.NEXT_PUBLIC_TOKEN_BTS),
+    CLP: parseAddress(process.env.NEXT_PUBLIC_TOKEN_CLP),
+    ARK1: parseAddress(process.env.NEXT_PUBLIC_TOKEN_ARK1),
   } satisfies Record<TokenSymbol, Address>,
 } as const;
 
