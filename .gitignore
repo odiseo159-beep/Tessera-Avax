@@ -11,8 +11,10 @@ node_modules/
 contracts/cache/
 contracts/artifacts/
 contracts/typechain-types/
-contracts/deployments/*.json
-!contracts/deployments/.gitkeep
+# Anything under deployments/ with a private key inside lives here. Public
+# addresses (fuji.json, etc.) are committed so the frontend can read them.
+contracts/deployments/test-wallets.json
+contracts/deployments/*.key.json
 
 # Next.js
 web/.next/
