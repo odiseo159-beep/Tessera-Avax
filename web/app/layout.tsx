@@ -4,6 +4,7 @@ import "./globals.css";
 
 import { Providers } from "./providers";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -25,8 +26,11 @@ export default function RootLayout({
     <html lang="es" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`}>
         <Providers>
-          <SiteHeader />
-          {children}
+          <div className="flex min-h-screen flex-col">
+            <SiteHeader />
+            <div className="flex-1">{children}</div>
+            <SiteFooter />
+          </div>
         </Providers>
       </body>
     </html>

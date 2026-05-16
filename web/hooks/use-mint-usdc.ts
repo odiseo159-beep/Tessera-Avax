@@ -5,6 +5,7 @@ import { useAccount, usePublicClient, useWriteContract } from "wagmi";
 import { toast } from "sonner";
 
 import { abis, contractAddresses, contractsReady } from "@/lib/contracts";
+import { parseViemError } from "@/lib/parse-error";
 
 const USDC_UNIT = 10n ** 6n;
 const DEFAULT_MINT = 10_000n * USDC_UNIT;
@@ -46,8 +47,7 @@ export function useMintUsdc() {
         toast.success(`Minted ${Number(amount / USDC_UNIT).toLocaleString()} USDC mock`);
       } catch (err) {
         setState("error");
-        const msg = err instanceof Error ? err.message.split("\n")[0] : String(err);
-        toast.error("No se pudo mintear", { description: msg.slice(0, 160) });
+        toast.error("No se pudo mintear", { description: parseViemError(err) });
       }
     },
     [address, publicClient, writeContractAsync]

@@ -10,6 +10,7 @@ import {
   contractAddresses,
   contractsReady,
 } from "@/lib/contracts";
+import { parseViemError } from "@/lib/parse-error";
 
 export type PlaceOrderState = "idle" | "approving" | "placing" | "success" | "error";
 
@@ -111,11 +112,10 @@ export function usePlaceOrder(): UsePlaceOrderResult {
           action: { label: "Ver tx", onClick: () => window.open(explorerUrl(placeHash), "_blank") },
         });
       } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        const short = message.split("\n")[0].slice(0, 140);
-        setErrorMessage(short);
+        const friendly = parseViemError(err);
+        setErrorMessage(friendly);
         setState("error");
-        toast.error("La orden falló", { description: short });
+        toast.error("La orden falló", { description: friendly });
       }
     },
     [address, publicClient, writeContractAsync]

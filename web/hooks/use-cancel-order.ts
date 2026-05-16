@@ -5,6 +5,7 @@ import { usePublicClient, useWriteContract } from "wagmi";
 import { toast } from "sonner";
 
 import { abis, contractAddresses, contractsReady } from "@/lib/contracts";
+import { parseViemError } from "@/lib/parse-error";
 
 export type CancelState = "idle" | "submitting" | "success" | "error";
 
@@ -45,8 +46,7 @@ export function useCancelOrder() {
         });
       } catch (err) {
         setState("error");
-        const msg = err instanceof Error ? err.message.split("\n")[0] : String(err);
-        toast.error("No se pudo cancelar", { description: msg.slice(0, 160) });
+        toast.error("No se pudo cancelar", { description: parseViemError(err) });
       } finally {
         setPendingId(null);
         setTimeout(() => setState("idle"), 1500);

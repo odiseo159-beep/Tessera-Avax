@@ -3,11 +3,11 @@ import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { PriceChart } from "@/components/price-chart";
 import { TradeGrid } from "@/components/trade-grid";
+import { AssetPriceCell } from "@/components/asset-price-cell";
 import { companyBySlug } from "@/lib/mock-companies";
 import { mockPriceSeries } from "@/lib/mock-orderbook";
 import { tokenAddressOf } from "@/lib/contracts";
-import { formatInt, formatPercent, formatUsdc, formatUsdcCompact } from "@/lib/format";
-import { cn } from "@/lib/utils";
+import { formatInt, formatUsdcCompact } from "@/lib/format";
 
 interface PageProps {
   params: { token: string };
@@ -19,7 +19,6 @@ export default function TradePage({ params }: PageProps) {
 
   const tokenAddress = tokenAddressOf(company.symbol);
   const series = mockPriceSeries(company);
-  const positive = company.change24h >= 0;
 
   const stats = [
     { label: "Market cap", value: formatUsdcCompact(company.marketCapUsdc) },
@@ -46,19 +45,11 @@ export default function TradePage({ params }: PageProps) {
           </p>
         </div>
 
-        <div className="flex flex-col items-end">
-          <span className="text-2xl font-semibold tabular-nums text-foreground">
-            {formatUsdc(company.midPriceUsdc)}
-          </span>
-          <span
-            className={cn(
-              "text-xs tabular-nums",
-              positive ? "text-[#0F6E56]" : "text-[#C03737]"
-            )}
-          >
-            {formatPercent(company.change24h)} · 24h
-          </span>
-        </div>
+        <AssetPriceCell
+          symbol={company.symbol}
+          tokenAddress={tokenAddress}
+          fallbackChange24h={company.change24h}
+        />
 
         <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
           <Badge variant="outline" className="border-[#0F6E56]/40 bg-[#E7F3F0] text-[#0F6E56]">
