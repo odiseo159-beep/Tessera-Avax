@@ -1,216 +1,339 @@
-# Design brief — Tessera (formerly EquityAccess)
+# Design brief — Tessera
 
 Pega este archivo entero como prompt al iniciar una sesión con el skill
-`frontend-design` (o `design-taste-frontend`). Toda la funcionalidad ya está
-construida y enchufada a contratos vivos en Avalanche Fuji — tu trabajo es
-**redibujar la UI** sobre esa base sin tocar la capa de datos.
-
-> **Update 2026-05-16**: el producto pivotó a **Tessera**, una plataforma
-> dual con dos tabs (Private equity LatAm + Public equity US powered by
-> Dinari). El landing en `/` es nuevo (choose-your-adventure), las páginas
-> anteriores quedan bajo `/private/*` y `/public/*` espeja la estructura.
-> Lee la sección "4 · Las 5 páginas" abajo — ahora son 5 productivas
-> + el landing. El bullet 4.1 del marketplace ahora se aplica a las DOS
-> rutas (private y public). Todo lo demás del brief (paleta, tipografía,
-> motion, hooks, restricciones) sigue válido.
+`frontend-design` (o `design-taste-frontend`). Toda la funcionalidad ya
+está construida y enchufada a contratos vivos en Avalanche Fuji + al
+sandbox real de Dinari — tu trabajo es **rediseñar la UI** sobre esa base
+sin tocar la capa de datos.
 
 ---
 
-## 1 · Mission
+## 1 · El reto
 
-Redibuja las 5 páginas del marketplace EquityAccess
-([`D:\AVAX\web`](./web)) con calidad de producto fintech institucional. No
-toques los hooks (`web/hooks/`), las libs (`web/lib/`), el deploy de
-contratos, ni los archivos de ABIs. Edita las páginas y los componentes de
-presentación. El resultado debe sentirse al nivel de
-**Robinhood + Bloomberg Terminal + Linear**: denso pero respirable, sin
-gradientes ni neón, tipografía precisa, micro-interacciones sutiles.
+Estamos a horas de entregar Tessera al **Hackathon LatAm Institucional de
+Avalanche**. El jurado verá 50+ demos en sucesión. La nuestra tiene que
+clavarse en su memoria en los **primeros 5 segundos** de pantalla
+compartida. Tienes que hacer una UI que **vuelva físicamente imposible no
+voltear a ver**.
 
-## 2 · Contexto del producto en una pantalla
+Especialmente la **página de inicio** (`/`) — donde el usuario elige
+entre los dos universos de activos — tiene que ser un momento "wow".
+Interactiva, viva, con personalidad. No puede ser dos cards bonitas
+estáticas. Tiene que sentirse como entrar a un terminal de Bloomberg
+diseñado por Linear.
 
-EquityAccess es un marketplace secundario para equity privado tokenizado en
-LatAm. Inversionistas verificados (KYC reusable on-chain) compran y venden
-fracciones de empresas privadas (Kavak, Bitso, Clip, SPV de Arkangeles) vía
-un orderbook on-chain con compliance enforced dentro del SecurityToken
-(ERC-3643 simplificado). Las transferencias validan `IdentityRegistry.isVerified(to)`
-en `_update`. Live en Avalanche Fuji, chainId 43113. El demo se entrega para
-el Hackathon LatAm Institucional el 17 mayo 2026.
+Lo demás del producto (trade view, portfolio, KYC) ya está construido
+funcionalmente. Tu trabajo es elevarlo todo a calidad de producto fintech
+institucional, pero **la landing es donde más peso visual debe caer**.
 
-Lee [`README.md`](./README.md) y [`PITCH.md`](./PITCH.md) para más contexto
-narrativo. El flujo end-to-end ya funciona: connect → KYC → mint USDC →
-trade → portfolio.
+## 2 · Test de 5 segundos para el jurado
 
-## 3 · Brand direction
+Cuando el jurado ve la landing por primera vez, en 5 segundos tiene que
+poder responder estas tres preguntas sin ayuda:
 
-**Paleta** (ya en `web/app/globals.css` como HSL CSS vars — respétala):
+1. **¿Qué es esto?** "Un marketplace que junta dos universos de activos."
+2. **¿Es real?** "Sí — hay datos vivos, números corriendo, logos reales
+   de Apple/NVIDIA y de Kavak/Bitso, links a Snowtrace."
+3. **¿Quiero tocarlo?** "Sí — ese hover/animación/transición me obliga a
+   probarlo yo."
 
-| Token            | Hex       | Uso                                                     |
-| ---------------- | --------- | ------------------------------------------------------- |
-| `--background`   | `#F1EFE8` | Fondo cálido off-white. Bases de página.                |
-| `--card`         | `#FFFFFF` | Cards, modales, panels.                                 |
-| `--primary`      | `#0F6E56` | CTAs positivos, buy, accent verde. Único color "fuerte". |
-| `--accent`       | `#3C3489` | Subrayados, charts secundarios, badges institucionales.  |
-| `--destructive`  | `#C03737` | Errores, sell, decay.                                    |
-| `--secondary`    | `#D3D1C7` | Borders cálidos, dividers.                              |
-| `--muted`        | `~ #E6E2D6` | Hover backgrounds, secondary surfaces.                 |
-| `--foreground`   | `#1A1D21` | Texto principal.                                         |
+Si tu landing pasa este test, ganamos. Si no, no.
 
-Logos de empresas usan paletas adjuntas en `lib/mock-companies.ts` (KVK
-naranja, BTS verde, CLP rojo, ARK1 morado). NO uses gradientes, NO uses
-sombras de >2dp, NO uses neón.
+## 3 · Producto en una pantalla
 
-**Tipografía**: **Inter** desde `next/font/google` (ya configurada como
-`--font-inter`). Tres escalas máximo: 12 / 14 / 24 con jumps muy claros para
-display (h1 hero: 36–48, semibold, tracking tight). Tabular nums (`tabular-nums`)
-en TODO número monetario. Mono solo para addresses (`font-mono`).
+Tessera es una plataforma dual sobre Avalanche Fuji:
 
-**Sentence case en TODO** — nunca Title Case, nunca ALL CAPS salvo eyebrows
-de section (uppercase tracking-wide 0.18em, 11px).
+- **Tessera Private** (`/private`) — equity privado latinoamericano. Cuatro
+  empresas reales tokenizadas (Kavak, Bitso, Clip, SPV de Arkangeles)
+  emitidas como SecurityTokens con compliance ERC-3643 enforced en
+  `_update`. Orderbook on-chain con escrow.
+- **Tessera Public** (`/public`) — equity público US, "powered by Dinari".
+  Seis tickers mega-cap (AAPL, MSFT, NVDA, GOOGL, AMZN, META) con precios
+  + historicals + metadata reales del sandbox de Dinari. El secundario
+  corre sobre nuestro mismo orderbook on-chain con la misma KYC.
 
-**Sin emojis** en código ni UI.
+**El value prop diferenciador**: una sola verificación KYC en
+`IdentityRegistry` desbloquea ambos universos. Verificas una vez,
+operas en privado Y público sin re-onboard.
 
-**Bordes**: 0.5px (`border-border/60` o `border-border/40`). Radius `--radius`
-8px en todo. Skeleton states con `bg-muted/50` y pulse sutil.
+Lee [`README.md`](./README.md) (technical) y [`PITCH.md`](./PITCH.md)
+(narrative + demo script) para más contexto.
 
-**Motion**: solo `transition-colors` y `transition-shadow`. Animaciones de
-entrada `fade-in 200ms ease-out`. Hover en cards: leve `shadow-sm`.
+## 4 · La landing (`/`) — el momento estelar
 
-**Spacing rhythm**: base 4. Padding interno cards 16-20. Gap entre secciones
-24-32. Max-width container 1280 (`max-w-7xl`).
+Esta es **la** página. Inviértele 60% del tiempo de diseño aquí.
 
-## 4 · Las 5 páginas
+### 4.1 Estructura obligatoria
 
-Estructura actual a redibujar. Mantén las rutas y los nombres de archivos.
+La landing tiene que tener:
 
-### 4.1 `/` Marketplace ([`web/app/page.tsx`](./web/app/page.tsx))
+1. **Header** sticky con marca + nav + connect wallet (ya existe en
+   `<SiteHeader>`, puedes refinarlo pero no quites elementos)
+2. **Hero** — title + subtítulo + un primer reveal del dual-product
+3. **Choose-your-market** — el momento de interacción central, dos
+   universos vivos para elegir
+4. **Prueba de vida** — datos reales corriendo (precios, # de órdenes,
+   contratos en Snowtrace) que demuestren que no es vaporware
+5. **Cómo funciona** — los 3 pasos del onboarding (conecta → KYC → opera)
+6. **Footer** con créditos del hackathon (ya existe en `<SiteFooter>`)
 
-**Anatomía actual**:
-1. Eyebrow "Marketplace · Avalanche Fuji"
-2. Hero h1 (2 líneas) + lead paragraph (2 líneas)
-3. 4 stat cards: TVL, Empresas listadas, Volumen 24h, Inversionistas
-4. Section title "Empresas listadas" + nota a la derecha
-5. Grid de 4 `<AssetCard />` (símbolo, nombre, sector, último precio, change
-   24h, badge país, tag "On-chain/Mock · ERC-3643", botón Trade)
+### 4.2 Choose-your-market — la pieza interactiva central
 
-**Objetivo**: que en 3 segundos quede claro qué es el producto y qué se
-puede tradear. El hero ocupa max 30% de fold-1. Las 4 stats son el segundo
-foco visual. Las cards de empresa son el tercero.
+**Hoy** son dos cards estáticas. **Tienen que volverse el corazón
+interactivo de la landing**. Algunas direcciones obligatorias (puedes
+combinarlas como prefieras, pero el resultado tiene que ser visiblemente
+"vivo"):
 
-### 4.2 `/trade/[token]` Trading view ([`web/app/trade/[token]/page.tsx`](./web/app/trade/[token]/page.tsx))
+- **Competencia visual entre ambas cards**: cuando el cursor entra a
+  Private, Public se atenúa/desatura/se aleja sutilmente; y al revés. El
+  usuario debe sentir que **está eligiendo**.
+- **Datos vivos dentro de cada card**: dentro de Private muestra el
+  precio real on-chain del último fill de KVK + cuántas órdenes activas
+  hay; dentro de Public muestra el precio live de AAPL/NVDA viniendo de
+  Dinari (cambia cada 30s). Esos números tienen que verse moverse en
+  vivo durante la demo.
+- **Color de hover**: Private = verde primary `#0F6E56`, Public = morado
+  accent `#3C3489`. Cuando estás sobre una card, ese color sangra al
+  borde / sombra / underline de manera sutil.
+- **Cursor-follow gradient ligero** dentro de cada card al hover (no en
+  todo el page, mata performance). Sutil, no neón.
+- **Micro-tilt 3D** opcional (~3° max) según la posición del mouse en la
+  card. Si lo haces, hardware accelerated (`transform: perspective(...)
+  rotateX rotateY`), no JavaScript pesado.
+- **Click no navega inmediato** — primero hace un cross-fade /
+  morph-zoom de 200-300ms y después navega a `/private` o `/public`. El
+  usuario debe sentir que "entra" a un universo, no que cambia de página.
+- **Indicador de "ambos universos, una identidad"**: una línea o glow
+  morado-verde que conecta sutilmente las dos cards y se intensifica al
+  pasar el cursor por en medio. Refuerza visualmente el value prop sin
+  necesitar texto.
 
-**La página estrella del demo.** Anatomía actual:
-1. Header del asset: logo 48px + nombre + (sector · ronda · país) +
-   `<AssetPriceCell />` (precio + change + on-chain/mock tag) + badges
-   (ERC-3643, KYC enforced, ticker)
-2. 4 stats: market cap, volumen 24h, holders, default rate
-3. `<PriceChart />` lightweight-charts v5, 30 puntos mock, fondo
-   transparente, línea `#0F6E56` 2px
-4. `<TradeGrid />` que pone `<Orderbook />` 2fr y `<TradePanel />` 1fr en
-   desktop, stack en mobile
+### 4.3 Hero
 
-**Objetivo**: que se sienta como Bloomberg Terminal. Mucha información,
-densa pero legible. Tabular nums en todo. Depth bars en el orderbook
-proporcionales al amount. Click en row de orderbook → prellena el panel.
+- **Headline grande** (display 48-64) con stagger reveal palabra por
+  palabra al primer paint (200ms entre palabras, total <1s).
+- **Subtítulo de una sola línea** con la palabra clave (probablemente
+  "una sola identidad" o "dos universos") resaltada en el morado accent.
+- **Eyebrow** "Avalanche LatAm Institucional · Fuji testnet" en
+  uppercase tracking-wide 11px — mismo patrón que ya usa el producto.
+- **Sin imagen decorativa de stock**. Si necesitas una imagen, tiene que
+  ser un screenshot real del trade view del producto, recortado o con
+  treatment.
 
-### 4.3 `/portfolio` ([`web/app/portfolio/page.tsx`](./web/app/portfolio/page.tsx))
+### 4.4 Ticker tape o prueba de vida
 
-**Anatomía**:
-1. Header con address corta + botón "Completa tu KYC" cuando no esté verificado
-2. `<PortfolioHoldings />` — tabla USDC + 4 SecurityTokens con cantidad,
-   precio, valor, total. Botón "Mintea 10k USDC mock" en el header de la
-   sección.
-3. `<PortfolioOrders />` — tabla órdenes activas con botón Cancelar por row
-4. `<PortfolioHistory />` — tabla OrderFilled events con role (maker/taker)
-   + side + counterparty linkeado a Snowtrace
+Antes del choose-your-market, OBLIGATORIAMENTE muestra una banda de datos
+reales. Opciones:
 
-**Objetivo**: dashboard que un family office leería sin sentirse perdido.
-Estados vacíos con CTA hacia donde sigue (ir al marketplace, completar KYC).
+- Una franja horizontal estilo Bloomberg con `KVK $18.00 +2.4%` ·
+  `AAPL $299.85 -0.13%` · `NVDA $224.41 -0.4%` ... etc. Scroll horizontal
+  lento o auto-rotate cada 4s. Datos reales de los hooks que ya existen
+  (`useLivePrice` por compañía).
+- O 4 stat tiles grandes: "10 tokens vivos en Fuji", "48 órdenes
+  on-chain", "6 stocks US powered by Dinari", "$XX volumen sandbox".
+- O ambas combinadas si el espacio lo permite.
 
-### 4.4 `/kyc` ([`web/app/kyc/page.tsx`](./web/app/kyc/page.tsx))
+El punto: que en los primeros 3 segundos el jurado vea **números
+moviéndose**.
 
-Stepper de 3 pasos vivo en `<KycStepper />`
-([`web/components/kyc-stepper.tsx`](./web/components/kyc-stepper.tsx)).
+### 4.5 Microinteracciones obligatorias
 
-1. **Paso 1**: nombre, email, país (`<Select>` con MX/CO/AR/BR/CL/PE/UY)
-2. **Paso 2**: documento mock — `<input type="file">` que solo toggle un
-   bool, no procesa el archivo
-3. **Paso 3**: review + botón "Confirmar y verificar" → POST a
-   `/api/kyc/verify` → success state con botón "Reclama 10k USDC mock" +
-   link a Snowtrace
+- **Botones**: compress 1-2px al `:active`, no más.
+- **Links**: underline animado de izquierda a derecha al hover (200ms),
+  cambia de color al accent del universo correspondiente si aplica.
+- **Page transition al entrar a `/private` o `/public`**: cross-fade
+  rápido (200ms). Si puedes usar View Transitions API o Framer Motion
+  layout animations, mejor.
+- **Cards de empresa en los marketplaces**: hover eleva 4px + sombra
+  sutil + el logo gira/escala ligeramente.
+- **Toasts**: slide in desde top-right con bounce físico mínimo.
 
-Cuando ya esté verificado, muestra empty state con check verde y CTA al
-marketplace. Cuando no haya wallet, prompt para conectar.
+### 4.6 NO hacer
 
-**Objetivo**: el "magic moment" del demo. Diseño minimalista, paso visible
-en el chip stepper arriba, transiciones suaves entre pasos.
+- No splash screens largos (>1.5s antes del primer paint).
+- No carruseles auto-play que el usuario no pueda pausar.
+- No video background (matan performance + accesibilidad).
+- No 3D pesado (Three.js / R3F sobra para esto).
+- No gradientes neón ni glow saturado. Toda saturación viene del
+  morado/verde del brand a opacidad media.
+- No emojis. Iconos solo de `lucide-react`.
 
-### 4.5 `/not-found` ([`web/app/not-found.tsx`](./web/app/not-found.tsx))
+## 5 · Resto de las páginas
 
-404 branded con voz del producto. Botones para volver al marketplace o
-portfolio. No tomes más de 1 fold.
+Mismo nivel visual que la landing, pero el peso de interacción es menor.
+Mantén las anatomías actuales — sólo súbeles el bar visual.
 
-## 5 · Componentes a redibujar (sin tocar lógica)
+### 5.1 `/private` y `/public` — marketplaces
 
-Todos viven en [`web/components/`](./web/components). Acepta los mismos
-props (definidos en cada `interface`) — mantén el shape porque el resto del
-sistema depende.
+Ya tienen hero + 4 stats + grid de `<AssetCard>`. Para subir el nivel:
 
-- [`site-header.tsx`](./web/components/site-header.tsx) — sticky topbar con
-  brand mark "EA" 28px + EquityAccess wordmark, nav links Marketplace /
-  Portfolio, KYC pill (5 estados: disconnected, unconfigured, loading,
-  pending, verified), RainbowKit `<ConnectButton />`. Backdrop blur + border
-  bottom.
-- [`site-footer.tsx`](./web/components/site-footer.tsx) — footer pequeño
-  con crédito hackathon + chainId.
-- [`asset-card.tsx`](./web/components/asset-card.tsx) — card de empresa en
-  el marketplace. 4 secciones: logo+nombre / descripción / precio+change /
-  meta tag + Trade button.
-- [`asset-price-cell.tsx`](./web/components/asset-price-cell.tsx) — display
-  de precio + change para el header de la trade view. Lee `useLastPrice`.
-- [`price-chart.tsx`](./web/components/price-chart.tsx) — wrapper
-  lightweight-charts v5. NO cambies la API (`addSeries(LineSeries, …)`),
-  sí puedes ajustar colores/grid/cursor.
-- [`orderbook.tsx`](./web/components/orderbook.tsx) — 8 asks invertidas
-  arriba (mejor ask abajo del bloque rojo), spread row, 8 bids abajo
-  (mejor bid arriba del bloque verde), depth bars. Click row → callback.
-- [`trade-panel.tsx`](./web/components/trade-panel.tsx) — tabs Comprar /
-  Vender, inputs cantidad/precio, breakdown subtotal+fee+total, botón
-  submit que dice exactamente por qué está disabled (state machine).
-- [`trade-grid.tsx`](./web/components/trade-grid.tsx) — client wrapper que
-  comparte el prefill state entre orderbook y panel. Solo es layout — el
-  diseño grid puede cambiar.
-- [`kyc-stepper.tsx`](./web/components/kyc-stepper.tsx) — los 3 pasos +
-  success state. Toca todo el chrome menos el `fetch('/api/kyc/verify')`.
-- [`portfolio-holdings.tsx`](./web/components/portfolio-holdings.tsx),
-  [`portfolio-orders.tsx`](./web/components/portfolio-orders.tsx),
-  [`portfolio-history.tsx`](./web/components/portfolio-history.tsx) — 3
-  tablas independientes en `<section>`s con header propio.
+- Cada AssetCard al hover muestra un mini-sparkline del precio (puedes
+  reutilizar `<PriceChart>` con altura 30px sin axes).
+- Tag "On-chain" / "Dinari live" / "Mock" — hoy es texto chico, hazlo
+  pill colorizado consistente con la marca.
+- Logo: para Private usa el cuadrado de color (logoBg/logoColor); para
+  Public usa el logo real de Dinari (ya descargado vía `next/image`).
+  Trata las dos formas con el mismo tamaño y radio para que el grid se
+  vea homogéneo.
+- Diferencia visual entre Private y Public: Private = línea de acento
+  verde en el border-top de cada card; Public = morado. Una pista mínima
+  pero presente del universo.
 
-## 6 · Capas que NO se tocan
+### 5.2 `/private/trade/[token]` y `/public/trade/[symbol]` — trade view
 
-- [`web/hooks/*`](./web/hooks) — todos los wagmi hooks (`useKycStatus`,
-  `useLastPrice`, `useOrders`, `usePlaceOrder`, `useCancelOrder`,
-  `useMintUsdc`, `useUserBalances`, `useUserActiveOrders`, `useTradeHistory`).
-- [`web/lib/*`](./web/lib) salvo si necesitas agregar un helper de
-  formato. Nada de cambiar `contracts.ts`, `mock-orderbook.ts`,
+La página estrella del producto. Anatomía actual:
+
+1. Header del asset (logo + nombre + sector/ronda/país + AssetPriceCell +
+   badges)
+2. 4 stat tiles
+3. PriceChart (mock 30d en private, Dinari historical en public)
+4. TradeGrid (Orderbook izquierda 2fr + TradePanel derecha 1fr)
+
+Mejoras esperadas:
+
+- El asset header debe sentirse pesado, denso, monoespaciado en los
+  números. Es el "ticker terminal" del producto.
+- El precio en `<AssetPriceCell>` debe **pulsar/flash** muy sutilmente
+  cuando cambie (`react-query` ya invalida cada 30s en Public). Usa una
+  animación de border o de background opacity, no del texto.
+- Orderbook: hoy las depth bars son rectángulos planos. Súbelas a un
+  gradient muy sutil hacia el centro del row (de fuera hacia el spread).
+  Spread row más prominente — quizás monoespaciada con altura mayor.
+- TradePanel: el botón "Confirmar compra/venta" debe cambiar de color
+  según el side (verde buy / rojo sell) con transición suave en el tab
+  toggle.
+
+### 5.3 `/portfolio`
+
+Tres secciones (holdings, órdenes activas, historial). Hoy son tablas
+shadcn nativas. Para subir nivel:
+
+- Cada row del holdings con un mini-indicador del universo (línea
+  vertical de 2px en el border-left, verde o morado).
+- Para holdings con balance > 0, agregar un `<Sparkline>` chico al final
+  del row (reutiliza la misma técnica que la AssetCard).
+- El header del portfolio con el address del usuario debe tener un copy
+  button micro-interactivo al hover.
+
+### 5.4 `/kyc`
+
+Stepper 3 pasos. Hoy es funcional pero plano. Para subir nivel:
+
+- El chip stepper arriba con animación de fill cuando avanzas (los chips
+  inactivos a activos se llenan con un easing).
+- Cross-fade entre pasos en lugar de reemplazo brusco.
+- Success state: confetti **muy sutil** (1-2s, no más) con la paleta de
+  marca al confirmar el KYC. O un check mark que se dibuja a mano (200ms
+  SVG path animation) si confetti es too much.
+
+### 5.5 `/not-found`
+
+Solo asegúrate que matchee el resto del lenguaje visual. Ya es funcional.
+
+## 6 · Brand direction
+
+### Paleta — ya en `web/app/globals.css` como HSL CSS vars. Respétala.
+
+| Token            | Hex       | Uso                                                                          |
+| ---------------- | --------- | ---------------------------------------------------------------------------- |
+| `--background`   | `#F1EFE8` | Fondo cálido off-white. Bases de página.                                     |
+| `--card`         | `#FFFFFF` | Cards, modales, panels.                                                      |
+| `--primary`      | `#0F6E56` | Universo **Private** + CTAs positivos / buy. Único color "fuerte" del lado private. |
+| `--accent`       | `#3C3489` | Universo **Public** + acentos institucionales.                               |
+| `--destructive`  | `#C03737` | Errores, sell, decay.                                                        |
+| `--secondary`    | `#D3D1C7` | Borders cálidos, dividers.                                                   |
+| `--muted`        | `~#E6E2D6`| Hover backgrounds, secondary surfaces.                                       |
+| `--foreground`   | `#1A1D21` | Texto principal.                                                             |
+
+Los logos de empresa privada ya tienen sus paletas custom en
+`lib/mock-companies.ts` (KVK naranja, BTS verde, CLP rojo, ARK1 morado).
+Los logos de Public vienen reales de Dinari (`dinariLogoUrl`).
+
+### Tipografía
+
+**Inter** desde `next/font/google` (ya configurada como `--font-inter`).
+
+- Display (h1 landing): 40-64, semibold, tracking tight, line-height
+  tight (1.05-1.1).
+- Section title: 18-24, semibold.
+- Body: 14, regular, line-height 1.5.
+- Numérico: SIEMPRE `tabular-nums`. Considera Inter en su variante con
+  features `cv01` y `cv11` para una vibe más institucional.
+- Mono (`font-mono`): solo para addresses y tx hashes.
+
+**Sentence case en TODO** — nunca Title Case, nunca ALL CAPS salvo
+eyebrows de section (uppercase tracking-wide 0.18em, 11px).
+
+### Motion philosophy
+
+- **Easing default**: `cubic-bezier(0.32, 0.72, 0, 1)` (cinemático,
+  decelera bonito).
+- **Duración default**: 180-220ms para microinteracciones, 300-400ms para
+  page-level transitions.
+- **Hardware accelerated**: solo `transform` y `opacity`. Cero animaciones
+  de `width`/`height`/`top`/`left`.
+- **Entrance staggers**: 60-90ms entre elementos hermanos al revelar.
+- **Sin loops infinitos** salvo el ticker tape (y ese a muy baja
+  velocidad).
+
+### Bordes y radios
+
+- Border 0.5-1px con `border-border/60` o `border-border/40`.
+- Radius `--radius` (8px) en todo. Cards principales pueden ir 12px para
+  destacar.
+- Sombras: `shadow-sm` o `shadow-md` max. Cero `shadow-xl`/`shadow-2xl`.
+
+## 7 · Componentes a redibujar (sin tocar lógica)
+
+Todos viven en [`web/components/`](./web/components). Mantén las
+interfaces de props — el sistema de datos depende de ellas.
+
+| Componente                                                                                  | Lo que puedes tocar                                                              |
+| ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| [`site-header.tsx`](./web/components/site-header.tsx)                                       | Estética del brand mark, hover de nav, KYC pill states (mantén los 5 estados)    |
+| [`site-footer.tsx`](./web/components/site-footer.tsx)                                       | Layout y copy fino                                                               |
+| [`asset-card.tsx`](./web/components/asset-card.tsx)                                         | Visual completo. La función `LogoMark` ya distingue Private vs Public.           |
+| [`asset-price-cell.tsx`](./web/components/asset-price-cell.tsx)                             | Pulse al cambiar de precio (nuevo)                                               |
+| [`price-chart.tsx`](./web/components/price-chart.tsx)                                       | Colores, grid, crosshair. NO la API `addSeries(LineSeries, …)` de v5.            |
+| [`dinari-chart.tsx`](./web/components/dinari-chart.tsx)                                     | Loading + error states del wrapper                                               |
+| [`orderbook.tsx`](./web/components/orderbook.tsx)                                           | Visual de las depth bars, spread row, hover de filas                             |
+| [`trade-panel.tsx`](./web/components/trade-panel.tsx)                                       | Toggle de tabs (verde/rojo), animación del botón submit                          |
+| [`trade-grid.tsx`](./web/components/trade-grid.tsx)                                         | Layout en mobile vs desktop, animación cuando prefill llega del orderbook        |
+| [`kyc-stepper.tsx`](./web/components/kyc-stepper.tsx)                                       | Transiciones entre pasos, success state                                          |
+| [`portfolio-holdings.tsx`](./web/components/portfolio-holdings.tsx)                         | Visual de la tabla, sparkline opcional                                           |
+| [`portfolio-orders.tsx`](./web/components/portfolio-orders.tsx)                             | Mismo                                                                            |
+| [`portfolio-history.tsx`](./web/components/portfolio-history.tsx)                           | Mismo                                                                            |
+
+## 8 · Capas que NO se tocan
+
+- [`web/hooks/*`](./web/hooks) — todos los wagmi/dinari hooks
+  (`useKycStatus`, `useLastPrice`, `useLivePrice`, `useDinariPrice`,
+  `useDinariHistory`, `useOrders`, `usePlaceOrder`, `useCancelOrder`,
+  `useMintUsdc`, `useUserBalances`, `useUserActiveOrders`,
+  `useTradeHistory`).
+- [`web/lib/dinari-client.ts`](./web/lib/dinari-client.ts) — server-only
+  Dinari client. Las credenciales viven aquí.
+- [`web/lib/*`](./web/lib) salvo helpers de formato (agregar uno si
+  necesitas). Nada de tocar `contracts.ts`, `mock-orderbook.ts`,
   `mock-companies.ts`, `parse-error.ts`.
 - [`web/lib/abis/*`](./web/lib/abis) — auto-generados, no tocar.
-- [`web/app/api/kyc/verify/route.ts`](./web/app/api/kyc/verify/route.ts) —
-  server route que firma `addIdentity`. Lo dejas igual.
-- [`web/app/providers.tsx`](./web/app/providers.tsx) — config de wagmi +
-  RainbowKit + react-query. Puedes ajustar `lightTheme()` props si quieres
+- [`web/app/api/*`](./web/app/api) — server routes (`/kyc/verify`,
+  `/dinari/stocks`, `/dinari/stocks/[id]/price`,
+  `/dinari/stocks/[id]/history`). NO tocar.
+- [`web/app/providers.tsx`](./web/app/providers.tsx) — wagmi +
+  RainbowKit + ReactQuery. Puedes ajustar `lightTheme()` props si quieres
   refinar el wallet modal.
 - `contracts/` — todo el código Solidity, scripts, tests, deployments.
-- `web/app/globals.css` — puedes refinar tokens pero **mantén los nombres**
-  porque los componentes de shadcn referencian estos exactos
-  (`--background`, `--foreground`, `--primary`, etc.).
+- `web/app/globals.css` — puedes **refinar tokens** pero **mantén los
+  nombres** (`--background`, `--foreground`, `--primary`, etc.) porque
+  los componentes de shadcn referencian estos exactos.
 
-## 7 · Restricciones técnicas
+## 9 · Restricciones técnicas
 
 - **Tailwind v3.4** (NO v4). El proyecto está pinneado.
 - **shadcn/ui 2.10.0** (style new-york, base color neutral). Si necesitas
-  un componente primitive nuevo: `npx --yes shadcn@2.10.0 add <name>` desde
-  `web/`.
+  un componente primitive nuevo: `npx --yes shadcn@2.10.0 add <name>`
+  desde `web/`.
 - **Next.js 14 App Router**. Server components por default; `'use client'`
   solo donde se necesite (cualquier componente que use wagmi hooks,
   state, refs).
@@ -222,65 +345,99 @@ sistema depende.
   inglés.
 - **Sin frontend tests**. No introduzcas Vitest ni Playwright.
 
-## 8 · Output esperado
+## 10 · Dependencias recomendadas (instálalas tú si te ayudan)
 
-Después de la sesión, los siguientes archivos deben compilar limpio
-(`pnpm build` desde `web/`) y la app debe renderizar en `localhost:3500`:
+Estas no están en el proyecto pero son OK agregar para la animación:
 
-- Las 5 páginas con un diseño visiblemente mejor (mide en términos de:
-  jerarquía visual clara, densidad apropiada, motion sutil, paleta
-  consistente).
-- Los componentes de presentación reescritos manteniendo sus interfaces
-  de props.
-- Tokens de tema en `globals.css` ajustados si conviene, **sin renombrar**.
-- Cualquier nuevo asset (SVG, ilustración) en `web/public/`.
-- `pnpm build` debe pasar sin errores TS ni nuevos warnings de webpack
-  reales (los warnings preexistentes de `@react-native-async-storage` y
-  `pino-pretty` ya están externalizados en `next.config.mjs`, ignóralos).
+- **`framer-motion`** — para layouts animations, page transitions,
+  stagger entrances, hover effects con spring physics. **Recomendado
+  fuertemente para la landing**.
+- **`@formkit/auto-animate`** — drop-in para que listas (orderbook,
+  portfolio tables) animen su mount/unmount sin configurar mucho.
+- **`react-use-measure`** — útil si haces cursor-follow gradients o
+  layout-dependent animations.
 
-## 9 · Estado actual visual
+NO instales:
+- Three.js, React Three Fiber (overkill).
+- Lottie (assets pesados, mejor evitarlo).
+- GSAP (caro y duplicado con Framer).
 
-Las screenshots que sigue muestran el punto de partida (Tailwind v3 ya
-genera correctamente):
+## 11 · Output esperado
 
-- Marketplace `/`: hero + 4 stats + 4 cards de empresas en grid 2×2. Logo
-  EA arriba a la izquierda, ConnectButton arriba a la derecha. Footer
-  fino abajo.
-- Trade view `/trade/kvk`: header con logo + nombre + precio + 3 badges,
-  4 stats, chart de 30 días (línea verde), orderbook con depth bars
-  rojas/verdes, panel Comprar/Vender abajo (en mobile) o a la derecha
-  (en desktop).
-- Portfolio `/portfolio`: 3 secciones apiladas (holdings, órdenes,
-  historial), cada una un `<section>` con tabla shadcn.
-- KYC `/kyc`: chip stepper de 3 pasos, formulario simple, success state
-  con botones de acción.
+Después de la sesión:
 
-Punto de partida funcional. Hay que llevarlo de "MVP que funciona" a
-"producto que un partner institucional firmaría en la mesa".
+1. Las 5 páginas con un diseño visiblemente mejor; la landing
+   especialmente debe sentirse interactiva al primer paint.
+2. Los componentes presentacionales reescritos manteniendo sus
+   interfaces de props.
+3. `pnpm build` desde `web/` debe pasar sin errores TS ni nuevos
+   warnings reales (los warnings preexistentes de
+   `@react-native-async-storage` y `pino-pretty` ya están externalizados
+   en `next.config.mjs`, ignóralos).
+4. `pnpm dev` debe levantar en `http://localhost:3500` y la primera
+   pantalla (`/`) debe pasar el test de 5 segundos (sección 2).
+5. Sin emojis, sin Title Case, sin gradientes neón, sin sombras
+   gigantes — mantén la disciplina del brand.
 
-## 10 · Inspiración concreta
+## 12 · Estado actual visual
 
-Como referencia visual:
+Lo que hay hoy (punto de partida funcional, no de diseño):
 
-- **Robinhood Web** — densidad balanceada, tabular nums, charts limpios,
-  paleta minimal con un solo accent fuerte.
-- **Bloomberg Terminal** — densidad de información sin sacrificar
-  legibilidad. Modos oscuros y claros igualmente legibles.
-- **Linear** — sentence case religioso, micro-tipografía perfecta, motion
-  invisible pero presente. Iconografía lucide-react.
-- **Stripe Dashboard** — eyebrows uppercase tracking-wide, cards con
-  bordes 0.5px cálidos, stats grid de 4.
+- **`/`** landing: dos cards estáticas con un eyebrow, un h1, un
+  subtítulo, un footer de 3 pasos. Compila y muestra los productos pero
+  no tiene movimiento ni cursor-follow ni datos vivos. **Este es el
+  archivo que más te toca**.
+- **`/private`**: marketplace con hero, 4 stat tiles, grid de 4
+  AssetCards (KVK/BTS/CLP/ARK1). Los precios son on-chain o mock midprice
+  según haya fills.
+- **`/public`**: marketplace con hero, 4 stat tiles, grid de 6 AssetCards
+  (AAPL/MSFT/NVDA/GOOGL/AMZN/META). Los precios son LIVE desde Dinari.
+- **`/private/trade/[token]`**: trade view completo con orderbook + price
+  chart + trade panel. Funcional, lleva tiempo de cariño visual.
+- **`/public/trade/[symbol]`**: igual estructura, con `<DinariChart>`
+  que pinta 30d de historicals reales.
+- **`/portfolio`**: 3 secciones (holdings, órdenes activas, history). Hoy
+  son tablas planas.
+- **`/kyc`**: stepper de 3 pasos. Funcional y limpio pero sin
+  transiciones.
 
-## 11 · Cómo empezar
+## 13 · Inspiración concreta
 
-1. Lee los 4 archivos clave: este, `README.md`, `PITCH.md`, `CLAUDE.md`.
-2. Inspecciona los componentes y hooks listados arriba para entender el
-   contrato de datos.
-3. Arranca el dev server: `cd web && pnpm dev` → http://localhost:3500
+- **Linear.app** — landing fría, denso, sentence case religioso, motion
+  invisible pero presente. **El modelo principal a seguir para la
+  landing**.
+- **Stripe.com** — eyebrows uppercase tracking-wide, cards con bordes
+  cálidos 0.5px, stats grid de 4, gradients muy contenidos.
+- **Robinhood Web** — densidad balanceada en el trade view, tabular nums,
+  charts limpios.
+- **Bloomberg Terminal** — el feel del ticker tape, la densidad de
+  información sin sacrificar legibilidad.
+- **Tome y Pitch** — el tipo de hover/tilt que queremos en las dos cards
+  de elección.
+
+Mira específicamente cómo Linear hace su hero — esa es la temperatura
+emocional que queremos para Tessera.
+
+## 14 · Cómo arrancar
+
+1. Lee los 4 archivos clave: este, [`README.md`](./README.md),
+   [`PITCH.md`](./PITCH.md), [`CLAUDE.md`](./CLAUDE.md).
+2. Inspecciona los hooks y libs en `web/hooks/` y `web/lib/` (NO los
+   modifiques) para entender qué datos están disponibles.
+3. Arranca el dev server: `cd web && pnpm dev` →
+   http://localhost:3500. Conecta tu wallet, completa KYC, mintea USDC,
+   coloca una orden — siente el producto antes de rediseñar.
 4. Crea un git branch `design/<tu-iteración>` para no contaminar master.
-5. Trabaja primero la página `/trade/kvk` (la estrella del demo). Cuando
-   esté lista, alinea el resto al mismo nivel visual.
-6. Cierra cada página con: validar render en preview + screenshot +
-   `pnpm build` limpio.
+5. **Empieza por `app/page.tsx`** (la landing). Considéralo terminado
+   solamente cuando alguien que vea la pantalla por 5 segundos sin más
+   contexto pueda responder las 3 preguntas de la sección 2.
+6. Después de la landing, ataca `/private/trade/[token]` y
+   `/public/trade/[symbol]` — son las páginas que el jurado va a ver
+   durante la demo.
+7. Cierra cada página con: validar render en preview + screenshot real
+   + `pnpm build` limpio.
+8. Documenta en el commit message qué patrones interactivos usaste, para
+   que el equipo entienda las decisiones después de la entrega.
 
-Buen viaje.
+Buen viaje. El jurado nos va a recordar por la landing — hazla
+imposible de olvidar.
