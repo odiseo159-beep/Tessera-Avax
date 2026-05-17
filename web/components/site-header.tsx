@@ -62,6 +62,9 @@ function KycPill() {
 export function SiteHeader() {
   const pathname = usePathname();
 
+  // The landing brings its own header (full prototype design + transitions).
+  if (pathname === "/") return null;
+
   return (
     <header className="sticky top-0 z-30 border-b border-border/60 bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-7xl items-center gap-6 px-4 sm:px-6 lg:px-8">

@@ -1,7 +1,9 @@
 # Tessera
 
+> **Dos universos de activos. Una sola identidad on-chain.**
+>
 > Dual asset secondary market on Avalanche. Equity privado LatAm + equity
-> público US bajo una sola identidad on-chain.
+> público US bajo una misma capa de KYC reusable.
 
 Tessera es una capa de mercado secundario sobre Avalanche Fuji que conecta
 dos universos de activos con la misma verificación KYC:

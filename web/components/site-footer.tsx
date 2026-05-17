@@ -1,4 +1,13 @@
+"use client";
+
+import { usePathname } from "next/navigation";
+
 export function SiteFooter() {
+  const pathname = usePathname();
+
+  // The landing brings its own footer (matches the prototype design system).
+  if (pathname === "/") return null;
+
   return (
     <footer className="border-t border-border/60 bg-background/80">
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-2 px-4 py-5 text-xs text-muted-foreground sm:flex-row sm:px-6 lg:px-8">

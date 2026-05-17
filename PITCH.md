@@ -14,10 +14,10 @@ grande de la landing page con las dos product cards a la derecha. Fondo
 
 > **Tessera**
 >
-> Una sola identidad. Dos universos de activos. Liquidez en 60 segundos.
+> Dos universos de activos. Una sola identidad on-chain.
 >
-> Equity privado LatAm y equity público US en un solo marketplace sobre
-> Avalanche, con KYC reusable on-chain.
+> Equity privado LatAm y equity público US, tokenizados en un mismo
+> orderbook sobre Avalanche, con KYC reusable.
 
 ---
 
