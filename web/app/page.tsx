@@ -3,10 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import "./landing.css";
-
-import { LandingHeader } from "@/components/landing/landing-header";
-import { LandingFooter } from "@/components/landing/landing-footer";
 import { Hero } from "@/components/landing/hero";
 import { TickerTape } from "@/components/landing/ticker-tape";
 import { ChooseMarket } from "@/components/landing/choose-market";
@@ -19,24 +15,12 @@ export default function LandingPage() {
   const [entering, setEntering] = useState<"private" | "public" | null>(null);
 
   return (
-    <div className="tessera-landing app bg-warm">
-      <div className="grain" aria-hidden="true" />
-
-      <LandingHeader />
-
-      <main>
-        <Hero variant="stagger" />
-        <TickerTape style="scroll" />
-        <ChooseMarket
-          tilt
-          showConnector
-          onEnter={(u) => setEntering(u)}
-        />
-        <ProofOfLife />
-        <HowItWorks />
-      </main>
-
-      <LandingFooter />
+    <>
+      <Hero variant="stagger" />
+      <TickerTape style="scroll" />
+      <ChooseMarket tilt showConnector onEnter={(u) => setEntering(u)} />
+      <ProofOfLife />
+      <HowItWorks />
 
       <UniverseTransition
         universe={entering}
@@ -45,6 +29,6 @@ export default function LandingPage() {
           setEntering(null);
         }}
       />
-    </div>
+    </>
   );
 }

@@ -1,31 +1,39 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 
 export default function NotFound() {
   return (
-    <main className="mx-auto flex max-w-2xl flex-col items-center justify-center gap-4 px-4 pb-16 pt-24 text-center sm:px-6 lg:px-8">
-      <span className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-        404
-      </span>
-      <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-        No encontramos esa página.
-      </h1>
-      <p className="text-sm text-muted-foreground">
-        Quizás el ticker no existe o el enlace está desactualizado. En private
-        tenemos KVK, BTS, CLP y ARK1. En public tenemos AAPL, MSFT, NVDA,
-        GOOGL, AMZN y META.
-      </p>
-      <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-        <Button asChild>
-          <Link href="/">Ir al inicio</Link>
-        </Button>
-        <Button asChild variant="outline">
-          <Link href="/private">Private equity</Link>
-        </Button>
-        <Button asChild variant="outline">
-          <Link href="/public">Public equity</Link>
-        </Button>
+    <div className="page">
+      <div
+        className="page-inner"
+        style={{
+          minHeight: "60vh",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          maxWidth: 720,
+        }}
+      >
+        <div className="eyebrow">
+          <span className="eyebrow-dot eyebrow-dot--red" />
+          404 · pieza fuera del tablero
+        </div>
+        <h1 className="ph-h1">Esa página no existe en este universo.</h1>
+        <p className="ph-lede">
+          Probablemente un link viejo del demo. Vuelve al inicio o entra a uno
+          de los dos marketplaces.
+        </p>
+        <div style={{ display: "inline-flex", gap: 10, marginTop: 16, flexWrap: "wrap" }}>
+          <Link className="btn btn--primary" href="/">
+            Volver al inicio<span style={{ marginLeft: 4 }}>→</span>
+          </Link>
+          <Link className="btn" href="/private">
+            <span className="pol-dot" style={{ background: "var(--primary)" }} /> Private
+          </Link>
+          <Link className="btn" href="/public">
+            <span className="pol-dot" style={{ background: "var(--accent)" }} /> Public
+          </Link>
+        </div>
       </div>
-    </main>
+    </div>
   );
 }
