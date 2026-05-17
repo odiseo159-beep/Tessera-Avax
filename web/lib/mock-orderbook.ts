@@ -19,7 +19,9 @@ const MOCK_MAKER: `0x${string}` = "0x000000000000000000000000000000000000DEAD";
 export function mockOrdersFor(company: CompanyMeta): UiOrder[] {
   const tokenUnit = 10n ** 18n;
   const usdcUnit = 10n ** 6n;
-  const midPrice = BigInt(company.midPriceUsdc) * usdcUnit;
+  // Floats (Public stocks like AAPL = 299.85) blow up BigInt(midPriceUsdc).
+  // Convert to base units via Math.round so any decimal place is preserved.
+  const midPrice = BigInt(Math.round(company.midPriceUsdc * Number(usdcUnit)));
   const cent = 10_000n;
 
   const bidOffsets = [-50n, -25n, -10n];
