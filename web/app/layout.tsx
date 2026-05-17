@@ -23,6 +23,15 @@ export const metadata: Metadata = {
   title: "Tessera · dual asset secondary market on Avalanche",
   description:
     "Mercado secundario dual sobre Avalanche: equity privado latinoamericano (Tessera) + acciones públicas tokenizadas (Dinari). KYC reusable on-chain.",
+  icons: {
+    icon: "/brand/tessera.png",
+    apple: "/brand/tessera.png",
+  },
+  openGraph: {
+    title: "Tessera",
+    description: "Dos universos de activos. Una sola identidad on-chain.",
+    images: ["/brand/tessera.png"],
+  },
 };
 
 export default function RootLayout({

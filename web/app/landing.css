@@ -107,17 +107,15 @@
   font-weight: 600; font-size: 15px; letter-spacing: -0.005em;
 }
 .brand-mark {
-  position: relative; width: 22px; height: 22px;
-  border-radius: 5px;
-  background: var(--fg);
+  position: relative;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
   overflow: hidden;
   display: inline-block;
+  background: url("/brand/tessera.png") center / contain no-repeat;
 }
-.brand-mark-a, .brand-mark-b {
-  position: absolute; width: 50%; height: 100%; top: 0;
-}
-.brand-mark-a { left: 0;  background: var(--primary); }
-.brand-mark-b { right: 0; background: var(--accent); }
+.brand-mark-a, .brand-mark-b { display: none; }
 .brand-name { font-feature-settings: "cv11", "ss01"; }
 
 .nav {
