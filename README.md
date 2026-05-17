@@ -260,6 +260,90 @@ pnpm dev                   # http://localhost:3500
 
 ---
 
+## Deploy a Vercel
+
+El repo es un monorepo simple — `contracts/` (Hardhat, no se deploya
+a Vercel) + `web/` (Next.js 14, esto es lo que importa). Pasos:
+
+### 1 · GitHub
+
+```bash
+cd D:\AVAX
+git remote add origin https://github.com/<tu-usuario>/tessera.git
+git push -u origin master
+```
+
+Verifica que **no se subió ningún secreto** — `web/.env.local`,
+`contracts/.env` y `contracts/deployments/test-wallets.json` están
+gitignored explícitamente. El repo público no debe contener private keys.
+
+### 2 · Vercel
+
+1. https://vercel.com/new → Import del repo de GitHub.
+2. **Framework Preset**: Next.js (auto-detectado).
+3. **Root Directory**: `web` (importante — el repo tiene contracts
+   adentro, sin esto Vercel busca Next.js en la raíz y falla).
+4. **Build Command**: `pnpm build` (default).
+5. **Output Directory**: `.next` (default).
+6. **Install Command**: `pnpm install --frozen-lockfile` (default si
+   detecta pnpm).
+
+### 3 · Variables de entorno en Vercel
+
+Settings → Environment Variables → agregar (`Production` + `Preview` +
+`Development`):
+
+**Públicas** (`NEXT_PUBLIC_*` — se inlinean al bundle del client):
+
+| Key | Valor |
+| --- | --- |
+| `NEXT_PUBLIC_CHAIN_ID` | `43113` |
+| `NEXT_PUBLIC_RPC_URL` | `https://api.avax-test.network/ext/bc/C/rpc` |
+| `NEXT_PUBLIC_WC_PROJECT_ID` | tu project ID real de cloud.walletconnect.com |
+| `NEXT_PUBLIC_USDC_ADDRESS` | `0xFaC00CC23F0b840A130A8Cb320d74FBBdcCf8dB6` |
+| `NEXT_PUBLIC_IDENTITY_REGISTRY` | `0x4d698C6f9e68C1cf6e3095e994114A44d8F6Ea96` |
+| `NEXT_PUBLIC_ORDERBOOK_ADDRESS` | `0x830e07b0545461E279b0d24EB923937Ed4ECE042` |
+| `NEXT_PUBLIC_TOKEN_KVK` | `0x8d1933d5Dbb734f0D8CF47d7eC2E0dB4327F1B17` |
+| `NEXT_PUBLIC_TOKEN_BTS` | `0x3021d1739f1adE03BBC4b4208f8Ec3AEB04b3002` |
+| `NEXT_PUBLIC_TOKEN_CLP` | `0x09d0Ffe48526e7068aAd600626Bb3003feACEF13` |
+| `NEXT_PUBLIC_TOKEN_ARK1` | `0xAC9BC752FF3D9DaA15e89bEBAE81D103D62F9c28` |
+| `NEXT_PUBLIC_TOKEN_AAPL` | `0x17838Fe98B3039029AFA182c4b11a0057251a868` |
+| `NEXT_PUBLIC_TOKEN_MSFT` | `0xbCAE2BfC457c6fC927b7b557045aA1c45367Fb26` |
+| `NEXT_PUBLIC_TOKEN_NVDA` | `0x017756B9e291c3626853894eB7f693Ea0ECA1BA7` |
+| `NEXT_PUBLIC_TOKEN_GOOGL` | `0xd7aEd6c9C4D0F0C16780E784a2B50287bC4D1B95` |
+| `NEXT_PUBLIC_TOKEN_AMZN` | `0x4d659989FD744D8a7927C54E901aC4547839084C` |
+| `NEXT_PUBLIC_TOKEN_META` | `0x5dbb29BD3647a607F9Af771cEcDd9171f6Ec6b82` |
+
+**Server-only** (sin `NEXT_PUBLIC_` — solo el servidor las ve):
+
+| Key | Valor |
+| --- | --- |
+| `KYC_ISSUER_PRIVATE_KEY` | mismo `PRIVATE_KEY` del deployer (`contracts/.env`) |
+| `DINARI_API_BASE` | `https://api-enterprise.sandbox.dinari.com` |
+| `DINARI_API_KEY_ID` | tu Dinari sandbox key ID |
+| `DINARI_API_SECRET` | tu Dinari sandbox secret |
+| `DINARI_ENTITY_ID` | tu entity ID de Dinari sandbox |
+| `DINARI_ACCOUNT_ID` | tu account ID de Dinari sandbox |
+
+> **Importante**: marca las server-only como **Secret** en Vercel para
+> que no aparezcan en build logs ni en `vercel env pull`.
+
+### 4 · Deploy + verificar
+
+- Vercel hace el primer build automáticamente al importar.
+- Visita la URL (https://tessera-<hash>.vercel.app) y verifica:
+  - **`/`** muestra la landing con ticker tape, choose-market, datos vivos.
+  - **`/private` y `/public`** listan empresas con precios reales.
+  - **`/api/dinari/stocks`** responde con el catálogo real (test del proxy).
+  - **`/api/kyc/verify`** responde 400 a un GET (es POST-only — confirma que la route está activa).
+
+### 5 · Custom domain (opcional)
+
+Settings → Domains → agregar `tessera.lat` o el que prefieras.
+Vercel emite el SSL automático.
+
+---
+
 ## Decisiones de diseño no triviales
 
 1. **Una sola IdentityRegistry + un solo Orderbook para los 10 tokens.**
