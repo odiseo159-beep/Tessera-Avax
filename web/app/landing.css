@@ -641,6 +641,11 @@
 .connector {
   position: relative;
   display: flex; align-items: center; justify-content: center;
+  /* Sits above the cards (is-hover bumps cards to z-index:2) so the
+     "una identidad" pill doesn't get clipped by the Public card's
+     stacking context. Clicks pass through to whichever card is below. */
+  z-index: 3;
+  pointer-events: none;
 }
 .connector-line {
   position: absolute; left: 0; right: 0; top: 50%;
