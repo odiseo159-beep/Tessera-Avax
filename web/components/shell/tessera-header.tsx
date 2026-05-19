@@ -10,6 +10,7 @@ import { useKycStatus } from "@/hooks/use-kyc-status";
 import { contractAddresses, ZERO_ADDRESS } from "@/lib/contracts";
 import { shortAddress } from "@/lib/format";
 import { UniverseTransition } from "@/components/landing/universe-transition";
+import { RiskBadge } from "@/components/shell/risk-badge";
 
 const USDC_UNIT = 1_000_000n;
 
@@ -116,6 +117,8 @@ export function TesseraHeader() {
               <span className="kyc-dot" />
               {KYC_LABEL[kycState]}
             </Link>
+
+            <RiskBadge />
 
             <ConnectButton.Custom>
               {({ account, chain, openConnectModal, openAccountModal, openChainModal, mounted }) => {

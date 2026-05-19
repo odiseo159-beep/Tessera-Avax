@@ -20,11 +20,17 @@ export function TesseraFooter() {
           <span className="foot-tag">· Avalanche LatAm Institucional 2026</span>
         </div>
         <div className="foot-links">
+          <a href="/admin/reports">
+            Compliance
+          </a>
           <a href={orderbookHref} target="_blank" rel="noopener noreferrer">
             Snowtrace<span className="link-arrow">↗</span>
           </a>
           <a href="https://docs.dinari.com" target="_blank" rel="noopener noreferrer">
             Dinari<span className="link-arrow">↗</span>
+          </a>
+          <a href="https://docs.wavynode.com" target="_blank" rel="noopener noreferrer">
+            Wavy Node<span className="link-arrow">↗</span>
           </a>
           <a
             href="https://build.avax.network/events/8a8ee2e9-d91d-4087-adba-c1221b72e407"

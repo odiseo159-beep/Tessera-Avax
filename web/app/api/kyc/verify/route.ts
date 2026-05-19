@@ -84,6 +84,25 @@ export async function POST(req: NextRequest) {
 
     await publicClient.waitForTransactionReceipt({ hash: txHash });
 
+    // Register the verified wallet with Wavy Node for ongoing risk
+    // monitoring. Awaited so the serverless runtime can't kill it
+    // before completion, but the try/catch guarantees KYC success even
+    // if Wavy is down or unconfigured — the badge just stays at
+    // "pendiente" until the next scan.
+    try {
+      const { registerAddress, isWavyConfigured } = await import("@/lib/wavy-client");
+      if (isWavyConfigured()) {
+        await registerAddress(
+          wallet,
+          wallet.toLowerCase(),
+          `Tessera KYC · ${country}`,
+        );
+      }
+    } catch (e) {
+      const m = e instanceof Error ? e.message : String(e);
+      console.error("Wavy registerAddress failed (non-blocking):", m);
+    }
+
     return NextResponse.json({ alreadyVerified: false, txHash });
   } catch (error) {
     const message =
