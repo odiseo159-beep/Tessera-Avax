@@ -159,6 +159,51 @@
   box-shadow: 0 0 0 3px rgba(15,110,86,0.18);
   animation: pulse-dot 2.6s var(--ease) infinite;
 }
+
+/* ── Risk score pill (Wavy Node) ───────────────────────────────────────── */
+.risk-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 28px; padding: 0 10px;
+  background: var(--muted);
+  color: var(--fg-soft);
+  border: 0.5px solid var(--border);
+  border-radius: 999px;
+  font-size: 12px; font-weight: 500;
+  text-decoration: none;
+}
+.risk-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--fg-faint);
+}
+.risk-pill--pending { /* neutral — awaiting key or no data */ }
+.risk-pill--ok {
+  background: var(--primary-soft);
+  color: var(--primary);
+  border-color: var(--primary-border);
+}
+.risk-pill--ok .risk-dot {
+  background: var(--primary);
+  box-shadow: 0 0 0 3px rgba(15,110,86,0.18);
+}
+.risk-pill--warn {
+  background: rgba(208, 136, 22, 0.10);
+  color: #a86b14;
+  border-color: rgba(208, 136, 22, 0.30);
+}
+.risk-pill--warn .risk-dot {
+  background: #d08816;
+  box-shadow: 0 0 0 3px rgba(208, 136, 22, 0.20);
+}
+.risk-pill--danger {
+  background: rgba(192, 55, 55, 0.10);
+  color: var(--destructive);
+  border-color: rgba(192, 55, 55, 0.30);
+}
+.risk-pill--danger .risk-dot {
+  background: var(--destructive);
+  box-shadow: 0 0 0 3px rgba(192, 55, 55, 0.22);
+  animation: pulse-dot 1.4s var(--ease) infinite;
+}
 .wallet-btn {
   display: inline-flex; align-items: center; gap: 10px;
   height: 32px; padding: 0 6px 0 12px;
@@ -910,6 +955,7 @@
 @media (max-width: 720px) {
   .header-inner { grid-template-columns: 1fr auto; gap: 12px; padding: 0 18px; }
   .kyc-pill { display: none; }
+  .risk-pill { display: none; }
   .hero-inner, .choose-head, .choose-grid, .pol-head, .pol-grid, .pol-foot, .how, .foot-inner, .foot-fine { padding-left: 18px; padding-right: 18px; }
   .hero-meta { flex-wrap: wrap; gap: 12px; }
   .pol-grid { grid-template-columns: 1fr 1fr; }
