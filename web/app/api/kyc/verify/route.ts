@@ -71,24 +71,27 @@ export async function POST(req: NextRequest) {
       args: [wallet as `0x${string}`],
     });
 
-    if (already) {
-      return NextResponse.json({ alreadyVerified: true, txHash: null });
+    let txHash: `0x${string}` | null = null;
+    if (!already) {
+      txHash = await walletClient.writeContract({
+        abi: abis.identityRegistry,
+        address: registryAddress as `0x${string}`,
+        functionName: "addIdentity",
+        args: [wallet as `0x${string}`, country],
+      });
+      await publicClient.waitForTransactionReceipt({ hash: txHash });
     }
 
-    const txHash = await walletClient.writeContract({
-      abi: abis.identityRegistry,
-      address: registryAddress as `0x${string}`,
-      functionName: "addIdentity",
-      args: [wallet as `0x${string}`, country],
-    });
-
-    await publicClient.waitForTransactionReceipt({ hash: txHash });
-
-    // Register the verified wallet with Wavy Node for ongoing risk
-    // monitoring. Awaited so the serverless runtime can't kill it
-    // before completion, but the try/catch guarantees KYC success even
-    // if Wavy is down or unconfigured — the badge just stays at
-    // "pendiente" until the next scan.
+    // Register the wallet with Wavy Node for ongoing risk monitoring.
+    // Runs in BOTH branches (first-time KYC and re-verify of an
+    // already-attested wallet) because Wavy's register endpoint is
+    // idempotent — second calls update foreign_user_id/description
+    // instead of duplicating. Without this, wallets KYC'd before the
+    // Wavy key landed would never enter the monitoring set.
+    //
+    // Awaited inline so the serverless runtime can't kill it; the
+    // try/catch keeps KYC's response guaranteed-success even when
+    // Wavy is down or unconfigured.
     try {
       const { registerAddress, isWavyConfigured } = await import("@/lib/wavy-client");
       if (isWavyConfigured()) {
@@ -103,7 +106,7 @@ export async function POST(req: NextRequest) {
       console.error("Wavy registerAddress failed (non-blocking):", m);
     }
 
-    return NextResponse.json({ alreadyVerified: false, txHash });
+    return NextResponse.json({ alreadyVerified: already, txHash });
   } catch (error) {
     const message =
       error instanceof Error ? error.message.split("\n")[0] : String(error);
