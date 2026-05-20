@@ -4,8 +4,8 @@
     {
       "name": "web",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--dir", "web", "dev"],
-      "port": 3500
+      "runtimeArgs": ["--dir", "web", "dev:preview"],
+      "autoPort": true
     }
   ]
 }
