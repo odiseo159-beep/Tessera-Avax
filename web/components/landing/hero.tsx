@@ -1,27 +1,21 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
-/// Tessera hero — v2 immersive stage with autoplay video background.
-/// The veil-on-click entry from the design prototype is intentionally
-/// dropped: per pitch direction we want the video running from the
-/// first paint so judges/visitors see motion the moment they land.
-///
-/// The video file lives in /public/hero-bg.mp4 and is served as a
-/// static asset (Next won't try to compile it). Tint + vignette layers
-/// on top tune the legibility of the headline against the footage.
+/// Tessera hero — v2 immersive stage with autoplay video background and
+/// a click-to-reveal logo veil over the top. The user lands on a big
+/// Tessera mark; clicking it slides the hero text up over the (already
+/// playing) video.
 
 interface HeroProps {
-  /// "stagger" reveals the headline word-by-word via the existing
-  /// .display.is-stagger animation. "instant" renders the full
-  /// headline immediately — better when the video is doing the
-  /// motion-grabbing.
+  /// "stagger" reveals the headline word-by-word via .display.is-stagger.
+  /// "instant" renders the full headline immediately — useful when the
+  /// video is already doing the motion-grabbing.
   variant?: "stagger" | "instant";
-  /// Reserved for future background variants (mosaic, aurora). Today
-  /// only "video" ships; everything else falls back to a minimal bg.
+  /// Reserved for future bg variants (mosaic, aurora). Today only
+  /// "video" ships; "minimal" is the fallback.
   bg?: "video" | "minimal";
-  /// 0.4..1.4 — multiplies opacity of the bg layers. Useful for
-  /// experimenting with how aggressive the footage looks.
+  /// 0.4..1.4 — multiplies opacity of the bg layers.
   intensity?: number;
 }
 
@@ -42,11 +36,12 @@ export function Hero({
   intensity = 1,
 }: HeroProps) {
   const stageRef = useRef<HTMLElement>(null);
+  const [revealed, setRevealed] = useState(false);
 
   // Light parallax: tracks the mouse and pushes CSS vars `--par-x` and
-  // `--par-y` (both in -1..1). The hero-bg layers (tint, vignette,
-  // potential blobs) consume those vars to drift in opposite directions
-  // and give the static video a subtle depth response.
+  // `--par-y` (both in -1..1). The hero-bg layers consume those vars
+  // to drift in opposite directions and give the static video subtle
+  // depth response.
   useEffect(() => {
     const el = stageRef.current;
     if (!el) return;
@@ -80,7 +75,7 @@ export function Hero({
   return (
     <section
       ref={stageRef}
-      className="hero-stage is-revealed"
+      className={`hero-stage ${revealed ? "is-revealed" : "is-veiled"}`}
       id="top"
       data-bg={bg}
       style={{
@@ -92,7 +87,34 @@ export function Hero({
       <HeroBg bg={bg} />
       <div className="hero-stage-fade" aria-hidden="true" />
 
-      <div className="hero-stage-inner">
+      {/* Veil — the big tessera mark the user clicks to enter. The video
+          is already playing behind it, so the experience is "watch the
+          logo breathe, then dive in". */}
+      <button
+        type="button"
+        className="hero-veil"
+        onClick={() => setRevealed(true)}
+        aria-label="Entrar a Tessera"
+        aria-hidden={revealed}
+        tabIndex={revealed ? -1 : 0}
+      >
+        <span className="hero-veil-eyebrow">
+          <span className="hero-veil-dot" />
+          Avalanche LatAm Institucional
+        </span>
+        <span className="hero-veil-logo">
+          <img src="/brand/tessera.png" alt="Tessera" />
+          <span className="hero-veil-ring" aria-hidden="true" />
+          <span className="hero-veil-ring hero-veil-ring--2" aria-hidden="true" />
+          <span className="hero-veil-ring hero-veil-ring--3" aria-hidden="true" />
+        </span>
+        <span className="hero-veil-cta">
+          Entrar
+          <span className="hero-veil-cta-arrow">→</span>
+        </span>
+      </button>
+
+      <div className="hero-stage-inner" aria-hidden={!revealed}>
         <div className="hero-eyebrow eyebrow">
           <span className="eyebrow-dot" />
           Avalanche LatAm Institucional · Fuji testnet
@@ -173,9 +195,9 @@ function HeroBg({ bg }: { bg: "video" | "minimal" }) {
           loop
           playsInline
           preload="auto"
-          // Belt-and-suspenders: some browsers (looking at you, Safari)
-          // ignore the `muted` attribute on autoplay unless the property
-          // is also set imperatively before play() is called.
+          // Belt-and-suspenders: some browsers (Safari) ignore the
+          // `muted` attribute on autoplay unless the property is also
+          // set imperatively before play() is called.
           ref={(el) => {
             if (el) {
               el.muted = true;

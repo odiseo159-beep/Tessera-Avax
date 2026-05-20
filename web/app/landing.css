@@ -969,8 +969,132 @@
   align-items: center;
   text-align: center;
   gap: 0;
+  transition: opacity 720ms var(--ease) 80ms, transform 720ms var(--ease) 80ms;
+}
+/* Veil / reveal state — driven by `is-revealed` / `is-veiled` on the stage */
+.hero-stage.is-veiled .hero-stage-inner {
+  opacity: 0;
+  transform: translateY(24px);
+  pointer-events: none;
+}
+.hero-stage.is-revealed .hero-stage-inner {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.hero-stage.is-revealed .hero-veil {
+  opacity: 0;
+  transform: scale(0.94);
+  pointer-events: none;
 }
 .hero-eyebrow { margin-bottom: 22px; }
+
+/* ── Hero veil — big logo invites click to enter ─────────────────────────── */
+.hero-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  background: transparent;
+  border: 0;
+  padding: 60px 32px;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  text-align: center;
+  transition: opacity 720ms var(--ease), transform 720ms var(--ease);
+}
+.hero-veil-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.78);
+  font-weight: 500;
+  text-shadow: 0 1px 12px rgba(0,0,0,0.4);
+}
+.hero-veil-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.2);
+  animation: pulse-dot 2.4s var(--ease) infinite;
+}
+.hero-veil-logo {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(140px, 18vw, 220px);
+  height: clamp(140px, 18vw, 220px);
+}
+.hero-veil-logo img {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 28px;
+  filter: drop-shadow(0 18px 40px rgba(0,0,0,0.45)) drop-shadow(0 2px 6px rgba(0,0,0,0.3));
+  transition: transform 480ms var(--ease);
+  animation: veil-float 4.8s var(--ease) infinite;
+}
+.hero-veil:hover .hero-veil-logo img { transform: scale(1.04); }
+.hero-veil:active .hero-veil-logo img { transform: scale(0.97); }
+.hero-veil-ring {
+  position: absolute;
+  inset: -8%;
+  border: 1.5px solid rgba(255,255,255,0.5);
+  border-radius: 28px;
+  opacity: 0;
+  animation: veil-ring 2.6s var(--ease) infinite;
+  pointer-events: none;
+}
+.hero-veil-ring--2 { animation-delay: 0.9s; }
+.hero-veil-ring--3 { animation-delay: 1.8s; }
+.hero-veil-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  background: rgba(255,255,255,0.92);
+  color: var(--fg);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  -webkit-backdrop-filter: blur(14px);
+          backdrop-filter: blur(14px);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.7) inset, 0 6px 18px -6px rgba(0,0,0,0.4);
+  transition: background 220ms var(--ease), transform 220ms var(--ease);
+}
+.hero-veil:hover .hero-veil-cta { background: #fff; transform: translateY(-1px); }
+.hero-veil-cta-arrow {
+  display: inline-flex;
+  width: 18px; height: 18px;
+  align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #fff;
+  border-radius: 50%;
+  font-size: 11px;
+  animation: veil-bounce 1.8s var(--ease) infinite;
+}
+@keyframes veil-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+@keyframes veil-ring {
+  0%   { opacity: 0.7; transform: scale(1); border-radius: 28px; }
+  100% { opacity: 0;   transform: scale(1.35); border-radius: 36px; }
+}
+@keyframes veil-bounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(2px); }
+}
 
 .hero-display {
   font-size: clamp(40px, 5.6vw, 78px);
@@ -1202,18 +1326,24 @@ body:has(.hero-stage[data-bg="video"]) .site-header:not(.is-scrolled) .wallet-ba
   width: max-content;
   align-self: flex-start;
 }
+/* Pill is now a motion.span inside the ACTIVE button (Framer Motion
+   handles the slide via shared layoutId). Each button gets the pill
+   when it becomes active, and the tone variant paints the colour. */
 .how-tabs-pill {
   position: absolute;
-  top: 5px; bottom: 5px;
+  inset: 0;
   background: var(--fg);
   border-radius: 8px;
   z-index: 0;
-  transition: transform 480ms var(--ease), width 480ms var(--ease);
   box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset, 0 4px 14px -4px rgba(26,29,33,0.35);
+}
+.how-tabs-pill--g { background: var(--primary); }
+.how-tabs-pill--p { background: var(--accent); }
+.how-tabs-pill--duo {
+  background: linear-gradient(120deg, var(--primary) 0%, color-mix(in oklab, var(--primary) 50%, var(--accent)) 50%, var(--accent) 100%);
 }
 .how-tab {
   position: relative;
-  z-index: 1;
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -1228,6 +1358,12 @@ body:has(.hero-stage[data-bg="video"]) .site-header:not(.is-scrolled) .wallet-ba
   border: 0;
   font-family: inherit;
 }
+/* Tab content sits above the motion pill */
+.how-tab > .how-tab-n,
+.how-tab > .how-tab-l {
+  position: relative;
+  z-index: 1;
+}
 .how-tab .how-tab-n {
   font-size: 11px;
   color: var(--fg-faint);
@@ -1236,13 +1372,6 @@ body:has(.hero-stage[data-bg="video"]) .site-header:not(.is-scrolled) .wallet-ba
 }
 .how-tab.is-active { color: #fff; }
 .how-tab.is-active .how-tab-n { color: rgba(255,255,255,0.7); }
-
-/* Active pill picks up a brand tone based on the active tab tone */
-.how-tabs:has(.how-tab--g.is-active) .how-tabs-pill { background: var(--primary); }
-.how-tabs:has(.how-tab--p.is-active) .how-tabs-pill { background: var(--accent); }
-.how-tabs:has(.how-tab--duo.is-active) .how-tabs-pill {
-  background: linear-gradient(120deg, var(--primary) 0%, color-mix(in oklab, var(--primary) 50%, var(--accent)) 50%, var(--accent) 100%);
-}
 
 /* Panel — fixed size, animated cross-fade between step bodies */
 .how-panel {
@@ -1254,26 +1383,15 @@ body:has(.hero-stage[data-bg="video"]) .site-header:not(.is-scrolled) .wallet-ba
   overflow: hidden;
   min-height: 320px;
 }
+/* AnimatePresence renders one body at a time (mode="wait"), so no
+   absolute-overlay stacking needed — Framer Motion drives the
+   opacity/translateX/blur via the motion.div in how-it-works.tsx. */
 .how-panel-body {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
   gap: 28px;
   padding: 28px;
   align-items: center;
-  opacity: 0;
-  transform: translateX(-12px);
-  filter: blur(8px);
-  transition: opacity 420ms var(--ease), transform 420ms var(--ease), filter 420ms var(--ease);
-  pointer-events: none;
-  position: absolute;
-  inset: 0;
-}
-.how-panel-body.is-active {
-  opacity: 1;
-  transform: translateX(0);
-  filter: blur(0);
-  pointer-events: auto;
-  position: relative;
 }
 .how-panel-copy { display: flex; flex-direction: column; gap: 10px; }
 .how-panel-meta { display: flex; align-items: center; gap: 12px; }

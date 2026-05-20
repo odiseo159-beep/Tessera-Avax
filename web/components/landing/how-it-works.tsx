@@ -1,11 +1,15 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
-/// Tessera "Cómo funciona" — v2 tabbed redesign.
-/// Three steps (Conecta / Verifica / Opera) presented as a tab bar with
-/// a sliding pill indicator and rich per-step visuals (wallet picker,
-/// KYC passport, orderbook). Replaces the static 3-column grid.
+/// Tessera "Cómo funciona" — tabbed v2 redesign powered by Framer
+/// Motion. The active-tab pill uses a shared `layoutId` so it slides
+/// smoothly between tabs without any manual measurement; the panel
+/// body cross-fades + blurs between steps via AnimatePresence.
+///
+/// Styling stays in our system (var(--fg), var(--card), var(--border)),
+/// not the dark glass of the demo we mirrored.
 
 type Tone = "g" | "p" | "duo";
 
@@ -47,34 +51,7 @@ const STEPS: Step[] = [
 
 export function HowItWorks() {
   const [active, setActive] = useState<string>(STEPS[0].id);
-  const tabsRef = useRef<HTMLDivElement>(null);
-  const [pill, setPill] = useState<{ x: number; w: number; ready: boolean }>({
-    x: 0,
-    w: 0,
-    ready: false,
-  });
-
-  // Measure the active tab and position the pill behind it. Re-measure
-  // on resize so the pill tracks across viewport breakpoints.
-  useLayoutEffect(() => {
-    const el = tabsRef.current;
-    if (!el) return;
-    const measure = () => {
-      const btn = el.querySelector<HTMLButtonElement>(`[data-tab="${active}"]`);
-      if (!btn) return;
-      const r = btn.getBoundingClientRect();
-      const pr = el.getBoundingClientRect();
-      setPill({ x: r.left - pr.left, w: r.width, ready: true });
-    };
-    measure();
-    const ro = new ResizeObserver(measure);
-    ro.observe(el);
-    window.addEventListener("resize", measure);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", measure);
-    };
-  }, [active]);
+  const activeStep = STEPS.find((s) => s.id === active) ?? STEPS[0];
 
   return (
     <section className="how" id="how">
@@ -85,53 +62,56 @@ export function HowItWorks() {
       <h2 className="how-title">Tres pasos. Una sola identidad.</h2>
 
       <div className="how-tabs-wrap">
-        <div className="how-tabs" ref={tabsRef} role="tablist">
-          {pill.ready && (
-            <span
-              className="how-tabs-pill"
-              style={{
-                transform: `translateX(${pill.x}px)`,
-                width: `${pill.w}px`,
-              }}
-              aria-hidden="true"
-            />
-          )}
-          {STEPS.map((s) => (
-            <button
-              key={s.id}
-              data-tab={s.id}
-              className={`how-tab ${active === s.id ? "is-active" : ""} how-tab--${s.tone}`}
-              onClick={() => setActive(s.id)}
-              role="tab"
-              aria-selected={active === s.id}
-              type="button"
-            >
-              <span className="how-tab-n mono">{s.id}</span>
-              <span className="how-tab-l">{s.t}</span>
-            </button>
-          ))}
+        <div className="how-tabs" role="tablist" aria-label="Pasos">
+          {STEPS.map((s) => {
+            const isActive = active === s.id;
+            return (
+              <button
+                key={s.id}
+                onClick={() => setActive(s.id)}
+                className={`how-tab how-tab--${s.tone} ${isActive ? "is-active" : ""}`}
+                role="tab"
+                aria-selected={isActive}
+                type="button"
+              >
+                {isActive && (
+                  <motion.span
+                    layoutId="how-tabs-pill"
+                    className={`how-tabs-pill how-tabs-pill--${s.tone}`}
+                    transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                    aria-hidden="true"
+                  />
+                )}
+                <span className="how-tab-n mono">{s.id}</span>
+                <span className="how-tab-l">{s.t}</span>
+              </button>
+            );
+          })}
         </div>
 
         <div className="how-panel">
-          {STEPS.map((s) => (
-            <div
-              key={s.id}
-              className={`how-panel-body ${active === s.id ? "is-active" : ""}`}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeStep.id}
+              className="how-panel-body is-active"
               role="tabpanel"
-              hidden={active !== s.id}
+              initial={{ opacity: 0, x: -12, filter: "blur(8px)" }}
+              animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, x: 12, filter: "blur(8px)" }}
+              transition={{ duration: 0.32, ease: [0.32, 0.72, 0, 1] }}
             >
-              <div className="how-panel-visual">{s.visual}</div>
+              <div className="how-panel-visual">{activeStep.visual}</div>
               <div className="how-panel-copy">
                 <div className="how-panel-meta">
-                  <span className="how-panel-n mono">{s.id}</span>
+                  <span className="how-panel-n mono">{activeStep.id}</span>
                   <span className="how-panel-rule" />
-                  <span className="how-panel-tag mono">{s.tag}</span>
+                  <span className="how-panel-tag mono">{activeStep.tag}</span>
                 </div>
-                <h3 className="how-panel-t">{s.t}</h3>
-                <p className="how-panel-d">{s.d}</p>
+                <h3 className="how-panel-t">{activeStep.t}</h3>
+                <p className="how-panel-d">{activeStep.d}</p>
               </div>
-            </div>
-          ))}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </div>
     </section>
