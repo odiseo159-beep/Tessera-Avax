@@ -1063,7 +1063,10 @@
 }
 
 /* ── Video bg variant ───────────────────────────────────────────────────── */
-.hero-bg--video { background: var(--bg-warm); }
+/* Dark fallback bg keeps the white video-mode headline legible during the
+   first frames while the MP4 is still buffering. Without it the user
+   would see white text on cream for ~200-500ms on slow connections. */
+.hero-bg--video { background: #1a1d21; }
 .hero-bg-video {
   position: absolute;
   inset: 0;
