@@ -2,6 +2,10 @@
 work-*/
 renders/
 
+# HyperFrames preview-server caches (regenerated on every preview)
+.thumbnails/
+.waveform-cache/
+
 # Node — only if/when we install local deps
 node_modules/
 
