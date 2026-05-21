@@ -10,4 +10,18 @@ Misma wallet. Mismo orderbook. Compras Kavak a diecisiete dólares. Compras NVID
 
 Compliance enforced por contrato. Reportes regulatorios auto-generados para cuatro jurisdicciones LatAm. ERC tres mil seiscientos cuarenta y tres. Bytecode, no PDF.
 
-Tessera. La bolsa privada de Latinoamérica. Top tres del Hackathon Avalanche LatAm Institucional.
+Tessera. La bolsa privada de Latinoamérica.
+
+Veamos cómo funciona, paso a paso.
+
+El usuario llega a Tessera y conecta su wallet. Cualquier wallet EVM funciona — Core, MetaMask, Rainbow, WalletConnect. El header muestra su address acortada y un badge gris: KYC pendiente. Para verificarse, navega al flow. Tres pasos. Primero, datos personales: nombre legal, país de residencia, RFC, email. Segundo, documento oficial — INE, pasaporte. Tercero, firma una transacción con su propia wallet. Esa firma agrega su address al IdentityRegistry de Tessera, un contrato ERC tres mil seiscientos cuarenta y tres en Avalanche Fuji. Tres segundos después, el badge se pone verde. Identidad atestada. Permanente. Sin re-onboardar.
+
+Con la identidad lista, entra al marketplace. Dos universos. Elige Privado. Ve cuatro tickers, cada uno representando una empresa real de Latinoamérica. Kavak. Bitso. Banco Compartamos. Arkangeles Series C. Hace click en Kavak. La página de trading carga: precio actual diecisiete punto ochenta y cinco, gráfico de treinta días, un orderbook on-chain con seis órdenes activas. Pone una orden limit: comprar cincuenta KVK a diecisiete ochenta y cinco. Confirma en su wallet. La transacción ejecuta. Tres segundos. La orden aparece en el orderbook.
+
+Ahora cambia al universo Público. Misma wallet, misma identidad. La transición es cinematográfica. Seis acciones públicas estadounidenses, todas tokenizadas. Apple, Microsoft, NVIDIA, Google, Amazon, Meta. Los precios vienen del sandbox real de Dinari, el broker dealer registrado en la SEC. Click en NVIDIA. Mismo layout de trading que el lado privado, porque el contrato Orderbook es el mismo. Pone una orden de NVDA a doscientos veinticuatro punto cuarenta y tres. Mismos tres segundos. Otra economía, mismo bloque.
+
+Va a su portfolio. Una sola vista, sin pestañas, sin re-login. Sus holdings de Kavak y NVIDIA aparecen juntos. Una sola cuenta, dos mercados, mismo wallet. Y arriba, el risk score continuo de Wavy Node, monitoreando la actividad en tiempo real.
+
+Detrás del trading, Wavy Node corre la capa de monitoreo. Para los reguladores latinoamericanos, no hay nada más importante que el audit trail. En el panel admin de Tessera, los reportes aparecen auto-generados. México, Aviso de Operación Relevante bajo LFPIORPI. Colombia, Reporte de Operación Sospechosa bajo Resolución 314. El Salvador, Guatemala. Cuatro jurisdicciones, cada una con sus formatos exactos. Folio, fecha, contraparte anónima, score de riesgo, monto. Lo que el regulador ya espera.
+
+Tessera. Un solo orderbook. Dos universos. Una sola identidad on-chain. Compliance enforced en el bytecode — no en un PDF. Hecho con Avalanche, Dinari y Wavy Node. Top tres del Hackathon Avalanche LatAm Institucional dos mil veintiseis.
