@@ -5,9 +5,14 @@ import {
   isWavyConfigured,
   type WavyReportRecord,
 } from "@/lib/wavy-client";
+import {
+  getDemoReports,
+  isDemoModeEnabled,
+  type DemoReport,
+} from "@/lib/wavy-demo-data";
 
 interface CountryEntry {
-  code: string;
+  code: "MX" | "CO" | "SV" | "GT";
   label: string;
   regulator: string;
   framework: string;
@@ -18,24 +23,24 @@ const COUNTRIES: CountryEntry[] = [
     code: "MX",
     label: "México",
     regulator: "SAT · SPPLD",
-    framework: "LFPIORPI (Ley Federal de Prevención e Identificación de Operaciones con Recursos de Procedencia Ilícita)",
+    framework: "LFPIORPI",
   },
   {
     code: "CO",
     label: "Colombia",
     regulator: "UIAF",
-    framework: "Resolución 314/2021 — supervisión de PSAV",
+    framework: "Resolución 314/2021",
   },
   {
     code: "SV",
     label: "El Salvador",
     regulator: "UIF · Fiscalía",
-    framework: "Ley contra el Lavado de Dinero y de Activos",
+    framework: "Ley contra el Lavado de Dinero",
   },
   {
     code: "GT",
     label: "Guatemala",
-    regulator: "IVE · Superintendencia de Bancos",
+    regulator: "IVE · SIB",
     framework: "Ley contra el Lavado de Dinero u Otros Activos",
   },
 ];
@@ -53,30 +58,37 @@ interface PageProps {
   searchParams: { country?: string; period?: string };
 }
 
+type Mode =
+  | { kind: "ok"; reports: WavyReportRecord[] }
+  | { kind: "demo"; reports: DemoReport[] }
+  | { kind: "not_configured" }
+  | { kind: "error"; message: string };
+
 export default async function ComplianceReportsPage({ searchParams }: PageProps) {
   const country = resolveCountry(searchParams.country);
   const period = searchParams.period ?? currentPeriod();
 
-  // Fetch reports server-side. The client distinguishes three states:
-  // (a) configured → real data, (b) not configured → "awaiting key"
-  // banner, (c) error → red note. Never fabricate data.
-  let mode: "ok" | "not_configured" | "error" = "ok";
-  let reports: WavyReportRecord[] = [];
-  let errorMessage: string | null = null;
-  if (!isWavyConfigured()) {
-    mode = "not_configured";
-  } else {
+  // Resolve the mode server-side. Three honest states:
+  //   ok            → real Wavy data
+  //   demo          → mock data, banner inocultable
+  //   not_configured → no key, no demo flag, render setup banner
+  let mode: Mode;
+  if (isWavyConfigured()) {
     try {
-      reports = await listReports({ countryCode: country.code, period, limit: 25 });
+      const reports = await listReports({ countryCode: country.code, period, limit: 25 });
+      mode = { kind: "ok", reports: Array.isArray(reports) ? reports : [] };
     } catch (err) {
-      mode = "error";
-      errorMessage = err instanceof Error ? err.message : String(err);
+      mode = { kind: "error", message: err instanceof Error ? err.message : String(err) };
     }
+  } else if (isDemoModeEnabled()) {
+    mode = { kind: "demo", reports: getDemoReports(country.code, period) };
+  } else {
+    mode = { kind: "not_configured" };
   }
 
   return (
     <div className="page">
-      <div className="kyc-wrap" style={{ maxWidth: 920 }}>
+      <div className="kyc-wrap" style={{ maxWidth: 980 }}>
         <div className="eyebrow">
           <span className="eyebrow-dot" />
           compliance · Wavy Node
@@ -85,88 +97,42 @@ export default async function ComplianceReportsPage({ searchParams }: PageProps)
         <p className="ph-lede">
           Reportes auto-generados a partir de la actividad on-chain monitoreada
           por Wavy Node. Cuatro jurisdicciones cubiertas: México (LFPIORPI),
-          Colombia (UIAF), El Salvador (UIF) y Guatemala (IVE).
+          Colombia (UIAF), El Salvador (UIF), Guatemala (IVE).
         </p>
+
+        {mode.kind === "demo" && <DemoBanner />}
 
         <CountrySwitcher selected={country.code} period={period} />
 
-        <div
-          style={{
-            marginTop: 18,
-            padding: "16px 18px",
-            background: "var(--bg-warm)",
-            border: "0.5px solid var(--border)",
-            borderRadius: 10,
-            display: "grid",
-            gap: 8,
-            fontSize: 13,
-          }}
-        >
+        <div className="report-context">
           <Row k="jurisdicción" v={`${country.label} · ${country.code}`} />
           <Row k="regulador" v={country.regulator} />
           <Row k="marco" v={country.framework} />
           <Row k="periodo" v={period} />
         </div>
 
-        {mode === "not_configured" && (
+        {mode.kind === "not_configured" && (
           <NotConfiguredBanner country={country.code} period={period} />
         )}
 
-        {mode === "error" && (
+        {mode.kind === "error" && (
           <p style={{ color: "var(--destructive)", marginTop: 16, fontSize: 13 }}>
-            {errorMessage}
+            {mode.message}
           </p>
         )}
 
-        {mode === "ok" && reports.length === 0 && (
-          <p style={{ marginTop: 24, color: "var(--fg-soft)" }}>
-            Sin reportes en {period} para {country.code}. Wavy Node los emite
-            cuando un usuario monitoreado excede el umbral mensual de su
-            jurisdicción.
-          </p>
+        {mode.kind === "demo" && (
+          <ReportList reports={mode.reports} country={country.code} period={period} />
         )}
 
-        {mode === "ok" && reports.length > 0 && (
-          <ul
-            style={{
-              marginTop: 24,
-              padding: 0,
-              listStyle: "none",
-              display: "grid",
-              gap: 8,
-            }}
-          >
-            {reports.map((r, i) => (
-              <li
-                key={i}
-                style={{
-                  padding: 14,
-                  background: "var(--card)",
-                  border: "0.5px solid var(--border)",
-                  borderRadius: 8,
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 11,
-                  whiteSpace: "pre-wrap",
-                  wordBreak: "break-all",
-                }}
-              >
-                {JSON.stringify(r, null, 2)}
-              </li>
-            ))}
-          </ul>
+        {mode.kind === "ok" && (
+          <LiveReportList reports={mode.reports} country={country.code} period={period} />
         )}
 
-        <p
-          style={{
-            marginTop: 28,
-            fontSize: 12,
-            color: "var(--fg-faint)",
-            lineHeight: 1.6,
-          }}
-        >
-          Wavy Node genera un reporte cuando un usuario excede el umbral de su
-          jurisdicción durante el mes (México: 210 UMAs ≈ $24,635 MXN). Tessera
-          entrega los datos del usuario via endpoint HMAC-firmado configurado en
+        <p className="report-fineprint">
+          Wavy Node emite un reporte cuando un usuario monitoreado excede el
+          umbral mensual de su jurisdicción (México: 645,000 MXN ≈ $35k USD para
+          AOR). Tessera entrega los datos vía endpoint HMAC-firmado configurado en
           el dashboard de Wavy.
         </p>
       </div>
@@ -174,43 +140,33 @@ export default async function ComplianceReportsPage({ searchParams }: PageProps)
   );
 }
 
-function CountrySwitcher({
-  selected,
-  period,
-}: {
-  selected: string;
-  period: string;
-}) {
+function DemoBanner() {
   return (
-    <div
-      style={{
-        display: "inline-flex",
-        gap: 8,
-        marginTop: 18,
-        padding: 4,
-        background: "var(--bg-warm)",
-        border: "0.5px solid var(--border)",
-        borderRadius: 10,
-      }}
-    >
+    <div className="demo-banner" role="status">
+      <span className="demo-banner-tag">DEMO</span>
+      <div className="demo-banner-text">
+        <strong>Datos sintéticos para demostración.</strong>{" "}
+        Esperando API key de Wavy Node — la conexión está cableada de extremo a
+        extremo y reemplazará automáticamente estos reportes cuando llegue. Los
+        montos, folios y user IDs no corresponden a operaciones reales.
+      </div>
+    </div>
+  );
+}
+
+function CountrySwitcher({ selected, period }: { selected: string; period: string }) {
+  return (
+    <div className="report-tabs">
       {COUNTRIES.map((c) => {
         const active = c.code === selected;
         return (
           <Link
             key={c.code}
             href={`/admin/reports?country=${c.code}&period=${period}`}
-            style={{
-              padding: "6px 12px",
-              borderRadius: 6,
-              fontSize: 12,
-              fontWeight: 500,
-              textDecoration: "none",
-              background: active ? "var(--card)" : "transparent",
-              color: active ? "var(--fg)" : "var(--fg-soft)",
-              border: active ? "0.5px solid var(--border)" : "0.5px solid transparent",
-            }}
+            className={`report-tab ${active ? "is-active" : ""}`}
           >
-            {c.code} · {c.label}
+            <span className="report-tab-code mono">{c.code}</span>
+            <span className="report-tab-label">{c.label}</span>
           </Link>
         );
       })}
@@ -218,82 +174,149 @@ function CountrySwitcher({
   );
 }
 
-function NotConfiguredBanner({
+function ReportList({
+  reports,
   country,
   period,
 }: {
+  reports: DemoReport[];
   country: string;
   period: string;
 }) {
-  return (
-    <div
-      style={{
-        marginTop: 24,
-        padding: "20px 22px",
-        background: "var(--card)",
-        border: "0.5px dashed var(--border)",
-        borderRadius: 12,
-      }}
-    >
-      <strong style={{ fontSize: 14 }}>
-        Integración lista — esperando API key de Wavy Node.
-      </strong>
-      <p style={{ color: "var(--fg-soft)", marginTop: 8, fontSize: 13, lineHeight: 1.55 }}>
-        El servidor está cableado para llamar a{" "}
-        <code style={{ fontFamily: "var(--font-mono)" }}>
-          GET /v1/reports?countryCode={country}&period={period}
-        </code>{" "}
-        en cuanto se reciba la key. Solicítala en{" "}
-        <a
-          href="https://wavynode.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: "var(--primary)", textDecoration: "underline", textUnderlineOffset: 3 }}
-        >
-          wavynode.com
-        </a>
-        .
+  if (reports.length === 0) {
+    return (
+      <p className="report-empty">
+        Sin reportes en {period} para {country}. Wavy Node los emite cuando un
+        usuario monitoreado excede el umbral mensual de su jurisdicción.
       </p>
-      <div
-        style={{
-          marginTop: 14,
-          display: "grid",
-          gap: 6,
-          fontFamily: "var(--font-mono)",
-          fontSize: 11,
-          color: "var(--fg-faint)",
-        }}
-      >
-        <span>WAVY_API_BASE    https://api.wavynode.com/v1</span>
-        <span>WAVY_API_KEY     (pegar aquí cuando llegue)</span>
-        <span>WAVY_PROJECT_ID  (pegar aquí cuando llegue)</span>
+    );
+  }
+  return (
+    <ul className="report-grid">
+      {reports.map((r) => (
+        <ReportCard key={r.id} r={r} />
+      ))}
+    </ul>
+  );
+}
+
+function LiveReportList({
+  reports,
+  country,
+  period,
+}: {
+  reports: WavyReportRecord[];
+  country: string;
+  period: string;
+}) {
+  if (reports.length === 0) {
+    return (
+      <p className="report-empty">
+        Sin reportes en {period} para {country}. Wavy Node los emite cuando un
+        usuario monitoreado excede el umbral mensual de su jurisdicción.
+      </p>
+    );
+  }
+  // Live shape isn't fully documented in the Wavy llms.txt dump — render as
+  // monospace cards until we have a real example to type against.
+  return (
+    <ul className="report-grid">
+      {reports.map((r, i) => (
+        <li key={i} className="report-card report-card--raw">
+          <pre>{JSON.stringify(r, null, 2)}</pre>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function ReportCard({ r }: { r: DemoReport }) {
+  return (
+    <li className={`report-card report-card--${r.riskLevel} report-card--${r.status}`}>
+      <div className="report-card-head">
+        <span className={`report-type report-type--${r.type.toLowerCase()}`}>
+          {r.type}
+        </span>
+        <StatusPill status={r.status} />
+        <span className={`risk-chip risk-chip--${r.riskLevel}`}>
+          <span className="risk-chip-dot" />
+          {r.riskLevel} · {r.riskScore}/100
+        </span>
       </div>
+
+      <h3 className="report-title">{r.typeLabel}</h3>
+      <div className="report-ref mono">{r.regulatoryRef}</div>
+
+      <div className="report-body">
+        <Field k="usuario" v={r.userId} mono />
+        <Field
+          k="operaciones"
+          v={`${r.operationsCount} · ${formatAmount(r.totalAmountUsd)} ${r.currency}`}
+        />
+        <Field
+          k="enviado"
+          v={r.submittedAt ? formatDate(r.submittedAt) : "—"}
+          mono={!!r.submittedAt}
+        />
+      </div>
+
+      <div className="report-card-foot mono">{r.id}</div>
+    </li>
+  );
+}
+
+function StatusPill({ status }: { status: DemoReport["status"] }) {
+  const label = {
+    submitted: "enviado",
+    draft: "borrador",
+    pending_review: "en revisión",
+  }[status];
+  return <span className={`status-pill status-pill--${status}`}>{label}</span>;
+}
+
+function Field({ k, v, mono = false }: { k: string; v: string; mono?: boolean }) {
+  return (
+    <div className="report-field">
+      <span className="report-field-k">{k}</span>
+      <span className={`report-field-v ${mono ? "mono" : ""}`}>{v}</span>
     </div>
   );
 }
 
 function Row({ k, v }: { k: string; v: string }) {
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "140px 1fr",
-        gap: 12,
-        color: "var(--fg-soft)",
-        fontFamily: "var(--font-mono)",
-      }}
-    >
-      <span
-        style={{
-          textTransform: "uppercase",
-          letterSpacing: "0.14em",
-          fontSize: 10,
-          color: "var(--fg-faint)",
-        }}
-      >
-        {k}
-      </span>
-      <span style={{ color: "var(--fg)" }}>{v}</span>
+    <div className="report-context-row">
+      <span className="report-context-k">{k}</span>
+      <span className="report-context-v">{v}</span>
     </div>
   );
+}
+
+function NotConfiguredBanner({ country, period }: { country: string; period: string }) {
+  return (
+    <div className="report-empty-state">
+      <strong>Integración lista — esperando API key de Wavy Node.</strong>
+      <p>
+        El servidor está cableado para llamar a{" "}
+        <code>GET /v1/reports?countryCode={country}&period={period}</code> en
+        cuanto se reciba la key. Para mostrar data sintética en el demo,{" "}
+        define <code>WAVY_DEMO_MODE=true</code> en{" "}
+        <code>.env.local</code>.
+      </p>
+      <div className="report-env-hint mono">
+        <div>WAVY_API_BASE    https://api.wavynode.com/v1</div>
+        <div>WAVY_API_KEY     (pegar aquí cuando llegue)</div>
+        <div>WAVY_PROJECT_ID  (pegar aquí cuando llegue)</div>
+      </div>
+    </div>
+  );
+}
+
+function formatAmount(n: number): string {
+  return n.toLocaleString("en-US", { maximumFractionDigits: 0 });
+}
+
+function formatDate(iso: string): string {
+  const d = new Date(iso);
+  return d.toISOString().slice(0, 10);
 }

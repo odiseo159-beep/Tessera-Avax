@@ -4,6 +4,7 @@ import {
   isWavyConfigured,
   WavyNotConfiguredError,
 } from "@/lib/wavy-client";
+import { getDemoReports, isDemoModeEnabled } from "@/lib/wavy-demo-data";
 
 const SUPPORTED_COUNTRIES = new Set(["MX", "CO", "SV", "GT"]);
 
@@ -35,6 +36,17 @@ export async function GET(req: NextRequest) {
   }
 
   if (!isWavyConfigured()) {
+    // Demo-mode fallback for the pitch: when the real API key isn't
+    // configured but WAVY_DEMO_MODE=true, return realistic mocks
+    // flagged with `demo: true` so the UI shows an unmissable badge.
+    if (isDemoModeEnabled()) {
+      return NextResponse.json({
+        status: "demo",
+        country,
+        period,
+        reports: getDemoReports(country, period),
+      });
+    }
     return NextResponse.json(
       { status: "not_configured", country, period },
       { status: 503 },
