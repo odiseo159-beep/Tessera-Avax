@@ -1857,3 +1857,205 @@ body:has(.hero-stage[data-bg="video"]) .site-header:not(.is-scrolled) .wallet-ba
   .report-body { grid-template-columns: 1fr; }
   .report-tabs { flex-wrap: wrap; }
 }
+
+/* ── /compliance — regulatory one-pager ─────────────────────────────── */
+
+.comp-cta-row {
+  display: flex;
+  gap: 10px;
+  margin: 22px 0 36px;
+  flex-wrap: wrap;
+}
+
+.comp-section { margin-top: 36px; }
+.comp-section-t {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--fg-faint);
+  font-weight: 600;
+  margin: 0 0 16px;
+  padding-bottom: 12px;
+  border-bottom: 0.5px solid var(--border);
+}
+.comp-p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--fg-soft);
+  margin: 0 0 14px;
+}
+.comp-p code {
+  background: var(--muted);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+.comp-p strong { color: var(--fg); font-weight: 600; }
+.comp-p em { color: var(--fg); font-style: italic; }
+
+.comp-arch-wrap {
+  margin: 18px -16px;
+  padding: 16px;
+  background: var(--card);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.comp-arch-wrap img { width: 100%; height: auto; display: block; }
+
+.comp-jur-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 18px;
+}
+.comp-jur-card {
+  padding: 16px 18px;
+  background: var(--card);
+  border: 0.5px solid var(--border);
+  border-radius: 10px;
+}
+.comp-jur-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.comp-jur-flag { font-size: 26px; line-height: 1; }
+.comp-jur-country { font-size: 15px; font-weight: 600; color: var(--fg); }
+.comp-jur-code {
+  font-size: 11px;
+  color: var(--fg-faint);
+  letter-spacing: 0.06em;
+}
+.comp-jur-meta {
+  display: grid;
+  gap: 6px;
+  padding: 10px 0;
+  border-top: 0.5px solid var(--border);
+  border-bottom: 0.5px solid var(--border);
+  margin-bottom: 12px;
+}
+.comp-jur-meta-row {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 10px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+}
+.comp-jur-meta-k {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 10px;
+  color: var(--fg-faint);
+}
+.comp-jur-meta-v { color: var(--fg); }
+.comp-jur-reports {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+.comp-jur-reports li {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 10px;
+  align-items: baseline;
+  font-size: 12px;
+}
+.comp-jur-type {
+  padding: 2px 6px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-radius: 4px;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+}
+.comp-jur-label { color: var(--fg-soft); }
+
+.comp-flow {
+  list-style: none;
+  padding: 0;
+  margin: 18px 0 0;
+  display: grid;
+  gap: 14px;
+}
+.comp-flow-step {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 16px;
+  padding: 14px 16px;
+  background: var(--card);
+  border: 0.5px solid var(--border);
+  border-radius: 10px;
+}
+.comp-flow-n {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--fg);
+  color: #fff;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.comp-flow-t {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--fg);
+  margin-bottom: 4px;
+}
+.comp-flow-d {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--fg-soft);
+  margin: 0;
+}
+
+.comp-mock-list {
+  margin: 16px 0 0;
+  padding: 16px 18px;
+  background: rgba(208, 136, 22, 0.06);
+  border: 0.5px solid rgba(208, 136, 22, 0.24);
+  border-radius: 10px;
+  list-style: none;
+}
+.comp-mock-list li {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--fg-soft);
+  padding: 6px 0;
+}
+.comp-mock-list li strong { color: var(--fg); font-weight: 600; }
+.comp-mock-list li code {
+  background: rgba(208, 136, 22, 0.10);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 11px;
+}
+
+.comp-foot {
+  margin-top: 40px;
+  padding-top: 18px;
+  border-top: 0.5px solid var(--border);
+  font-size: 12px;
+  color: var(--fg-faint);
+  line-height: 1.6;
+}
+.comp-foot .link {
+  color: var(--fg-soft);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.comp-foot .link:hover { color: var(--fg); }
+
+@media (max-width: 720px) {
+  .comp-jur-grid { grid-template-columns: 1fr; }
+  .comp-flow-step { grid-template-columns: 1fr; }
+  .comp-flow-n { width: 36px; }
+}
