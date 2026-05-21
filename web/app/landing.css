@@ -944,6 +944,585 @@
 }
 .uo-meta { font-size: 12px; color: rgba(255,255,255,0.7); letter-spacing: 0.04em; }
 
+/* ═══════════════════════════════════════════════════════════════════════
+   Landing v2 — Hero stage (autoplay video bg) + tabbed "Cómo funciona"
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Hero stage — immersive video bg, content over fade ─────────────────── */
+.hero-stage {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: clamp(640px, 92vh, 920px);
+  /* Extend visually behind the sticky header */
+  margin-top: -70px;
+  padding-top: 70px;
+}
+.hero-stage-inner {
+  position: relative;
+  z-index: 3;
+  max-width: 920px;
+  margin: 0 auto;
+  padding: clamp(56px, 9vh, 110px) 32px clamp(70px, 11vh, 130px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0;
+  transition: opacity 720ms var(--ease) 80ms, transform 720ms var(--ease) 80ms;
+}
+/* Veil / reveal state — driven by `is-revealed` / `is-veiled` on the stage */
+.hero-stage.is-veiled .hero-stage-inner {
+  opacity: 0;
+  transform: translateY(24px);
+  pointer-events: none;
+}
+.hero-stage.is-revealed .hero-stage-inner {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.hero-stage.is-revealed .hero-veil {
+  opacity: 0;
+  transform: scale(0.94);
+  pointer-events: none;
+}
+.hero-eyebrow { margin-bottom: 22px; }
+
+/* ── Hero veil — big logo invites click to enter ─────────────────────────── */
+.hero-veil {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  background: transparent;
+  border: 0;
+  padding: 60px 32px;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  text-align: center;
+  transition: opacity 720ms var(--ease), transform 720ms var(--ease);
+}
+.hero-veil-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.78);
+  font-weight: 500;
+  text-shadow: 0 1px 12px rgba(0,0,0,0.4);
+}
+.hero-veil-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.2);
+  animation: pulse-dot 2.4s var(--ease) infinite;
+}
+.hero-veil-logo {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(140px, 18vw, 220px);
+  height: clamp(140px, 18vw, 220px);
+}
+.hero-veil-logo img {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 28px;
+  filter: drop-shadow(0 18px 40px rgba(0,0,0,0.45)) drop-shadow(0 2px 6px rgba(0,0,0,0.3));
+  transition: transform 480ms var(--ease);
+  animation: veil-float 4.8s var(--ease) infinite;
+}
+.hero-veil:hover .hero-veil-logo img { transform: scale(1.04); }
+.hero-veil:active .hero-veil-logo img { transform: scale(0.97); }
+.hero-veil-ring {
+  position: absolute;
+  inset: -8%;
+  border: 1.5px solid rgba(255,255,255,0.5);
+  border-radius: 28px;
+  opacity: 0;
+  animation: veil-ring 2.6s var(--ease) infinite;
+  pointer-events: none;
+}
+.hero-veil-ring--2 { animation-delay: 0.9s; }
+.hero-veil-ring--3 { animation-delay: 1.8s; }
+/* Minimalist chevron-up — sits below the logo and bobs upward to
+   indicate "click the thing above". No pill, no text — pure hint. */
+.hero-veil-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.85);
+  filter: drop-shadow(0 1px 6px rgba(0, 0, 0, 0.35));
+  animation: veil-arrow-bob 1.8s var(--ease) infinite;
+}
+.hero-veil:hover .hero-veil-arrow { color: #fff; }
+@keyframes veil-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+@keyframes veil-ring {
+  0%   { opacity: 0.7; transform: scale(1); border-radius: 28px; }
+  100% { opacity: 0;   transform: scale(1.35); border-radius: 36px; }
+}
+@keyframes veil-arrow-bob {
+  0%, 100% { transform: translateY(2px); opacity: 0.55; }
+  50%      { transform: translateY(-4px); opacity: 1; }
+}
+
+.hero-display {
+  font-size: clamp(40px, 5.6vw, 78px);
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+  margin: 0 0 22px;
+  max-width: 18ch;
+  text-wrap: balance;
+}
+.hero-display .word-inner.is-accent {
+  background: linear-gradient(120deg, var(--accent) 0%, color-mix(in oklab, var(--accent) 55%, var(--primary)) 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+}
+.hero-accent-word {
+  background: linear-gradient(120deg, var(--accent) 0%, color-mix(in oklab, var(--accent) 55%, var(--primary)) 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+}
+
+.hero-lede {
+  font-size: clamp(15px, 1.1vw, 17px);
+  line-height: 1.55;
+  color: var(--fg-soft);
+  max-width: 54ch;
+  margin: 0 0 24px;
+}
+
+/* ── CTA row ────────────────────────────────────────────────────────────── */
+.hero-cta-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 28px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 40px; padding: 0 16px 0 18px;
+  background: var(--fg);
+  color: var(--bg-warm);
+  border-radius: 8px;
+  font-size: 14px; font-weight: 500;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset, 0 6px 16px -6px rgba(26,29,33,0.35);
+  transition: transform 160ms var(--ease), box-shadow 220ms var(--ease);
+  text-decoration: none;
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset, 0 14px 30px -10px rgba(26,29,33,0.45); }
+.btn-primary svg { opacity: 0.85; }
+
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 40px; padding: 0 16px;
+  background: rgba(255,255,255,0.6);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+          backdrop-filter: blur(10px) saturate(140%);
+  border: 0.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px; font-weight: 500;
+  color: var(--fg);
+  box-shadow: var(--shadow-sm);
+  transition: background 200ms var(--ease), border-color 200ms var(--ease);
+  text-decoration: none;
+}
+.btn-ghost:hover { background: rgba(255,255,255,0.85); border-color: var(--accent-border); }
+.btn-ghost-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+}
+
+/* meta strip retains the inset-card feel but with stronger glass against bg */
+.hero-stage .hero-meta {
+  background: rgba(255,255,255,0.65);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+          backdrop-filter: blur(14px) saturate(140%);
+  border-color: rgba(26,29,33,0.08);
+}
+
+/* ── Hero bg base layer ─────────────────────────────────────────────────── */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* ── Video bg variant ───────────────────────────────────────────────────── */
+/* Dark fallback bg keeps the white video-mode headline legible during the
+   first frames while the MP4 is still buffering. Without it the user
+   would see white text on cream for ~200-500ms on slow connections. */
+.hero-bg--video { background: #1a1d21; }
+.hero-bg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: saturate(1.05) contrast(1.02);
+  opacity: calc(1 * var(--intensity, 1));
+}
+.hero-bg-tint {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(70% 55% at 25% 22%, color-mix(in oklab, var(--primary) 28%, transparent) 0%, transparent 65%),
+    radial-gradient(70% 55% at 78% 32%, color-mix(in oklab, var(--accent) 32%, transparent) 0%, transparent 65%);
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+.hero-bg--video .hero-bg-vignette {
+  background:
+    radial-gradient(140% 100% at 50% 0%, transparent 30%, color-mix(in oklab, var(--bg-warm) 25%, transparent) 80%),
+    linear-gradient(180deg, transparent 0%, transparent 55%, color-mix(in oklab, var(--bg-warm) 60%, transparent) 80%, var(--bg-warm) 100%);
+  mix-blend-mode: normal;
+}
+.hero-bg-vignette {
+  position: absolute; inset: 0;
+  background: radial-gradient(120% 80% at 50% 30%, transparent 35%, rgba(26,29,33,0.06) 100%);
+  mix-blend-mode: multiply;
+}
+
+/* Fade at the bottom of the hero — artwork dissolves into bg-warm */
+.hero-stage-fade {
+  position: absolute;
+  left: 0; right: 0;
+  bottom: 0;
+  height: 55%;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    color-mix(in oklab, var(--bg-warm) 60%, transparent) 35%,
+    var(--bg-warm) 78%,
+    var(--bg-warm) 100%
+  );
+}
+
+/* ── Video-bg readability overrides ─────────────────────────────────────── */
+.hero-stage[data-bg="video"] .hero-display { color: #fff; text-shadow: 0 1px 30px rgba(0,0,0,0.35); }
+.hero-stage[data-bg="video"] .hero-display .hero-accent-word,
+.hero-stage[data-bg="video"] .hero-display .word-inner.is-accent {
+  background: linear-gradient(120deg, #ffffff 0%, color-mix(in oklab, #ffffff 70%, var(--primary)) 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+}
+.hero-stage[data-bg="video"] .hero-eyebrow { color: rgba(255,255,255,0.85); }
+.hero-stage[data-bg="video"] .hero-eyebrow .eyebrow-dot { box-shadow: 0 0 0 3px rgba(255,255,255,0.18); }
+.hero-stage[data-bg="video"] .hero-lede { color: rgba(255,255,255,0.88); text-shadow: 0 1px 18px rgba(0,0,0,0.3); }
+.hero-stage[data-bg="video"] .hero-lede .lede-mono { background: rgba(255,255,255,0.18); color: #fff; }
+.hero-stage[data-bg="video"] .btn-ghost {
+  background: rgba(255,255,255,0.85);
+  border-color: rgba(255,255,255,0.7);
+  color: var(--fg);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+          backdrop-filter: blur(18px) saturate(160%);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset, 0 4px 16px -4px rgba(0,0,0,0.35);
+  font-weight: 500;
+}
+.hero-stage[data-bg="video"] .btn-ghost:hover {
+  background: rgba(255,255,255,1);
+  border-color: rgba(255,255,255,0.9);
+}
+.hero-stage[data-bg="video"] .btn-ghost .btn-ghost-dot {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  box-shadow: 0 0 0 3px rgba(15,110,86,0.12);
+}
+.hero-stage[data-bg="video"] .btn-primary { background: #fff; color: var(--fg); }
+.hero-stage[data-bg="video"] .hero-meta {
+  background: rgba(20,22,26,0.42);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+          backdrop-filter: blur(16px) saturate(140%);
+  border-color: rgba(255,255,255,0.18);
+  color: #fff;
+}
+.hero-stage[data-bg="video"] .hero-meta .meta-label { color: rgba(255,255,255,0.65); }
+.hero-stage[data-bg="video"] .hero-meta .meta-val { color: #fff; }
+.hero-stage[data-bg="video"] .hero-meta .meta-sep { background: rgba(255,255,255,0.2); }
+
+/* Site-header readability while sitting over the dark video footage.
+   Uses :has() (modern Chromium / Safari / Firefox 121+) to scope the
+   override only when the video stage is on the page AND the user hasn't
+   scrolled past it. */
+body:has(.hero-stage[data-bg="video"]) .site-header:not(.is-scrolled) { color: #fff; }
+body:has(.hero-stage[data-bg="video"]) .site-header:not(.is-scrolled) .nav-link { color: rgba(255,255,255,0.78); }
+body:has(.hero-stage[data-bg="video"]) .site-header:not(.is-scrolled) .nav-link:hover { color: #fff; }
+body:has(.hero-stage[data-bg="video"]) .site-header:not(.is-scrolled) .brand { color: #fff; }
+body:has(.hero-stage[data-bg="video"]) .site-header:not(.is-scrolled) .kyc-pill {
+  background: rgba(255,255,255,0.14);
+  color: #fff;
+  border-color: rgba(255,255,255,0.24);
+}
+body:has(.hero-stage[data-bg="video"]) .site-header:not(.is-scrolled) .wallet-btn {
+  background: rgba(255,255,255,0.14);
+  color: #fff;
+  border-color: rgba(255,255,255,0.24);
+  box-shadow: none;
+}
+body:has(.hero-stage[data-bg="video"]) .site-header:not(.is-scrolled) .wallet-bal {
+  background: rgba(255,255,255,0.18);
+  color: #fff;
+}
+
+/* ── How it works — v2 tabbed redesign ──────────────────────────────────── */
+.how-tabs-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 24px;
+}
+.how-tabs {
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+  gap: 4px;
+  padding: 5px;
+  background: var(--card);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  width: max-content;
+  align-self: flex-start;
+}
+/* Pill is now a motion.span inside the ACTIVE button (Framer Motion
+   handles the slide via shared layoutId). Each button gets the pill
+   when it becomes active, and the tone variant paints the colour. */
+.how-tabs-pill {
+  position: absolute;
+  inset: 0;
+  background: var(--fg);
+  border-radius: 8px;
+  z-index: 0;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset, 0 4px 14px -4px rgba(26,29,33,0.35);
+}
+.how-tabs-pill--g { background: var(--primary); }
+.how-tabs-pill--p { background: var(--accent); }
+.how-tabs-pill--duo {
+  background: linear-gradient(120deg, var(--primary) 0%, color-mix(in oklab, var(--primary) 50%, var(--accent)) 50%, var(--accent) 100%);
+}
+.how-tab {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px 10px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fg-soft);
+  border-radius: 8px;
+  transition: color 280ms var(--ease);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  font-family: inherit;
+}
+/* Tab content sits above the motion pill */
+.how-tab > .how-tab-n,
+.how-tab > .how-tab-l {
+  position: relative;
+  z-index: 1;
+}
+.how-tab .how-tab-n {
+  font-size: 11px;
+  color: var(--fg-faint);
+  letter-spacing: 0.04em;
+  transition: color 280ms var(--ease);
+}
+.how-tab.is-active { color: #fff; }
+.how-tab.is-active .how-tab-n { color: rgba(255,255,255,0.7); }
+
+/* Panel — fixed size, animated cross-fade between step bodies */
+.how-panel {
+  position: relative;
+  background: var(--card);
+  border: 0.5px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+  min-height: 320px;
+}
+/* AnimatePresence renders one body at a time (mode="wait"), so no
+   absolute-overlay stacking needed — Framer Motion drives the
+   opacity/translateX/blur via the motion.div in how-it-works.tsx. */
+.how-panel-body {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 28px;
+  padding: 28px;
+  align-items: center;
+}
+.how-panel-copy { display: flex; flex-direction: column; gap: 10px; }
+.how-panel-meta { display: flex; align-items: center; gap: 12px; }
+.how-panel-n { font-size: 11px; color: var(--fg-faint); letter-spacing: 0.04em; }
+.how-panel-rule { flex: 1; height: 0.5px; background: var(--border); }
+.how-panel-tag { font-size: 10.5px; color: var(--fg-faint); text-transform: uppercase; letter-spacing: 0.08em; }
+.how-panel-t {
+  font-size: clamp(24px, 2.4vw, 32px);
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  margin: 2px 0 4px;
+}
+.how-panel-d { font-size: 15px; line-height: 1.55; color: var(--fg-soft); margin: 0; max-width: 38ch; }
+
+/* Visual frame */
+.how-panel-visual {
+  position: relative;
+  background: var(--bg-warm);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  height: 260px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.step-visual { display: flex; flex-direction: column; gap: 12px; height: 100%; }
+.sv-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.sv-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; padding: 5px 9px;
+  background: var(--card);
+  border: 0.5px solid var(--border);
+  border-radius: 999px;
+  color: var(--fg-soft);
+}
+.sv-chip--mono { font-family: var(--font-mono); font-size: 10.5px; color: var(--fg-faint); }
+.sv-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--fg-faint); }
+.sv-dot--ok { background: var(--primary); box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 18%, transparent); }
+.sv-dot--ok.is-live { background: var(--destructive); box-shadow: 0 0 0 3px rgba(192,55,55,0.18); animation: pulse-dot 1.4s var(--ease) infinite; }
+
+/* Wallet visual */
+.sv-wallet {
+  background: var(--card);
+  border: 0.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex; flex-direction: column; gap: 8px;
+  flex: 1;
+}
+.sv-wallet-head { display: flex; align-items: center; gap: 10px; }
+.sv-w-ic {
+  width: 28px; height: 28px; border-radius: 6px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  flex-shrink: 0;
+}
+.sv-w-name { font-size: 13px; font-weight: 600; }
+.sv-w-sub { font-size: 11px; color: var(--fg-faint); }
+.sv-w-action {
+  margin-left: auto;
+  font-size: 12px; font-weight: 500;
+  padding: 6px 12px;
+  background: var(--fg); color: var(--bg-warm);
+  border-radius: 6px;
+}
+.sv-wallet-list { display: flex; flex-direction: column; gap: 1px; }
+.sv-wallet-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 6px 8px; font-size: 12.5px;
+  border-radius: 6px;
+  color: var(--fg-soft);
+}
+.sv-wallet-row--active { background: color-mix(in oklab, var(--primary) 8%, transparent); color: var(--fg); }
+.sv-w-logo {
+  width: 22px; height: 22px; border-radius: 5px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 10px; color: #fff; font-weight: 600;
+}
+.sv-w-arrow { margin-left: auto; color: var(--fg-faint); font-size: 12px; }
+
+/* KYC visual */
+.sv-kyc {
+  background: var(--card); border: 0.5px solid var(--border); border-radius: 10px;
+  padding: 14px; display: flex; flex-direction: column; gap: 12px; flex: 1;
+}
+.sv-kyc-head { display: flex; align-items: center; gap: 14px; }
+.sv-passport {
+  width: 52px; height: 52px; border-radius: 8px;
+  background: linear-gradient(135deg, color-mix(in oklab, var(--primary) 15%, var(--card)), color-mix(in oklab, var(--accent) 15%, var(--card)));
+  border: 0.5px solid var(--border);
+  padding: 10px;
+  display: flex; flex-direction: column; justify-content: center; gap: 4px;
+  flex-shrink: 0;
+}
+.sv-pp-line { display: block; height: 3px; background: var(--fg); border-radius: 2px; opacity: 0.5; }
+.sv-pp-line--short { width: 60%; opacity: 0.3; }
+.sv-kyc-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 14px; flex: 1; }
+.sv-kyc-field { display: flex; flex-direction: column; gap: 1px; }
+.sv-kyc-field .lbl { font-size: 9.5px; color: var(--fg-faint); letter-spacing: 0.1em; }
+.sv-kyc-field .val { font-size: 12px; color: var(--fg); font-weight: 500; }
+.sv-tick { color: var(--primary); margin-right: 3px; font-weight: 700; }
+.sv-kyc-claims { display: flex; flex-direction: column; gap: 4px; padding-top: 8px; border-top: 0.5px solid var(--border); }
+.sv-claim { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--fg-soft); font-family: var(--font-mono); }
+.sv-claim-dot { width: 6px; height: 6px; border-radius: 50%; }
+.sv-claim-dot--g { background: var(--primary); }
+.sv-claim-dot--p { background: var(--accent); }
+
+/* Orderbook visual */
+.sv-book {
+  background: var(--card); border: 0.5px solid var(--border); border-radius: 10px;
+  padding: 10px;
+  display: flex; flex-direction: column; gap: 6px;
+  flex: 1;
+  font-family: var(--font-mono); font-size: 11px;
+}
+.sv-book-side { display: flex; flex-direction: column; gap: 2px; }
+.sv-book-row {
+  position: relative;
+  display: grid; grid-template-columns: 60px 1fr;
+  align-items: center; gap: 8px;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+.sv-book-side--asks .sv-book-row { color: var(--destructive); }
+.sv-book-side--bids .sv-book-row { color: var(--primary); }
+.sv-book-row > span:nth-child(2) { color: var(--fg-soft); justify-self: end; z-index: 1; }
+.sv-bar {
+  position: absolute;
+  top: 0; bottom: 0;
+  right: 0;
+  background: rgba(192,55,55,0.08);
+  border-radius: 4px;
+  z-index: 0;
+}
+.sv-book-side--bids .sv-bar { background: rgba(15,110,86,0.08); right: auto; left: 0; }
+.sv-book-mid {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 8px;
+  background: var(--muted);
+  border-radius: 6px;
+  font-size: 13px;
+}
+.sv-mid-price { font-weight: 600; font-family: var(--font-mono); color: var(--fg); }
+.sv-mid-pct { color: var(--primary); font-weight: 500; font-family: var(--font-mono); }
+
 /* ── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 1100px) {
   .choose-grid { grid-template-columns: 1fr; gap: 14px; }
@@ -952,13 +1531,22 @@
   .how-grid { grid-template-columns: 1fr; }
   .nav { display: none; }
 }
+@media (max-width: 880px) {
+  /* Tabbed how-it-works stacks visual above copy on narrow viewports */
+  .how-panel-body { grid-template-columns: 1fr; gap: 20px; }
+  .how-panel-visual { height: 220px; order: 1; }
+  .how-panel-copy { order: 2; }
+}
 @media (max-width: 720px) {
   .header-inner { grid-template-columns: 1fr auto; gap: 12px; padding: 0 18px; }
   .kyc-pill { display: none; }
   .risk-pill { display: none; }
   .hero-inner, .choose-head, .choose-grid, .pol-head, .pol-grid, .pol-foot, .how, .foot-inner, .foot-fine { padding-left: 18px; padding-right: 18px; }
+  .hero-stage-inner { padding-left: 18px; padding-right: 18px; }
   .hero-meta { flex-wrap: wrap; gap: 12px; }
   .pol-grid { grid-template-columns: 1fr 1fr; }
   .mkt-list-head, .mkt-row { grid-template-columns: 22px 44px 1fr 70px 56px; }
   .mkt-spark { display: none; }
+  .how-tabs { width: 100%; }
+  .how-tab { flex: 1; justify-content: center; padding: 10px 12px; }
 }
