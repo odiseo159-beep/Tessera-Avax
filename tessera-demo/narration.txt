@@ -1,0 +1,13 @@
+Tessera. Dos universos de activos. Una sola identidad on-chain.
+
+En LatAm, el equity privado tiene diez años de iliquidez. El equity público de Estados Unidos suma comisiones, T más dos, y onboarding fragmentado. Tessera resuelve ambos.
+
+Cuatro capas. Identidad atestada on-chain vía ERC tres mil seiscientos cuarenta y tres. Compliance enforced dentro del bytecode de cada token. Un solo orderbook para Privado y Público. Reportes regulatorios automáticos vía Wavy Node.
+
+Verificas tu identidad una sola vez. La wallet queda atestada en IdentityRegistry. Risk score continuo. Listo para operar.
+
+Entras a Privado. Cuatro empresas LatAm tokenizadas. Pones una orden en Kavak. Mismo orderbook sirve Público. Compras NVIDIA con la misma wallet.
+
+En admin reports, Wavy Node genera reportes para México, Colombia, El Salvador y Guatemala. AOR, ROS, RTS — los formatos que los reguladores ya esperan.
+
+Tessera. Compliance enforced en el bytecode. Top tres del Hackathon Avalanche LatAm Institucional.

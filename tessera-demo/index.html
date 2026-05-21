@@ -1,0 +1,814 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>Tessera — submission demo (95s)</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1920px; height: 1080px;
+        overflow: hidden;
+        background: #F1EFE8;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        color: #1A1D21;
+        font-feature-settings: "ss01", "cv11";
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* Tessera tokens */
+      :root {
+        --bg: #F1EFE8;
+        --surface: #FAF8F0;
+        --fg: #1A1D21;
+        --fg-soft: #5C6066;
+        --fg-faint: #5F6369;
+        --border: #D3D1C7;
+        --muted: #E6E2D6;
+        --primary: #0F6E56;
+        --primary-soft: rgba(15, 110, 86, 0.10);
+        --primary-border: rgba(15, 110, 86, 0.24);
+        --accent: #3C3489;
+        --accent-soft: rgba(60, 52, 137, 0.10);
+        --accent-border: rgba(60, 52, 137, 0.24);
+        --warn: #8B5A0A;
+      }
+
+      .scene {
+        position: absolute; inset: 0;
+        width: 1920px; height: 1080px;
+        display: flex; flex-direction: column;
+        justify-content: center; align-items: center;
+        padding: 96px 160px;
+      }
+
+      .eyebrow {
+        display: inline-flex; align-items: center; gap: 12px;
+        font-size: 18px; font-weight: 500;
+        letter-spacing: 0.24em; text-transform: uppercase;
+        color: var(--fg-soft);
+      }
+      .eyebrow-dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: var(--primary);
+        box-shadow: 0 0 0 4px rgba(15,110,86,0.18);
+      }
+      .mono {
+        font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+
+      /* ═══════════════════ Scene 1 — Cold open ═══════════════════ */
+      .s1 {
+        background:
+          radial-gradient(circle at 50% 40%, rgba(60,52,137,0.04) 0%, transparent 60%),
+          var(--bg);
+      }
+      .s1-logo {
+        display: inline-grid;
+        grid-template-columns: 1fr 1fr;
+        width: 280px; height: 280px;
+        border-radius: 32px;
+        overflow: hidden;
+        box-shadow: 0 24px 60px -20px rgba(26,29,33,0.20);
+        margin-top: 32px;
+      }
+      .s1-logo-a { background: var(--primary); }
+      .s1-logo-b { background: var(--accent); position: relative; }
+      .s1-logo-b::after {
+        content: ""; position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(180deg, transparent 25%, #fff 25%, #fff 40%, transparent 40%);
+      }
+      .s1-eyebrow { margin-bottom: 32px; }
+      .s1-wordmark {
+        font-size: 168px; font-weight: 700;
+        letter-spacing: -0.04em;
+        line-height: 1;
+        margin: 40px 0 28px;
+      }
+      .s1-tagline {
+        font-size: 44px; font-weight: 400;
+        color: var(--fg-soft);
+        max-width: 1100px; text-align: center;
+        line-height: 1.3;
+      }
+      .s1-tagline .accent { color: var(--accent); font-weight: 600; }
+      .s1-tagline .word { display: inline-block; }
+
+      /* ═══════════════════ Scene 2 — Problem ═══════════════════ */
+      .s2 {
+        background: var(--bg);
+        flex-direction: column;
+        padding-top: 80px;
+      }
+      .s2-eyebrow { margin-bottom: 48px; }
+      .s2-grid {
+        display: grid; grid-template-columns: 1fr 2px 1fr;
+        gap: 80px;
+        width: 100%;
+        max-width: 1500px;
+      }
+      .s2-col {
+        display: flex; flex-direction: column;
+        gap: 24px;
+      }
+      .s2-rule {
+        background: var(--border);
+        margin: 40px 0;
+      }
+      .s2-col-eyebrow {
+        font-size: 14px; font-weight: 500;
+        letter-spacing: 0.22em; text-transform: uppercase;
+      }
+      .s2-col--priv .s2-col-eyebrow { color: var(--primary); }
+      .s2-col--pub .s2-col-eyebrow { color: var(--accent); }
+      .s2-big {
+        font-size: 140px; font-weight: 700;
+        letter-spacing: -0.04em;
+        line-height: 0.95;
+      }
+      .s2-big-unit {
+        font-size: 44px; font-weight: 500;
+        color: var(--fg-soft);
+        margin-top: 4px;
+      }
+      .s2-body {
+        font-size: 26px; line-height: 1.5;
+        color: var(--fg-soft);
+        max-width: 540px;
+      }
+      .s2-tag {
+        display: inline-flex; align-items: center; gap: 10px;
+        margin-top: 12px;
+        padding: 8px 16px;
+        border-radius: 999px;
+        font-size: 16px; font-weight: 500;
+        background: var(--muted);
+      }
+      .s2-col--priv .s2-tag {
+        background: var(--primary-soft); color: var(--primary);
+      }
+      .s2-col--pub .s2-tag {
+        background: var(--accent-soft); color: var(--accent);
+      }
+
+      /* ═══════════════════ Scene 3 — Architecture stack ═══════════════════ */
+      .s3 {
+        background: var(--bg);
+        padding: 80px 200px;
+        gap: 24px;
+        justify-content: center;
+      }
+      .s3-eyebrow { margin-bottom: 24px; }
+      .s3-stack {
+        display: flex; flex-direction: column;
+        gap: 14px;
+        width: 100%;
+        max-width: 1320px;
+      }
+      .s3-layer {
+        display: grid;
+        grid-template-columns: 80px 1fr auto;
+        align-items: center;
+        gap: 32px;
+        padding: 28px 32px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: 0 2px 8px rgba(26,29,33,0.04);
+      }
+      .s3-layer-n {
+        font-size: 20px; font-weight: 600;
+        color: var(--fg-faint);
+        font-family: 'JetBrains Mono', monospace;
+        letter-spacing: 0.1em;
+      }
+      .s3-layer-body { display: grid; gap: 6px; }
+      .s3-layer-t { font-size: 32px; font-weight: 600; color: var(--fg); letter-spacing: -0.01em; }
+      .s3-layer-d {
+        font-size: 18px; color: var(--fg-soft);
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .s3-layer-tag {
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 14px; font-weight: 500;
+        letter-spacing: 0.08em; text-transform: uppercase;
+      }
+      .s3-layer--shared { border-left: 4px solid var(--primary); }
+      .s3-layer--shared .s3-layer-tag { background: var(--primary-soft); color: var(--primary); }
+      .s3-layer--split { border-left: 4px solid var(--accent); }
+      .s3-layer--split .s3-layer-tag { background: var(--accent-soft); color: var(--accent); }
+      .s3-layer--off { border-left: 4px solid var(--warn); }
+      .s3-layer--off .s3-layer-tag { background: rgba(208,136,22,0.10); color: var(--warn); }
+
+      /* ═══════════════════ Scene 4 — KYC + risk ═══════════════════ */
+      .s4 {
+        background: var(--bg);
+        flex-direction: row;
+        gap: 80px;
+        padding: 80px 200px;
+        align-items: center;
+      }
+      .s4-card {
+        flex: 0 0 800px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 40px;
+        box-shadow: 0 24px 60px -24px rgba(26,29,33,0.10);
+      }
+      .s4-card-eyebrow {
+        font-size: 12px; font-weight: 500;
+        color: var(--primary);
+        letter-spacing: 0.24em; text-transform: uppercase;
+        margin-bottom: 14px;
+      }
+      .s4-card-t {
+        font-size: 38px; font-weight: 600;
+        letter-spacing: -0.01em;
+        margin-bottom: 24px;
+      }
+      .s4-field {
+        display: grid; gap: 6px;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .s4-field-k {
+        font-size: 12px; font-weight: 500;
+        text-transform: uppercase; letter-spacing: 0.18em;
+        color: var(--fg-faint);
+      }
+      .s4-field-v {
+        font-size: 22px; color: var(--fg);
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .s4-stamp {
+        margin-top: 24px;
+        padding: 16px 20px;
+        background: var(--primary-soft);
+        border: 1px solid var(--primary-border);
+        border-radius: 10px;
+        display: flex; align-items: center; gap: 16px;
+      }
+      .s4-stamp-check {
+        width: 44px; height: 44px;
+        border-radius: 50%;
+        background: var(--primary);
+        display: inline-flex; align-items: center; justify-content: center;
+        color: #fff; font-size: 24px; font-weight: 700;
+      }
+      .s4-stamp-text {
+        font-size: 22px; font-weight: 500;
+        color: var(--primary);
+      }
+      .s4-right { display: flex; flex-direction: column; gap: 24px; align-items: flex-start; }
+      .s4-pill {
+        display: inline-flex; align-items: center; gap: 10px;
+        padding: 14px 20px;
+        background: var(--surface);
+        border: 1px solid var(--primary-border);
+        border-radius: 999px;
+        font-size: 22px; font-weight: 500;
+        color: var(--primary);
+      }
+      .s4-pill-dot {
+        width: 10px; height: 10px; border-radius: 50%;
+        background: var(--primary);
+        box-shadow: 0 0 0 5px rgba(15,110,86,0.18);
+      }
+      .s4-quote {
+        font-size: 30px; line-height: 1.4;
+        color: var(--fg-soft);
+        max-width: 560px;
+      }
+      .s4-quote strong { color: var(--fg); }
+
+      /* ═══════════════════ Scene 5 — Dual trade ═══════════════════ */
+      .s5 {
+        background: var(--bg);
+        flex-direction: column;
+        padding: 80px 120px;
+        gap: 28px;
+        justify-content: center;
+      }
+      .s5-eyebrow { margin-bottom: 8px; }
+      .s5-grid {
+        display: grid; grid-template-columns: 1fr 80px 1fr;
+        align-items: stretch;
+        gap: 0;
+        width: 100%;
+        max-width: 1680px;
+      }
+      .s5-side {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 32px 36px;
+        display: flex; flex-direction: column; gap: 18px;
+      }
+      .s5-side--priv { border-color: rgba(15,110,86,0.30); }
+      .s5-side--pub { border-color: rgba(60,52,137,0.30); }
+      .s5-link {
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        position: relative;
+      }
+      .s5-link-pill {
+        position: absolute;
+        white-space: nowrap;
+        padding: 8px 14px;
+        background: var(--fg);
+        color: #fff;
+        border-radius: 999px;
+        font-size: 14px; font-weight: 500;
+      }
+      .s5-link-bar {
+        height: 2px;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        width: 80px;
+      }
+      .s5-eyebrow-row {
+        display: flex; justify-content: space-between; align-items: center;
+      }
+      .s5-tab-eyebrow {
+        font-size: 12px; font-weight: 600;
+        letter-spacing: 0.22em; text-transform: uppercase;
+      }
+      .s5-side--priv .s5-tab-eyebrow { color: var(--primary); }
+      .s5-side--pub .s5-tab-eyebrow { color: var(--accent); }
+      .s5-ticker {
+        font-size: 64px; font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+      .s5-price-row {
+        display: flex; align-items: baseline; gap: 14px;
+      }
+      .s5-price {
+        font-size: 38px; font-weight: 500;
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .s5-pct {
+        font-size: 18px; font-weight: 500;
+        color: var(--primary);
+        padding: 4px 8px;
+        background: var(--primary-soft);
+        border-radius: 4px;
+      }
+      .s5-book {
+        display: grid; gap: 6px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 15px;
+      }
+      .s5-book-row {
+        display: grid; grid-template-columns: 1fr 1fr 60px;
+        gap: 12px; padding: 4px 0;
+        align-items: center;
+      }
+      .s5-bar {
+        height: 6px; border-radius: 2px;
+        opacity: 0.65;
+      }
+      .s5-bar--bid { background: var(--primary); }
+      .s5-bar--ask { background: #c03737; }
+      .s5-side--pub .s5-bar--bid { background: var(--accent); }
+      .s5-foot {
+        margin-top: 24px;
+        padding: 12px 16px;
+        background: var(--muted);
+        border-radius: 8px;
+        font-size: 14px; color: var(--fg-soft);
+        text-align: center;
+        font-family: 'JetBrains Mono', monospace;
+        max-width: 1320px;
+        margin-left: auto; margin-right: auto;
+      }
+
+      /* ═══════════════════ Scene 6 — Compliance reports ═══════════════════ */
+      .s6 {
+        background: var(--bg);
+        flex-direction: column;
+        padding: 80px 120px;
+        gap: 28px;
+        justify-content: center;
+      }
+      .s6-eyebrow { margin-bottom: 12px; }
+      .s6-tabs {
+        display: flex; gap: 6px;
+        padding: 12px;
+        background: var(--muted);
+        border-radius: 14px;
+        align-self: flex-start;
+      }
+      .s6-tab {
+        display: inline-flex; align-items: center;
+        padding: 14px 22px;
+        font-size: 17px; font-weight: 500;
+        border-radius: 8px;
+        font-family: 'JetBrains Mono', monospace;
+        line-height: 1.2;
+        min-height: 50px;
+      }
+      .s6-tab.is-active {
+        background: var(--surface);
+        box-shadow: 0 2px 8px rgba(26,29,33,0.08);
+      }
+      .s6-cards {
+        display: grid; gap: 16px; width: 100%; max-width: 1680px;
+      }
+      .s6-card {
+        padding: 24px 32px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        border-left-width: 5px;
+        display: grid;
+        grid-template-columns: 110px 1fr 1fr 1fr 240px;
+        gap: 32px; align-items: center;
+      }
+      .s6-card--low { border-left-color: var(--primary); }
+      .s6-card--medium { border-left-color: var(--warn); }
+      .s6-card--high { border-left-color: #c03737; }
+      .s6-type {
+        display: inline-block;
+        padding: 6px 12px;
+        background: var(--primary-soft); color: var(--primary);
+        border-radius: 5px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 16px; font-weight: 600; letter-spacing: 0.1em;
+        text-align: center;
+      }
+      .s6-type--aoi { background: var(--accent-soft); color: var(--accent); }
+      .s6-type--aop { background: rgba(192,55,55,0.10); color: #c03737; }
+      .s6-card-t {
+        font-size: 22px; font-weight: 600;
+        line-height: 1.25;
+      }
+      .s6-card-ref { font-size: 14px; color: var(--fg-faint); font-family: 'JetBrains Mono', monospace; margin-top: 4px; }
+      .s6-card-meta { font-size: 15px; color: var(--fg-soft); font-family: 'JetBrains Mono', monospace; }
+      .s6-card-pill {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-size: 14px; font-weight: 500;
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .s6-card-pill--low { background: var(--primary-soft); color: var(--primary); }
+      .s6-card-pill--med { background: rgba(208,136,22,0.10); color: var(--warn); }
+      .s6-card-pill--high { background: rgba(192,55,55,0.10); color: #c03737; }
+      .s6-card-pill-dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: currentColor;
+      }
+
+      /* ═══════════════════ Scene 7 — Closing ═══════════════════ */
+      .s7 {
+        background: var(--bg);
+      }
+      .s7-mark {
+        display: inline-grid;
+        grid-template-columns: 1fr 1fr;
+        width: 200px; height: 200px;
+        border-radius: 28px;
+        overflow: hidden;
+        margin-bottom: 56px;
+        box-shadow: 0 24px 60px -20px rgba(26,29,33,0.20);
+      }
+      .s7-mark-a { background: var(--primary); }
+      .s7-mark-b { background: var(--accent); position: relative; }
+      .s7-mark-b::after {
+        content: ""; position: absolute; inset: 0;
+        background: linear-gradient(180deg, transparent 25%, #fff 25%, #fff 40%, transparent 40%);
+      }
+      .s7-wordmark {
+        font-size: 144px; font-weight: 700;
+        letter-spacing: -0.04em;
+        line-height: 1;
+        margin-bottom: 28px;
+      }
+      .s7-tagline {
+        font-size: 36px;
+        color: var(--fg-soft);
+        margin-bottom: 60px;
+      }
+      .s7-chip {
+        display: inline-flex; align-items: center; gap: 12px;
+        padding: 12px 22px;
+        background: var(--surface);
+        border: 1px solid var(--primary-border);
+        border-radius: 999px;
+        font-size: 18px; font-weight: 500;
+        color: var(--primary);
+      }
+      .s7-chip-dot {
+        width: 10px; height: 10px; border-radius: 50%;
+        background: var(--primary);
+        box-shadow: 0 0 0 5px rgba(15,110,86,0.18);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="60" data-width="1920" data-height="1080">
+
+      <!-- ═══════════════════ Scene 1 (0–8s) ═══════════════════ -->
+      <div id="s1" class="clip scene s1" data-start="0" data-duration="7" data-track-index="0">
+        <div class="eyebrow s1-eyebrow"><span class="eyebrow-dot"></span> Avalanche LatAm Institucional · 2026</div>
+        <div class="s1-logo">
+          <span class="s1-logo-a"></span>
+          <span class="s1-logo-b"></span>
+        </div>
+        <div class="s1-wordmark">Tessera</div>
+        <div class="s1-tagline">
+          <span class="word" id="s1-w1">Dos</span>
+          <span class="word" id="s1-w2">universos</span>
+          <span class="word" id="s1-w3">de</span>
+          <span class="word" id="s1-w4">activos.</span>
+          <br/>
+          <span class="word" id="s1-w5">Una</span>
+          <span class="word" id="s1-w6">sola</span>
+          <span class="word accent" id="s1-w7">identidad</span>
+          <span class="word" id="s1-w8">on-chain.</span>
+        </div>
+      </div>
+
+      <!-- ═══════════════════ Scene 2 (8–18s) ═══════════════════ -->
+      <div id="s2" class="clip scene s2" data-start="7" data-duration="7" data-track-index="0">
+        <div class="eyebrow s2-eyebrow"><span class="eyebrow-dot"></span> El problema · dos lados, mismo defecto</div>
+        <div class="s2-grid">
+          <div class="s2-col s2-col--priv" id="s2-priv">
+            <div class="s2-col-eyebrow">Equity privado · LatAm</div>
+            <div class="s2-big">10<span class="s2-big-unit">años de iliquidez</span></div>
+            <p class="s2-body">Series A–C atrapadas. Vender en SPV: 50–200k USD y 3–6 meses por deal.</p>
+            <div class="s2-tag">Compliance fuera del activo</div>
+          </div>
+          <div class="s2-rule"></div>
+          <div class="s2-col s2-col--pub" id="s2-pub">
+            <div class="s2-col-eyebrow">Equity público · LatAm → US</div>
+            <div class="s2-big">1.5%<span class="s2-big-unit">comisión retail · T+2</span></div>
+            <p class="s2-body">Sin reporting a CNBV. Onboarding fragmentado por broker.</p>
+            <div class="s2-tag">Compliance fuera del activo</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════ Scene 3 (18–32s) ═══════════════════ -->
+      <div id="s3" class="clip scene s3" data-start="14" data-duration="11" data-track-index="0">
+        <div class="eyebrow s3-eyebrow"><span class="eyebrow-dot"></span> La solución · stack en cuatro capas</div>
+        <div class="s3-stack">
+          <div class="s3-layer s3-layer--shared" id="s3-l1">
+            <div class="s3-layer-n">01</div>
+            <div class="s3-layer-body">
+              <div class="s3-layer-t">Identity · IdentityRegistry</div>
+              <div class="s3-layer-d">addIdentity(addr, country) · isVerified(addr)</div>
+            </div>
+            <div class="s3-layer-tag">shared</div>
+          </div>
+          <div class="s3-layer s3-layer--split" id="s3-l2">
+            <div class="s3-layer-n">02</div>
+            <div class="s3-layer-body">
+              <div class="s3-layer-t">Compliance · SecurityToken (×10)</div>
+              <div class="s3-layer-d">_update() → IdentityRegistry.isVerified(to) · ERC-3643</div>
+            </div>
+            <div class="s3-layer-tag">per-token</div>
+          </div>
+          <div class="s3-layer s3-layer--shared" id="s3-l3">
+            <div class="s3-layer-n">03</div>
+            <div class="s3-layer-body">
+              <div class="s3-layer-t">Trading · Orderbook</div>
+              <div class="s3-layer-d">limit orders · 0.3% fee · escrow pull-style</div>
+            </div>
+            <div class="s3-layer-tag">shared</div>
+          </div>
+          <div class="s3-layer s3-layer--off" id="s3-l4">
+            <div class="s3-layer-n">04</div>
+            <div class="s3-layer-body">
+              <div class="s3-layer-t">Monitoring · Wavy Node</div>
+              <div class="s3-layer-d">risk score real-time · MX · CO · SV · GT</div>
+            </div>
+            <div class="s3-layer-tag">off-chain</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════ Scene 4 (32–50s) ═══════════════════ -->
+      <div id="s4" class="clip scene s4" data-start="25" data-duration="10" data-track-index="0">
+        <div class="s4-card" id="s4-card">
+          <div class="s4-card-eyebrow">KYC · paso 03 · firma on-chain</div>
+          <div class="s4-card-t">Verifica una vez. Opera en ambos universos.</div>
+          <div class="s4-field" id="s4-f1">
+            <span class="s4-field-k">Wallet</span>
+            <span class="s4-field-v">0x9dcC...6acF</span>
+          </div>
+          <div class="s4-field" id="s4-f2">
+            <span class="s4-field-k">País</span>
+            <span class="s4-field-v">MX</span>
+          </div>
+          <div class="s4-field" id="s4-f3">
+            <span class="s4-field-k">Registry</span>
+            <span class="s4-field-v">IdentityRegistry · ERC-3643</span>
+          </div>
+          <div class="s4-stamp" id="s4-stamp">
+            <div class="s4-stamp-check">✓</div>
+            <div class="s4-stamp-text">Identidad atestada on-chain</div>
+          </div>
+        </div>
+        <div class="s4-right">
+          <div class="s4-pill" id="s4-pill">
+            <span class="s4-pill-dot"></span>
+            Riesgo · bajo · 18/100
+          </div>
+          <p class="s4-quote">
+            <strong>Una verificación.</strong> Risk score continuo via Wavy Node. Listo para operar en Private y Public.
+          </p>
+        </div>
+      </div>
+
+      <!-- ═══════════════════ Scene 5 (50–68s) ═══════════════════ -->
+      <div id="s5" class="clip scene s5" data-start="35" data-duration="10" data-track-index="0">
+        <div class="eyebrow s5-eyebrow"><span class="eyebrow-dot"></span> Demo · dos universos · una sola wallet</div>
+        <div class="s5-grid">
+          <div class="s5-side s5-side--priv" id="s5-priv">
+            <div class="s5-eyebrow-row">
+              <span class="s5-tab-eyebrow">Tessera Private · LatAm</span>
+              <span class="mono" style="color:var(--fg-faint);font-size:14px">0x8d19…1B17</span>
+            </div>
+            <div class="s5-ticker">KVK</div>
+            <div class="s5-price-row">
+              <span class="s5-price">$17.85</span>
+              <span class="s5-pct">+1.10%</span>
+            </div>
+            <div class="s5-book">
+              <div class="s5-book-row"><span>17.95</span><span>120</span><span class="s5-bar s5-bar--ask" style="width:34%"></span></div>
+              <div class="s5-book-row"><span>17.90</span><span>340</span><span class="s5-bar s5-bar--ask" style="width:78%"></span></div>
+              <div class="s5-book-row"><span>17.85</span><span>—</span><span></span></div>
+              <div class="s5-book-row"><span>17.80</span><span>180</span><span class="s5-bar s5-bar--bid" style="width:46%"></span></div>
+              <div class="s5-book-row"><span>17.75</span><span>420</span><span class="s5-bar s5-bar--bid" style="width:96%"></span></div>
+            </div>
+          </div>
+          <div class="s5-link" id="s5-link">
+            <span class="s5-link-bar"></span>
+            <span class="s5-link-pill">una identidad</span>
+          </div>
+          <div class="s5-side s5-side--pub" id="s5-pub">
+            <div class="s5-eyebrow-row">
+              <span class="s5-tab-eyebrow">Tessera Public · US</span>
+              <span class="mono" style="color:var(--fg-faint);font-size:14px">0x0177…1BA7</span>
+            </div>
+            <div class="s5-ticker">NVDA</div>
+            <div class="s5-price-row">
+              <span class="s5-price">$224.43</span>
+              <span class="s5-pct" style="background:var(--accent-soft);color:var(--accent)">−0.40%</span>
+            </div>
+            <div class="s5-book">
+              <div class="s5-book-row"><span>224.95</span><span>40</span><span class="s5-bar s5-bar--ask" style="width:22%"></span></div>
+              <div class="s5-book-row"><span>224.70</span><span>80</span><span class="s5-bar s5-bar--ask" style="width:48%"></span></div>
+              <div class="s5-book-row"><span>224.43</span><span>—</span><span></span></div>
+              <div class="s5-book-row"><span>224.20</span><span>60</span><span class="s5-bar s5-bar--bid" style="width:38%"></span></div>
+              <div class="s5-book-row"><span>223.90</span><span>110</span><span class="s5-bar s5-bar--bid" style="width:72%"></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="s5-foot">mismo Orderbook · 0x830e…E042 · misma identidad on-chain</div>
+      </div>
+
+      <!-- ═══════════════════ Scene 6 (68–85s) ═══════════════════ -->
+      <div id="s6" class="clip scene s6" data-start="45" data-duration="10" data-track-index="0">
+        <div class="eyebrow s6-eyebrow"><span class="eyebrow-dot"></span> Reportes regulatorios · auto-generados</div>
+        <div class="s6-tabs" id="s6-tabs">
+          <div class="s6-tab is-active">MX · México</div>
+          <div class="s6-tab">CO · Colombia</div>
+          <div class="s6-tab">SV · El Salvador</div>
+          <div class="s6-tab">GT · Guatemala</div>
+        </div>
+        <div class="s6-cards">
+          <div class="s6-card s6-card--low" id="s6-c1">
+            <div class="s6-type">AOR</div>
+            <div>
+              <div class="s6-card-t">Aviso de Operación Relevante</div>
+              <div class="s6-card-ref">SAT-AOR-2026-04829</div>
+            </div>
+            <div class="s6-card-meta">user_4a2e91c · 3 ops · 84,500 USDC</div>
+            <div class="s6-card-meta">enviado · 2026-05-19</div>
+            <div class="s6-card-pill s6-card-pill--low"><span class="s6-card-pill-dot"></span>low · 18/100</div>
+          </div>
+          <div class="s6-card s6-card--medium" id="s6-c2">
+            <div class="s6-type s6-type--aoi">AOI</div>
+            <div>
+              <div class="s6-card-t">Aviso de Operación Inusual</div>
+              <div class="s6-card-ref">SAT-AOI-2026-04861</div>
+            </div>
+            <div class="s6-card-meta">user_91dfa02 · 7 ops · 142,300 USDC</div>
+            <div class="s6-card-meta">en revisión · pendiente</div>
+            <div class="s6-card-pill s6-card-pill--med"><span class="s6-card-pill-dot"></span>medium · 64/100</div>
+          </div>
+          <div class="s6-card s6-card--high" id="s6-c3">
+            <div class="s6-type s6-type--aop">AOP</div>
+            <div>
+              <div class="s6-card-t">Aviso de Operación Preocupante</div>
+              <div class="s6-card-ref">SAT-AOP-2026-04601</div>
+            </div>
+            <div class="s6-card-meta">user_d7f2a14 · 12 ops · 287,400 USDC</div>
+            <div class="s6-card-meta">enviado · 2026-05-03</div>
+            <div class="s6-card-pill s6-card-pill--high"><span class="s6-card-pill-dot"></span>high · 78/100</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════ Scene 7 (85–95s) ═══════════════════ -->
+      <div id="s7" class="clip scene s7" data-start="55" data-duration="5" data-track-index="0">
+        <div class="s7-mark" id="s7-mark">
+          <span class="s7-mark-a"></span>
+          <span class="s7-mark-b"></span>
+        </div>
+        <div class="s7-wordmark" id="s7-wordmark">Tessera</div>
+        <div class="s7-tagline" id="s7-tagline">Compliance enforced en el bytecode.</div>
+        <div class="s7-chip" id="s7-chip">
+          <span class="s7-chip-dot"></span>
+          Top 3 · Hackathon Avalanche LatAm Institucional
+        </div>
+      </div>
+
+      <!-- ═══════════════════ Narration audio ═══════════════════ -->
+      <audio id="narration" class="clip" data-start="0" data-duration="57" data-track-index="1" src="narration.wav" data-volume="1"></audio>
+
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      /* ── Scene 1 · cold open (0–8) ────────────────────────────────────── */
+      tl.from("#s1 .s1-eyebrow", { y: -20, opacity: 0, duration: 0.6, ease: "power3.out" }, 0.3);
+      tl.from("#s1 .s1-logo", { scale: 0.7, opacity: 0, duration: 0.8, ease: "back.out(1.6)" }, 0.5);
+      tl.from("#s1 .s1-wordmark", { y: 40, opacity: 0, duration: 0.7, ease: "expo.out" }, 1.0);
+      tl.from("#s1 .s1-tagline .word", { y: 24, opacity: 0, duration: 0.45, ease: "power3.out", stagger: 0.08 }, 1.4);
+
+      /* ── Scene 2 · problem (7–14) ─────────────────────────────────────── */
+      tl.from("#s2 .s2-eyebrow", { y: -16, opacity: 0, duration: 0.5, ease: "power3.out" }, 7.2);
+      tl.from("#s2-priv", { x: -80, opacity: 0, duration: 0.7, ease: "power3.out" }, 7.5);
+      tl.from("#s2-pub", { x: 80, opacity: 0, duration: 0.7, ease: "power3.out" }, 7.7);
+      tl.from("#s2 .s2-rule", { scaleY: 0, opacity: 0, duration: 0.6, ease: "expo.out", transformOrigin: "top center" }, 7.9);
+      tl.from("#s2-priv .s2-big", { y: 30, opacity: 0, scale: 0.92, duration: 0.6, ease: "back.out(1.4)" }, 8.2);
+      tl.from("#s2-pub .s2-big", { y: 30, opacity: 0, scale: 0.92, duration: 0.6, ease: "back.out(1.4)" }, 8.4);
+      tl.from("#s2-priv .s2-tag", { y: 16, opacity: 0, duration: 0.4, ease: "power2.out" }, 10.5);
+      tl.from("#s2-pub .s2-tag", { y: 16, opacity: 0, duration: 0.4, ease: "power2.out" }, 10.7);
+
+      /* ── Scene 3 · architecture (14–25) ───────────────────────────────── */
+      tl.from("#s3 .s3-eyebrow", { y: -16, opacity: 0, duration: 0.5, ease: "power3.out" }, 14.2);
+      tl.from("#s3-l1", { x: -50, opacity: 0, duration: 0.6, ease: "power3.out" }, 14.5);
+      tl.from("#s3-l2", { x: -50, opacity: 0, duration: 0.6, ease: "power3.out" }, 16.0);
+      tl.from("#s3-l3", { x: -50, opacity: 0, duration: 0.6, ease: "power3.out" }, 17.5);
+      tl.from("#s3-l4", { x: -50, opacity: 0, duration: 0.6, ease: "power3.out" }, 19.0);
+      // Pulse layer 2 (compliance — the killer point) — note its final state
+      // is identical to its start because it's a yoyo + even repeat count.
+      tl.to("#s3-l2", { boxShadow: "0 8px 30px rgba(60,52,137,0.20)", duration: 0.5, ease: "power2.inOut", yoyo: true, repeat: 3 }, 21.5);
+
+      /* ── Scene 4 · KYC + risk (25–35) ─────────────────────────────────── */
+      tl.from("#s4-card", { y: 30, opacity: 0, duration: 0.7, ease: "power3.out" }, 25.2);
+      tl.from("#s4-f1", { x: -16, opacity: 0, duration: 0.4, ease: "power2.out" }, 26.0);
+      tl.from("#s4-f2", { x: -16, opacity: 0, duration: 0.4, ease: "power2.out" }, 26.4);
+      tl.from("#s4-f3", { x: -16, opacity: 0, duration: 0.4, ease: "power2.out" }, 26.8);
+      tl.from("#s4-stamp", { scale: 0.9, opacity: 0, duration: 0.5, ease: "back.out(1.6)" }, 28.5);
+      tl.from("#s4-stamp .s4-stamp-check", { scale: 0, rotate: -90, duration: 0.5, ease: "back.out(2)" }, 29.0);
+      tl.from("#s4-pill", { x: 60, opacity: 0, duration: 0.6, ease: "power3.out" }, 30.5);
+      tl.from("#s4 .s4-quote", { y: 20, opacity: 0, duration: 0.6, ease: "power3.out" }, 31.2);
+
+      /* ── Scene 5 · dual trade (35–45) ─────────────────────────────────── */
+      tl.from("#s5 .s5-eyebrow", { y: -16, opacity: 0, duration: 0.5, ease: "power3.out" }, 35.2);
+      tl.from("#s5-priv", { x: -80, opacity: 0, duration: 0.7, ease: "power3.out" }, 35.5);
+      tl.from("#s5-pub", { x: 80, opacity: 0, duration: 0.7, ease: "power3.out" }, 36.0);
+      tl.from("#s5-priv .s5-ticker", { scale: 0.92, opacity: 0, duration: 0.5, ease: "back.out(1.4)" }, 36.2);
+      tl.from("#s5-pub .s5-ticker", { scale: 0.92, opacity: 0, duration: 0.5, ease: "back.out(1.4)" }, 36.7);
+      tl.from("#s5-link", { opacity: 0, scale: 0.7, duration: 0.5, ease: "back.out(1.6)" }, 37.5);
+      tl.from("#s5-priv .s5-book-row", { x: -20, opacity: 0, duration: 0.3, ease: "power2.out", stagger: 0.06 }, 38.5);
+      tl.from("#s5-pub .s5-book-row", { x: 20, opacity: 0, duration: 0.3, ease: "power2.out", stagger: 0.06 }, 39.2);
+      tl.from("#s5 .s5-foot", { y: 20, opacity: 0, duration: 0.5, ease: "power3.out" }, 41.5);
+
+      /* ── Scene 6 · reports (45–55) ────────────────────────────────────── */
+      tl.from("#s6 .s6-eyebrow", { y: -16, opacity: 0, duration: 0.5, ease: "power3.out" }, 45.2);
+      tl.from("#s6-tabs .s6-tab", { y: 12, opacity: 0, duration: 0.35, ease: "power3.out", stagger: 0.06 }, 45.5);
+      tl.from("#s6-c1", { x: -30, opacity: 0, duration: 0.5, ease: "power3.out" }, 46.2);
+      tl.from("#s6-c2", { x: -30, opacity: 0, duration: 0.5, ease: "power3.out" }, 46.7);
+      tl.from("#s6-c3", { x: -30, opacity: 0, duration: 0.5, ease: "power3.out" }, 47.2);
+      // Cycle the active tab across countries
+      tl.set("#s6-tabs .s6-tab:nth-child(1)", { className: "s6-tab" }, 49.5);
+      tl.set("#s6-tabs .s6-tab:nth-child(2)", { className: "s6-tab is-active" }, 49.5);
+      tl.set("#s6-tabs .s6-tab:nth-child(2)", { className: "s6-tab" }, 51.0);
+      tl.set("#s6-tabs .s6-tab:nth-child(3)", { className: "s6-tab is-active" }, 51.0);
+      tl.set("#s6-tabs .s6-tab:nth-child(3)", { className: "s6-tab" }, 52.5);
+      tl.set("#s6-tabs .s6-tab:nth-child(4)", { className: "s6-tab is-active" }, 52.5);
+
+      /* ── Scene 7 · closing (55–60) ────────────────────────────────────── */
+      tl.from("#s7-mark", { scale: 0.7, opacity: 0, duration: 0.7, ease: "back.out(1.6)" }, 55.2);
+      tl.from("#s7-wordmark", { y: 24, opacity: 0, duration: 0.6, ease: "expo.out" }, 55.8);
+      tl.from("#s7-tagline", { y: 16, opacity: 0, duration: 0.5, ease: "power3.out" }, 56.4);
+      tl.from("#s7-chip", { y: 12, opacity: 0, duration: 0.5, ease: "power3.out" }, 57.0);
+      // Quiet hold + soft fade-out on the last beat (final scene exception)
+      tl.to("#s7-tagline", { opacity: 0.7, duration: 0.6, ease: "power2.inOut" }, 58.5);
+      tl.to(["#s7-mark", "#s7-wordmark", "#s7-chip"], { opacity: 0.9, duration: 0.7, ease: "power2.inOut" }, 59);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>
