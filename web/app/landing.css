@@ -1057,32 +1057,17 @@
 }
 .hero-veil-ring--2 { animation-delay: 0.9s; }
 .hero-veil-ring--3 { animation-delay: 1.8s; }
-.hero-veil-cta {
+/* Minimalist chevron-up — sits below the logo and bobs upward to
+   indicate "click the thing above". No pill, no text — pure hint. */
+.hero-veil-arrow {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 18px;
-  background: rgba(255,255,255,0.92);
-  color: var(--fg);
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 500;
-  -webkit-backdrop-filter: blur(14px);
-          backdrop-filter: blur(14px);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.7) inset, 0 6px 18px -6px rgba(0,0,0,0.4);
-  transition: background 220ms var(--ease), transform 220ms var(--ease);
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.85);
+  filter: drop-shadow(0 1px 6px rgba(0, 0, 0, 0.35));
+  animation: veil-arrow-bob 1.8s var(--ease) infinite;
 }
-.hero-veil:hover .hero-veil-cta { background: #fff; transform: translateY(-1px); }
-.hero-veil-cta-arrow {
-  display: inline-flex;
-  width: 18px; height: 18px;
-  align-items: center; justify-content: center;
-  background: linear-gradient(135deg, var(--primary), var(--accent));
-  color: #fff;
-  border-radius: 50%;
-  font-size: 11px;
-  animation: veil-bounce 1.8s var(--ease) infinite;
-}
+.hero-veil:hover .hero-veil-arrow { color: #fff; }
 @keyframes veil-float {
   0%, 100% { transform: translateY(0); }
   50%      { transform: translateY(-6px); }
@@ -1091,9 +1076,9 @@
   0%   { opacity: 0.7; transform: scale(1); border-radius: 28px; }
   100% { opacity: 0;   transform: scale(1.35); border-radius: 36px; }
 }
-@keyframes veil-bounce {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(2px); }
+@keyframes veil-arrow-bob {
+  0%, 100% { transform: translateY(2px); opacity: 0.55; }
+  50%      { transform: translateY(-4px); opacity: 1; }
 }
 
 .hero-display {

@@ -108,9 +108,16 @@ export function Hero({
           <span className="hero-veil-ring hero-veil-ring--2" aria-hidden="true" />
           <span className="hero-veil-ring hero-veil-ring--3" aria-hidden="true" />
         </span>
-        <span className="hero-veil-cta">
-          Entrar
-          <span className="hero-veil-cta-arrow">→</span>
+        <span className="hero-veil-arrow" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M6 14L12 8L18 14"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
         </span>
       </button>
 
