@@ -78,7 +78,7 @@ export function HowItWorks() {
                   <motion.span
                     layoutId="how-tabs-pill"
                     className={`how-tabs-pill how-tabs-pill--${s.tone}`}
-                    transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 36 }}
                     aria-hidden="true"
                   />
                 )}
@@ -95,10 +95,10 @@ export function HowItWorks() {
               key={activeStep.id}
               className="how-panel-body is-active"
               role="tabpanel"
-              initial={{ opacity: 0, x: -12, filter: "blur(8px)" }}
+              initial={{ opacity: 0, x: -8, filter: "blur(6px)" }}
               animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, x: 12, filter: "blur(8px)" }}
-              transition={{ duration: 0.32, ease: [0.32, 0.72, 0, 1] }}
+              exit={{ opacity: 0, x: 8, filter: "blur(6px)" }}
+              transition={{ duration: 0.22, ease: [0.32, 0.72, 0, 1] }}
             >
               <div className="how-panel-visual">{activeStep.visual}</div>
               <div className="how-panel-copy">
