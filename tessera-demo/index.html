@@ -941,6 +941,73 @@
       .s12-card-pill--high { background: rgba(192,55,55,0.10); color: #c03737; }
       .s12-card-pill-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
+      /* ═══════════════════ Scene 13 — Benefits ═══════════════════ */
+      .s13 { background: var(--bg); padding: 70px 100px; gap: 24px; justify-content: center; }
+      .s13-eyebrow { align-self: center; }
+      .s13-h {
+        font-size: 56px; font-weight: 700;
+        letter-spacing: -0.02em;
+        text-align: center;
+        margin-bottom: 16px;
+      }
+      .s13-h .accent {
+        background: linear-gradient(120deg, var(--primary), var(--accent));
+        -webkit-background-clip: text; background-clip: text;
+        color: transparent;
+      }
+      .s13-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        width: 100%; max-width: 1680px;
+      }
+      .s13-card {
+        padding: 28px 30px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        display: flex; flex-direction: column; gap: 16px;
+        border-top: 4px solid var(--primary);
+      }
+      .s13-card--retail { border-top-color: var(--accent); }
+      .s13-card--reg { border-top-color: var(--fg); }
+      .s13-card-persona {
+        font-size: 13px; font-weight: 600;
+        letter-spacing: 0.22em; text-transform: uppercase;
+        color: var(--fg-faint);
+      }
+      .s13-card-h {
+        font-size: 28px; font-weight: 700;
+        letter-spacing: -0.01em;
+        line-height: 1.15;
+      }
+      .s13-card-h .accent { color: var(--primary); }
+      .s13-card--retail .s13-card-h .accent { color: var(--accent); }
+      .s13-bullets {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex; flex-direction: column; gap: 10px;
+      }
+      .s13-bullets li {
+        display: grid;
+        grid-template-columns: 22px 1fr;
+        gap: 8px;
+        align-items: baseline;
+        font-size: 17px;
+        color: var(--fg-soft);
+        line-height: 1.35;
+      }
+      .s13-bullets li::before {
+        content: "✓";
+        color: var(--primary);
+        font-weight: 700;
+        font-size: 18px;
+        line-height: 1.1;
+      }
+      .s13-card--retail .s13-bullets li::before { color: var(--accent); }
+      .s13-card--reg .s13-bullets li::before { color: var(--fg); }
+
       /* ═══════════════════ Scene 7 — Closing ═══════════════════ */
       .s7 { background: var(--bg); }
       .s7-mark-img {
@@ -993,31 +1060,31 @@
         </div>
       </div>
 
-      <!-- ═══════════════════ Scene 2 (7–15s) · PROBLEM ═══════════════════ -->
+      <!-- ═══════════════════ Scene 2 (7–15s) · OPPORTUNITY ═══════════════════ -->
       <div id="s2" class="clip scene s2" data-start="7" data-duration="8" data-track-index="0">
-        <div class="eyebrow s2-eyebrow"><span class="eyebrow-dot"></span> Hoy son mercados separados</div>
+        <div class="eyebrow s2-eyebrow"><span class="eyebrow-dot"></span> La oportunidad · dos demandas reales</div>
         <div class="s2-grid">
-          <div class="s2-col s2-col--priv" id="s2-priv">
-            <div class="s2-col-eyebrow">Equity privado · LatAm</div>
+          <div class="s2-col s2-col--pub" id="s2-priv">
+            <div class="s2-col-eyebrow">Retail joven · LatAm</div>
             <div class="s2-big-wrap">
-              <div class="s2-big">10</div>
-              <div class="s2-big-unit">años de iliquidez por deal</div>
+              <div class="s2-big">8<span style="font-size:84px">×</span></div>
+              <div class="s2-big-unit">crecimiento de cuentas retail · últimos 5 años</div>
             </div>
-            <p class="s2-body">Series A–C atrapadas. La única salida cuesta 50–200k USD y 3–6 meses por tender offer.</p>
-            <div class="s2-tag">Fondos esperan</div>
+            <p class="s2-body">Generaciones jóvenes con apetito sofisticado, atrapadas detrás de comisiones del 1.5% y T+2. Sin acceso a equity privado.</p>
+            <div class="s2-tag" style="background:var(--accent-soft);color:var(--accent)">Demanda buscando producto</div>
           </div>
           <div class="s2-rule"></div>
-          <div class="s2-col s2-col--pub" id="s2-pub">
-            <div class="s2-col-eyebrow">Equity público · LatAm → US</div>
+          <div class="s2-col s2-col--priv" id="s2-pub">
+            <div class="s2-col-eyebrow">Startups privadas · LatAm</div>
             <div class="s2-big-wrap">
-              <div class="s2-big">1.5<span style="font-size:84px">%</span></div>
-              <div class="s2-big-unit">comisión retail · T+2</div>
+              <div class="s2-big">$8B</div>
+              <div class="s2-big-unit">private equity LatAm en ciclos de 10 años</div>
             </div>
-            <p class="s2-body">Brokers domésticos cobran spread, no reportan a CNBV, sin acceso a fracciones.</p>
-            <div class="s2-tag">Retail paga</div>
+            <p class="s2-body">Empresas que crecen necesitan capital sin salir a bolsa. Tender offers: cinco family offices, seis meses, $50–200k por deal.</p>
+            <div class="s2-tag">Capital buscando rondas</div>
           </div>
         </div>
-        <div class="s2-bottom" id="s2-bottom"><strong>Ambos pierden.</strong></div>
+        <div class="s2-bottom" id="s2-bottom"><strong>Dos demandas. Una infraestructura.</strong></div>
       </div>
 
       <!-- ═══════════════════ Scene 3 (15–25s) · SOLUTION ═══════════════════ -->
@@ -1050,7 +1117,7 @@
         <div class="eyebrow s4-eyebrow"><span class="eyebrow-dot"></span> El cruce · donde nace la liquidez</div>
         <div class="s4-grid">
           <div class="s4-card s4-card--left" id="s4-left">
-            <div class="s4-card-persona">Inversionista retail · México</div>
+            <div class="s4-card-persona">Inversionista retail · joven · LatAm</div>
             <div class="s4-card-step">
               <div class="s4-card-label">Entró por</div>
               <div class="s4-card-pills">
@@ -1060,11 +1127,11 @@
             </div>
             <div class="s4-card-arrow">↓</div>
             <div class="s4-card-step">
-              <div class="s4-card-label">Descubre · misma wallet</div>
+              <div class="s4-card-label">Descubre, en la misma wallet</div>
               <div class="s4-card-pills">
                 <span class="s4-pill s4-pill--priv">KVK</span>
                 <span class="s4-pill s4-pill--priv">BTS</span>
-                <span class="s4-pill s4-pill--priv">ARK1</span>
+                <span class="s4-pill s4-pill--priv">+$100 ticket</span>
               </div>
             </div>
           </div>
@@ -1086,20 +1153,20 @@
             <span class="s4-cross-badge">misma wallet</span>
           </div>
           <div class="s4-card s4-card--right" id="s4-right">
-            <div class="s4-card-persona">Family office · LatAm</div>
+            <div class="s4-card-persona">Startup LatAm · necesita capital sin IPO</div>
             <div class="s4-card-step">
-              <div class="s4-card-label">Tokenizó su Series C</div>
+              <div class="s4-card-label">Antes · tender offer</div>
               <div class="s4-card-pills">
-                <span class="s4-pill s4-pill--priv">KVK</span>
-                <span class="s4-pill s4-pill--priv">BTS</span>
+                <span class="s4-pill s4-pill--priv">5 family offices</span>
+                <span class="s4-pill s4-pill--priv">6 meses</span>
               </div>
             </div>
             <div class="s4-card-arrow">↓</div>
             <div class="s4-card-step">
-              <div class="s4-card-label">Recibe · demanda retail nueva</div>
+              <div class="s4-card-label">En Tessera</div>
               <div class="s4-card-pills">
-                <span class="s4-pill s4-pill--pub">desde NVDA</span>
-                <span class="s4-pill s4-pill--pub">desde AAPL</span>
+                <span class="s4-pill s4-pill--pub">1,000 retail tickets</span>
+                <span class="s4-pill s4-pill--pub">liquidez secundaria</span>
               </div>
             </div>
           </div>
@@ -1389,7 +1456,7 @@
       </div>
 
       <!-- ═══════════════════ Scene 12 (200–225s) · COMPLIANCE ADMIN ═══════════════════ -->
-      <div id="s12" class="clip scene s12" data-start="200" data-duration="25" data-track-index="0">
+      <div id="s12" class="clip scene s12" data-start="200" data-duration="15" data-track-index="0">
         <div class="eyebrow s12-eyebrow"><span class="eyebrow-dot"></span> /admin/reports · Wavy Node auto-generados</div>
         <div class="s12-banner" id="s12-banner">
           <span class="s12-banner-tag">DEMO</span>
@@ -1435,6 +1502,41 @@
         </div>
       </div>
 
+      <!-- ═══════════════════ Scene 13 (215–225s) · BENEFITS ═══════════════════ -->
+      <div id="s13" class="clip scene s13" data-start="215" data-duration="10" data-track-index="0">
+        <div class="eyebrow s13-eyebrow"><span class="eyebrow-dot"></span> Beneficios concretos · para cada lado del mercado</div>
+        <h2 class="s13-h">Tessera resuelve <span class="accent">tres problemas</span> a la vez.</h2>
+        <div class="s13-grid">
+          <div class="s13-card s13-card--issuer" id="s13-c1">
+            <div class="s13-card-persona">Para startups · emisores</div>
+            <div class="s13-card-h">Capital sin <span class="accent">IPO</span>.</div>
+            <ul class="s13-bullets">
+              <li>Sin perder control accionario</li>
+              <li>Sin bancos de inversión ni 2 años de roadshow</li>
+              <li>Liquidez secundaria desde el día uno</li>
+            </ul>
+          </div>
+          <div class="s13-card s13-card--retail" id="s13-c2">
+            <div class="s13-card-persona">Para retail · usuarios jóvenes</div>
+            <div class="s13-card-h">Acceso a <span class="accent">equity privado</span>.</div>
+            <ul class="s13-bullets">
+              <li>Tickets pequeños — desde $100 USDC</li>
+              <li>Sin comisión de broker, sin T+2</li>
+              <li>Una KYC sirve a ambos universos</li>
+            </ul>
+          </div>
+          <div class="s13-card s13-card--reg" id="s13-c3">
+            <div class="s13-card-persona">Para reguladores · supervisores</div>
+            <div class="s13-card-h">Audit trail <span class="accent">completo</span>.</div>
+            <ul class="s13-bullets">
+              <li>Reportes AOR/ROS/RTS auto-generados</li>
+              <li>Compliance enforced en el bytecode</li>
+              <li>4 jurisdicciones — MX, CO, SV, GT</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
       <!-- ═══════════════════ Scene 7 (225–240s) · CLOSING ═══════════════════ -->
       <div id="s7" class="clip scene s7" data-start="225" data-duration="15" data-track-index="0">
         <img class="s7-mark-img" src="tessera.png" alt="Tessera" id="s7-mark"/>
@@ -1447,7 +1549,7 @@
       </div>
 
       <!-- ═══════════════════ Narration audio ═══════════════════ -->
-      <audio id="narration" class="clip" data-start="0" data-duration="210" data-track-index="1" src="narration.wav" data-volume="1"></audio>
+      <audio id="narration" class="clip" data-start="0" data-duration="198" data-track-index="1" src="narration.wav" data-volume="1"></audio>
 
     </div>
 
@@ -1622,13 +1724,25 @@
       tl.from("#s12-c1", { x: -30, opacity: 0, duration: 0.5, ease: "power3.out" }, 202.5);
       tl.from("#s12-c2", { x: -30, opacity: 0, duration: 0.5, ease: "power3.out" }, 203);
       tl.from("#s12-c3", { x: -30, opacity: 0, duration: 0.5, ease: "power3.out" }, 203.5);
-      // Cycle the active tab across countries during the hold
-      tl.set("#s12-tabs > .s12-tab:nth-child(1)", { className: "s12-tab" }, 213);
-      tl.set("#s12-tabs > .s12-tab:nth-child(2)", { className: "s12-tab is-active" }, 213);
-      tl.set("#s12-tabs > .s12-tab:nth-child(2)", { className: "s12-tab" }, 216);
-      tl.set("#s12-tabs > .s12-tab:nth-child(3)", { className: "s12-tab is-active" }, 216);
-      tl.set("#s12-tabs > .s12-tab:nth-child(3)", { className: "s12-tab" }, 219);
-      tl.set("#s12-tabs > .s12-tab:nth-child(4)", { className: "s12-tab is-active" }, 219);
+      // Cycle the active tab across countries during the hold (compressed
+      // for the shorter 15s scene window so all 4 jurisdictions get screen
+      // time before s13 takes over).
+      tl.set("#s12-tabs > .s12-tab:nth-child(1)", { className: "s12-tab" }, 207);
+      tl.set("#s12-tabs > .s12-tab:nth-child(2)", { className: "s12-tab is-active" }, 207);
+      tl.set("#s12-tabs > .s12-tab:nth-child(2)", { className: "s12-tab" }, 210);
+      tl.set("#s12-tabs > .s12-tab:nth-child(3)", { className: "s12-tab is-active" }, 210);
+      tl.set("#s12-tabs > .s12-tab:nth-child(3)", { className: "s12-tab" }, 213);
+      tl.set("#s12-tabs > .s12-tab:nth-child(4)", { className: "s12-tab is-active" }, 213);
+
+      /* ── Scene 13 · Benefits (215–225) ────────────────────────────────── */
+      tl.from("#s13 .s13-eyebrow", { y: -16, opacity: 0, duration: 0.45, ease: "power3.out" }, 215.3);
+      tl.from("#s13 .s13-h", { y: 22, opacity: 0, duration: 0.55, ease: "power3.out" }, 215.7);
+      tl.from("#s13-c1", { y: 30, opacity: 0, duration: 0.55, ease: "back.out(1.4)" }, 216.3);
+      tl.from("#s13-c2", { y: 30, opacity: 0, duration: 0.55, ease: "back.out(1.4)" }, 216.55);
+      tl.from("#s13-c3", { y: 30, opacity: 0, duration: 0.55, ease: "back.out(1.4)" }, 216.8);
+      tl.from("#s13-c1 .s13-bullets li", { x: -12, opacity: 0, duration: 0.32, ease: "power2.out", stagger: 0.10 }, 217.4);
+      tl.from("#s13-c2 .s13-bullets li", { x: -12, opacity: 0, duration: 0.32, ease: "power2.out", stagger: 0.10 }, 217.7);
+      tl.from("#s13-c3 .s13-bullets li", { x: -12, opacity: 0, duration: 0.32, ease: "power2.out", stagger: 0.10 }, 218.0);
 
       /* ── Scene 7 · closing (225–240) ──────────────────────────────────── */
       tl.from("#s7-mark", { scale: 0.7, opacity: 0, duration: 0.7, ease: "back.out(1.6)" }, 225.4);
