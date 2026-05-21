@@ -9,6 +9,7 @@
     "deploy:fuji": "hardhat run scripts/deploy.ts --network fuji",
     "seed:fuji": "hardhat run scripts/seed.ts --network fuji",
     "deploy-public:fuji": "hardhat run scripts/deploy-public.ts --network fuji",
+    "preflight:fuji": "hardhat run scripts/preflight.ts --network fuji",
     "export-abis": "ts-node scripts/export-abis.ts",
     "sync-env": "ts-node scripts/sync-env.ts fuji",
     "clean": "hardhat clean"
