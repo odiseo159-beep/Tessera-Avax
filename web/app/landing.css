@@ -969,12 +969,12 @@
   align-items: center;
   text-align: center;
   gap: 0;
-  transition: opacity 720ms var(--ease) 80ms, transform 720ms var(--ease) 80ms;
+  transition: opacity 420ms var(--ease) 40ms, transform 420ms var(--ease) 40ms;
 }
 /* Veil / reveal state — driven by `is-revealed` / `is-veiled` on the stage */
 .hero-stage.is-veiled .hero-stage-inner {
   opacity: 0;
-  transform: translateY(24px);
+  transform: translateY(16px);
   pointer-events: none;
 }
 .hero-stage.is-revealed .hero-stage-inner {
@@ -984,7 +984,7 @@
 }
 .hero-stage.is-revealed .hero-veil {
   opacity: 0;
-  transform: scale(0.94);
+  transform: scale(0.96);
   pointer-events: none;
 }
 .hero-eyebrow { margin-bottom: 22px; }
@@ -1006,7 +1006,7 @@
   font: inherit;
   color: inherit;
   text-align: center;
-  transition: opacity 720ms var(--ease), transform 720ms var(--ease);
+  transition: opacity 420ms var(--ease), transform 420ms var(--ease);
 }
 .hero-veil-eyebrow {
   display: inline-flex;
@@ -1127,25 +1127,25 @@
   color: var(--bg-warm);
   border-radius: 8px;
   font-size: 14px; font-weight: 500;
-  box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset, 0 6px 16px -6px rgba(26,29,33,0.35);
-  transition: transform 160ms var(--ease), box-shadow 220ms var(--ease);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset, 0 4px 10px -4px rgba(26,29,33,0.28);
+  transition: transform 140ms var(--ease), box-shadow 180ms var(--ease);
   text-decoration: none;
 }
-.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset, 0 14px 30px -10px rgba(26,29,33,0.45); }
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset, 0 8px 18px -6px rgba(26,29,33,0.32); }
 .btn-primary svg { opacity: 0.85; }
 
 .btn-ghost {
   display: inline-flex; align-items: center; gap: 8px;
   height: 40px; padding: 0 16px;
   background: rgba(255,255,255,0.6);
-  -webkit-backdrop-filter: blur(10px) saturate(140%);
-          backdrop-filter: blur(10px) saturate(140%);
+  -webkit-backdrop-filter: blur(6px) saturate(130%);
+          backdrop-filter: blur(6px) saturate(130%);
   border: 0.5px solid var(--border);
   border-radius: 8px;
   font-size: 14px; font-weight: 500;
   color: var(--fg);
   box-shadow: var(--shadow-sm);
-  transition: background 200ms var(--ease), border-color 200ms var(--ease);
+  transition: background 160ms var(--ease), border-color 160ms var(--ease);
   text-decoration: none;
 }
 .btn-ghost:hover { background: rgba(255,255,255,0.85); border-color: var(--accent-border); }
@@ -1154,11 +1154,14 @@
   background: linear-gradient(135deg, var(--primary), var(--accent));
 }
 
-/* meta strip retains the inset-card feel but with stronger glass against bg */
+/* meta strip retains the inset-card feel but with lighter glass — the
+   previous blur(14px) was visibly chugging when scrolled over the
+   moving video. blur(8px) reads almost identical at a fraction of the
+   GPU cost. */
 .hero-stage .hero-meta {
   background: rgba(255,255,255,0.65);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-          backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(8px) saturate(130%);
+          backdrop-filter: blur(8px) saturate(130%);
   border-color: rgba(26,29,33,0.08);
 }
 
@@ -1225,7 +1228,10 @@
 }
 
 /* ── Video-bg readability overrides ─────────────────────────────────────── */
-.hero-stage[data-bg="video"] .hero-display { color: #fff; text-shadow: 0 1px 30px rgba(0,0,0,0.35); }
+/* Headline text-shadow tuned down to a hairline — the previous 30px blur
+   read as a halo around every letter. 6px keeps just enough edge against
+   bright video frames without looking like a glow effect. */
+.hero-stage[data-bg="video"] .hero-display { color: #fff; text-shadow: 0 1px 6px rgba(0,0,0,0.22); }
 .hero-stage[data-bg="video"] .hero-display .hero-accent-word,
 .hero-stage[data-bg="video"] .hero-display .word-inner.is-accent {
   background: linear-gradient(120deg, #ffffff 0%, color-mix(in oklab, #ffffff 70%, var(--primary)) 100%);
@@ -1235,15 +1241,15 @@
 }
 .hero-stage[data-bg="video"] .hero-eyebrow { color: rgba(255,255,255,0.85); }
 .hero-stage[data-bg="video"] .hero-eyebrow .eyebrow-dot { box-shadow: 0 0 0 3px rgba(255,255,255,0.18); }
-.hero-stage[data-bg="video"] .hero-lede { color: rgba(255,255,255,0.88); text-shadow: 0 1px 18px rgba(0,0,0,0.3); }
+.hero-stage[data-bg="video"] .hero-lede { color: rgba(255,255,255,0.88); text-shadow: 0 1px 4px rgba(0,0,0,0.22); }
 .hero-stage[data-bg="video"] .hero-lede .lede-mono { background: rgba(255,255,255,0.18); color: #fff; }
 .hero-stage[data-bg="video"] .btn-ghost {
   background: rgba(255,255,255,0.85);
   border-color: rgba(255,255,255,0.7);
   color: var(--fg);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
-          backdrop-filter: blur(18px) saturate(160%);
-  box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset, 0 4px 16px -4px rgba(0,0,0,0.35);
+  -webkit-backdrop-filter: blur(10px) saturate(140%);
+          backdrop-filter: blur(10px) saturate(140%);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset, 0 2px 8px -2px rgba(0,0,0,0.28);
   font-weight: 500;
 }
 .hero-stage[data-bg="video"] .btn-ghost:hover {
@@ -1257,8 +1263,8 @@
 .hero-stage[data-bg="video"] .btn-primary { background: #fff; color: var(--fg); }
 .hero-stage[data-bg="video"] .hero-meta {
   background: rgba(20,22,26,0.42);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-          backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(10px) saturate(130%);
+          backdrop-filter: blur(10px) saturate(130%);
   border-color: rgba(255,255,255,0.18);
   color: #fff;
 }

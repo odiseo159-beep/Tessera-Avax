@@ -42,33 +42,45 @@ export function Hero({
   // `--par-y` (both in -1..1). The hero-bg layers consume those vars
   // to drift in opposite directions and give the static video subtle
   // depth response.
+  //
+  // The rAF loop self-suspends when the interpolated `cur` matches
+  // `target` (no in-flight motion). A new mousemove resumes it. This
+  // avoids burning a frame per refresh just to interpolate 0 → 0 while
+  // the user isn't moving the cursor.
   useEffect(() => {
     const el = stageRef.current;
     if (!el) return;
     let raf = 0;
-    let target = { x: 0, y: 0 };
-    let cur = { x: 0, y: 0 };
+    const target = { x: 0, y: 0 };
+    const cur = { x: 0, y: 0 };
     const apply = () => {
-      cur = {
-        x: cur.x + (target.x - cur.x) * 0.06,
-        y: cur.y + (target.y - cur.y) * 0.06,
-      };
+      const dx = target.x - cur.x;
+      const dy = target.y - cur.y;
+      if (Math.abs(dx) < 0.001 && Math.abs(dy) < 0.001) {
+        // Snap to exact target and idle until the next mousemove.
+        cur.x = target.x;
+        cur.y = target.y;
+        el.style.setProperty("--par-x", cur.x.toFixed(3));
+        el.style.setProperty("--par-y", cur.y.toFixed(3));
+        raf = 0;
+        return;
+      }
+      cur.x += dx * 0.08;
+      cur.y += dy * 0.08;
       el.style.setProperty("--par-x", cur.x.toFixed(3));
       el.style.setProperty("--par-y", cur.y.toFixed(3));
       raf = requestAnimationFrame(apply);
     };
     const move = (e: MouseEvent) => {
       const r = el.getBoundingClientRect();
-      target = {
-        x: ((e.clientX - r.left) / r.width - 0.5) * 2,
-        y: ((e.clientY - r.top) / r.height - 0.5) * 2,
-      };
+      target.x = ((e.clientX - r.left) / r.width - 0.5) * 2;
+      target.y = ((e.clientY - r.top) / r.height - 0.5) * 2;
+      if (!raf) raf = requestAnimationFrame(apply);
     };
     el.addEventListener("mousemove", move);
-    raf = requestAnimationFrame(apply);
     return () => {
       el.removeEventListener("mousemove", move);
-      cancelAnimationFrame(raf);
+      if (raf) cancelAnimationFrame(raf);
     };
   }, []);
 
