@@ -1,0 +1,1759 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>Tessera — submission demo (60s)</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1920px; height: 1080px;
+        overflow: hidden;
+        background: #F1EFE8;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        color: #1A1D21;
+        -webkit-font-smoothing: antialiased;
+      }
+      /* Inter stylistic sets — opt in only for prose, NEVER on mono.
+         Body-level features were cascading into JetBrains Mono and
+         producing the case-substitution glitch on .s4-pill / .mono. */
+      h1, h2, h3, p, .s1-tagline, .s4-quote {
+        font-feature-settings: "ss01", "cv11";
+      }
+      .mono {
+        font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-feature-settings: normal;
+        font-variant: normal;
+      }
+
+      :root {
+        --bg: #F1EFE8;
+        --surface: #FAF8F0;
+        --fg: #1A1D21;
+        --fg-soft: #5C6066;
+        --fg-faint: #5F6369;
+        --border: #D3D1C7;
+        --muted: #E6E2D6;
+        --primary: #0F6E56;
+        --primary-soft: rgba(15, 110, 86, 0.10);
+        --primary-border: rgba(15, 110, 86, 0.24);
+        --accent: #3C3489;
+        --accent-soft: rgba(60, 52, 137, 0.10);
+        --accent-border: rgba(60, 52, 137, 0.24);
+        --warn: #8B5A0A;
+      }
+
+      .scene {
+        position: absolute; inset: 0;
+        width: 1920px; height: 1080px;
+        display: flex; flex-direction: column;
+        justify-content: center; align-items: center;
+        padding: 96px 160px;
+      }
+
+      .eyebrow {
+        display: inline-flex; align-items: center; gap: 12px;
+        font-size: 18px; font-weight: 500;
+        letter-spacing: 0.24em; text-transform: uppercase;
+        color: var(--fg-soft);
+      }
+      .eyebrow-dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: var(--primary);
+        box-shadow: 0 0 0 4px rgba(15,110,86,0.18);
+      }
+      /* (.mono base rule moved earlier so the !important-free
+         feature-settings reset wins over body cascade.) */
+
+      /* ═══════════════════ Scene 1 — Cold open ═══════════════════ */
+      .s1 {
+        background:
+          radial-gradient(circle at 50% 40%, rgba(60,52,137,0.04) 0%, transparent 60%),
+          var(--bg);
+      }
+      .s1-logo-img {
+        width: 280px; height: 280px;
+        object-fit: contain;
+        filter: drop-shadow(0 18px 40px rgba(26,29,33,0.18)) drop-shadow(0 2px 6px rgba(26,29,33,0.10));
+        margin-top: 24px;
+      }
+      .s1-eyebrow { margin-bottom: 32px; }
+      .s1-wordmark {
+        font-size: 168px; font-weight: 700;
+        letter-spacing: -0.04em;
+        line-height: 1;
+        margin: 56px 0 36px;
+      }
+      .s1-tagline {
+        font-size: 52px; font-weight: 500;
+        color: var(--fg);
+        max-width: 1300px; text-align: center;
+        line-height: 1.25;
+        letter-spacing: -0.01em;
+      }
+      .s1-tagline .accent { color: var(--accent); }
+      .s1-tagline .word { display: inline-block; }
+      .s1-tagline .dot { color: var(--fg-faint); margin: 0 14px; }
+
+      /* ═══════════════════ Scene 2 — Problem ═══════════════════ */
+      .s2 {
+        background: var(--bg);
+        flex-direction: column;
+        padding: 100px 140px;
+      }
+      .s2-eyebrow { margin-bottom: 64px; }
+      .s2-grid {
+        display: grid; grid-template-columns: 1fr 2px 1fr;
+        gap: 80px;
+        width: 100%;
+        max-width: 1600px;
+      }
+      .s2-col {
+        display: flex; flex-direction: column;
+        gap: 36px;
+      }
+      .s2-rule {
+        background: var(--border);
+        margin: 24px 0;
+      }
+      .s2-col-eyebrow {
+        font-size: 16px; font-weight: 600;
+        letter-spacing: 0.22em; text-transform: uppercase;
+      }
+      .s2-col--priv .s2-col-eyebrow { color: var(--primary); }
+      .s2-col--pub .s2-col-eyebrow { color: var(--accent); }
+      .s2-big-wrap { display: flex; flex-direction: column; gap: 12px; }
+      .s2-big {
+        font-size: 140px; font-weight: 700;
+        letter-spacing: -0.04em;
+        line-height: 0.95;
+      }
+      .s2-big-unit {
+        font-size: 30px; font-weight: 500;
+        color: var(--fg-soft);
+      }
+      .s2-body {
+        font-size: 28px; line-height: 1.55;
+        color: var(--fg-soft);
+        max-width: 580px;
+      }
+      .s2-tag {
+        display: inline-flex; align-items: center; gap: 10px;
+        align-self: flex-start;
+        padding: 12px 20px;
+        border-radius: 999px;
+        font-size: 16px; font-weight: 500;
+        background: var(--muted);
+      }
+      .s2-col--priv .s2-tag {
+        background: var(--primary-soft); color: var(--primary);
+      }
+      .s2-col--pub .s2-tag {
+        background: var(--accent-soft); color: var(--accent);
+      }
+      .s2-bottom {
+        margin-top: 56px;
+        font-size: 26px; font-weight: 500;
+        color: var(--fg);
+        text-align: center;
+      }
+      .s2-bottom strong { font-weight: 700; }
+
+      /* ═══════════════════ Scene 3 — Solution ═══════════════════ */
+      .s3 {
+        background: var(--bg);
+        padding: 96px 200px;
+        gap: 28px;
+        justify-content: center;
+      }
+      .s3-eyebrow { margin-bottom: 24px; }
+      .s3-h {
+        font-size: 64px; font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+        text-align: center;
+        max-width: 1400px;
+        margin-bottom: 32px;
+      }
+      .s3-h .accent { background: linear-gradient(120deg, var(--primary), var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+      .s3-flow {
+        display: grid;
+        grid-template-columns: 1fr 80px 1fr 80px 1fr;
+        align-items: center;
+        gap: 0;
+        width: 100%;
+        max-width: 1500px;
+      }
+      .s3-node {
+        padding: 32px 28px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        text-align: center;
+        box-shadow: 0 2px 12px rgba(26,29,33,0.06);
+      }
+      .s3-node--priv { border-color: rgba(15,110,86,0.40); border-left: 4px solid var(--primary); }
+      .s3-node--pub { border-color: rgba(60,52,137,0.40); border-left: 4px solid var(--accent); }
+      .s3-node--core {
+        background: var(--fg);
+        color: #fff;
+        border-color: var(--fg);
+      }
+      .s3-node-eyebrow {
+        font-size: 12px; font-weight: 600;
+        letter-spacing: 0.22em; text-transform: uppercase;
+        margin-bottom: 10px;
+      }
+      .s3-node--priv .s3-node-eyebrow { color: var(--primary); }
+      .s3-node--pub .s3-node-eyebrow { color: var(--accent); }
+      .s3-node--core .s3-node-eyebrow { color: rgba(255,255,255,0.7); }
+      .s3-node-name { font-size: 28px; font-weight: 600; line-height: 1.2; }
+      .s3-node-list {
+        margin-top: 12px;
+        font-size: 16px;
+        color: var(--fg-soft);
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .s3-node--core .s3-node-list { color: rgba(255,255,255,0.85); }
+      .s3-arrow {
+        display: flex; align-items: center; justify-content: center;
+        font-size: 32px; color: var(--fg-faint);
+      }
+
+      /* ═══════════════════ Scene 4 — Crossover (NEW) ═══════════════════ */
+      .s4 {
+        background: var(--bg);
+        flex-direction: column;
+        padding: 96px 140px;
+        gap: 32px;
+        justify-content: center;
+      }
+      .s4-eyebrow { margin-bottom: 12px; }
+      .s4-grid {
+        display: grid; grid-template-columns: 1fr 160px 1fr;
+        gap: 0;
+        width: 100%;
+        max-width: 1640px;
+        align-items: stretch;
+      }
+      .s4-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 36px 40px;
+        display: flex; flex-direction: column;
+        gap: 24px;
+        box-shadow: 0 8px 30px -10px rgba(26,29,33,0.10);
+      }
+      .s4-card--left { border-left: 5px solid var(--accent); }
+      .s4-card--right { border-left: 5px solid var(--primary); }
+      .s4-card-persona {
+        font-size: 16px; font-weight: 600;
+        letter-spacing: 0.22em; text-transform: uppercase;
+        color: var(--fg);
+      }
+      .s4-card-step {
+        display: flex; flex-direction: column; gap: 14px;
+      }
+      .s4-card-label {
+        font-size: 15px; font-weight: 600;
+        letter-spacing: 0.18em; text-transform: uppercase;
+        color: var(--fg-faint);
+      }
+      .s4-card-pills {
+        display: flex; flex-wrap: wrap; gap: 10px;
+      }
+      .s4-pill {
+        padding: 12px 22px;
+        border-radius: 999px;
+        font-size: 22px; font-weight: 600;
+        font-family: 'JetBrains Mono', monospace;
+        font-feature-settings: normal;
+        font-variant: normal;
+        letter-spacing: 0.02em;
+        line-height: 1;
+      }
+      .s4-pill--pub { background: var(--accent-soft); color: var(--accent); border: 1.5px solid var(--accent-border); }
+      .s4-pill--priv { background: var(--primary-soft); color: var(--primary); border: 1.5px solid var(--primary-border); }
+      .s4-card-arrow {
+        align-self: flex-start;
+        font-size: 32px; color: var(--fg);
+        margin-left: 8px;
+      }
+      .s4-cross {
+        position: relative;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .s4-cross-svg {
+        position: absolute;
+        width: 160px; height: 100%;
+      }
+      .s4-cross-badge {
+        position: relative;
+        z-index: 2;
+        padding: 8px 14px;
+        background: var(--fg);
+        color: #fff;
+        border-radius: 999px;
+        font-size: 13px; font-weight: 600;
+        letter-spacing: 0.18em; text-transform: uppercase;
+        box-shadow: 0 6px 18px -4px rgba(26,29,33,0.35);
+      }
+      .s4-quote {
+        font-size: 32px; font-weight: 600;
+        text-align: center;
+        max-width: 1100px;
+        line-height: 1.3;
+        letter-spacing: -0.005em;
+        margin-top: 8px;
+      }
+      .s4-quote .accent {
+        background: linear-gradient(120deg, var(--primary), var(--accent));
+        -webkit-background-clip: text; background-clip: text;
+        color: transparent;
+      }
+
+      /* ═══════════════════ Scene 5 — Dual trade ═══════════════════ */
+      .s5 {
+        background: var(--bg);
+        flex-direction: column;
+        padding: 96px 120px;
+        gap: 28px;
+        justify-content: center;
+      }
+      .s5-eyebrow { margin-bottom: 8px; }
+      .s5-grid {
+        display: grid; grid-template-columns: 1fr 160px 1fr;
+        align-items: stretch;
+        gap: 0;
+        width: 100%;
+        max-width: 1680px;
+        isolation: isolate;
+      }
+      .s5-side {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 32px 36px;
+        display: flex; flex-direction: column; gap: 18px;
+        position: relative;
+        z-index: 1;
+      }
+      .s5-side--priv { border-color: rgba(15,110,86,0.30); }
+      .s5-side--pub { border-color: rgba(60,52,137,0.30); }
+      .s5-link {
+        display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        position: relative;
+        z-index: 10;
+      }
+      .s5-link-pill {
+        position: absolute;
+        white-space: nowrap;
+        padding: 10px 18px;
+        background: var(--fg);
+        color: #fff;
+        border-radius: 999px;
+        font-size: 16px; font-weight: 500;
+        box-shadow: 0 6px 20px -6px rgba(26,29,33,0.4);
+      }
+      .s5-link-bar {
+        height: 2px;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        width: 160px;
+      }
+      .s5-eyebrow-row {
+        display: flex; justify-content: space-between; align-items: center;
+      }
+      .s5-tab-eyebrow {
+        font-size: 12px; font-weight: 600;
+        letter-spacing: 0.22em; text-transform: uppercase;
+      }
+      .s5-side--priv .s5-tab-eyebrow { color: var(--primary); }
+      .s5-side--pub .s5-tab-eyebrow { color: var(--accent); }
+      .s5-ticker {
+        font-size: 64px; font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+      .s5-price-row {
+        display: flex; align-items: baseline; gap: 14px;
+      }
+      .s5-price {
+        font-size: 38px; font-weight: 500;
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .s5-pct {
+        font-size: 18px; font-weight: 500;
+        color: var(--primary);
+        padding: 4px 8px;
+        background: var(--primary-soft);
+        border-radius: 4px;
+      }
+      .s5-book {
+        display: grid; gap: 6px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 15px;
+      }
+      .s5-book-row {
+        display: grid; grid-template-columns: 1fr 1fr 60px;
+        gap: 12px; padding: 4px 0;
+        align-items: center;
+      }
+      .s5-bar {
+        height: 6px; border-radius: 2px;
+        opacity: 0.65;
+      }
+      .s5-bar--bid { background: var(--primary); }
+      .s5-bar--ask { background: #c03737; }
+      .s5-side--pub .s5-bar--bid { background: var(--accent); }
+      .s5-foot {
+        margin-top: 24px;
+        padding: 14px 18px;
+        background: var(--muted);
+        border-radius: 8px;
+        font-size: 15px; color: var(--fg-soft);
+        text-align: center;
+        font-family: 'JetBrains Mono', monospace;
+        max-width: 1320px;
+        margin-left: auto; margin-right: auto;
+      }
+
+      /* ═══════════════════ Scene 6 — Compliance ═══════════════════ */
+      .s6 {
+        background: var(--bg);
+        flex-direction: column;
+        padding: 100px 160px;
+        gap: 28px;
+        justify-content: center;
+      }
+      .s6-eyebrow { margin-bottom: 8px; }
+      .s6-h {
+        font-size: 56px; font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.15;
+        max-width: 1500px;
+        text-align: center;
+        margin-bottom: 16px;
+      }
+      .s6-h .accent { color: var(--primary); }
+      .s6-juris {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        width: 100%;
+        max-width: 1480px;
+      }
+      .s6-jur {
+        padding: 24px 22px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        display: flex; flex-direction: column; gap: 10px;
+        text-align: center;
+      }
+      .s6-jur-code {
+        font-size: 36px; font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--primary);
+      }
+      .s6-jur-name {
+        font-size: 16px; font-weight: 500;
+        color: var(--fg);
+      }
+      .s6-jur-reg {
+        font-size: 13px;
+        color: var(--fg-soft);
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .s6-pill {
+        display: inline-flex; align-items: center; gap: 12px;
+        align-self: center;
+        padding: 14px 22px;
+        background: var(--fg);
+        color: #fff;
+        border-radius: 999px;
+        font-size: 18px; font-weight: 500;
+        font-family: 'JetBrains Mono', monospace;
+        margin-top: 18px;
+      }
+      .s6-pill-dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: #fff;
+        opacity: 0.85;
+      }
+
+      /* ═══════════════════ Scene 8 — KYC walkthrough ═══════════════════ */
+      .s8 { background: var(--bg); padding: 64px 120px; justify-content: flex-start; gap: 28px; }
+      .s8-topbar {
+        display: flex; align-items: center; justify-content: space-between;
+        width: 100%; max-width: 1700px;
+        padding: 16px 28px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        box-shadow: 0 1px 4px rgba(26,29,33,0.04);
+      }
+      .s8-topbar-brand { display: flex; align-items: center; gap: 14px; }
+      .s8-topbar-logo { width: 36px; height: 36px; }
+      .s8-topbar-name { font-size: 22px; font-weight: 600; letter-spacing: -0.01em; }
+      .s8-topbar-nav { display: flex; gap: 24px; }
+      .s8-nav-link { font-size: 16px; color: var(--fg-soft); }
+      .s8-nav-link.is-current { color: var(--fg); font-weight: 600; }
+      .s8-topbar-right { display: flex; align-items: center; gap: 12px; }
+      .s8-kyc-pill {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 8px 14px;
+        border-radius: 999px;
+        font-size: 14px; font-weight: 500;
+      }
+      .s8-kyc-pill--pending { background: var(--muted); color: var(--fg-soft); }
+      .s8-kyc-pill--verified {
+        background: var(--primary-soft); color: var(--primary);
+        border: 1px solid var(--primary-border);
+      }
+      .s8-kyc-dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background: currentColor;
+      }
+      .s8-wallet-btn {
+        display: inline-flex; align-items: center; gap: 10px;
+        padding: 8px 12px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 14px;
+      }
+      .s8-wallet-bal { background: var(--muted); padding: 4px 10px; border-radius: 6px; font-size: 13px; }
+
+      .s8-stepper {
+        display: flex; align-items: center; gap: 18px;
+        align-self: center;
+        margin-top: 12px;
+      }
+      .s8-step {
+        display: flex; align-items: center; gap: 12px;
+        padding: 12px 20px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+      }
+      .s8-step.is-active {
+        border-color: var(--primary);
+        background: var(--primary-soft);
+      }
+      .s8-step.is-done { background: var(--primary); border-color: var(--primary); }
+      .s8-step.is-done .s8-step-n,
+      .s8-step.is-done .s8-step-l { color: #fff; }
+      .s8-step-n {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 16px; font-weight: 600;
+        color: var(--fg-faint);
+      }
+      .s8-step.is-active .s8-step-n { color: var(--primary); }
+      .s8-step-l { font-size: 16px; font-weight: 500; }
+      .s8-step-rule {
+        width: 60px; height: 2px;
+        background: var(--border);
+      }
+      .s8-step-rule.is-filled { background: var(--primary); }
+
+      .s8-panel {
+        width: 100%; max-width: 1400px;
+        align-self: center;
+        padding: 36px 44px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        margin-top: 8px;
+        box-shadow: 0 8px 30px -12px rgba(26,29,33,0.10);
+      }
+      .s8-panel-eyebrow {
+        font-size: 13px; font-weight: 600;
+        text-transform: uppercase; letter-spacing: 0.22em;
+        color: var(--fg-faint);
+      }
+      .s8-panel-h {
+        font-size: 42px; font-weight: 600;
+        letter-spacing: -0.01em;
+        margin: 8px 0 24px;
+      }
+      .s8-fields {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px 24px;
+      }
+      .s8-field { display: flex; flex-direction: column; gap: 8px; }
+      .s8-field--full { grid-column: 1 / -1; }
+      .s8-field-label {
+        font-size: 13px; font-weight: 500;
+        text-transform: uppercase; letter-spacing: 0.18em;
+        color: var(--fg-faint);
+      }
+      .s8-field-input {
+        padding: 16px 18px;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 22px; color: var(--fg);
+        font-family: 'JetBrains Mono', monospace;
+        font-feature-settings: normal;
+      }
+      .s8-success {
+        display: flex; flex-direction: column; align-items: center;
+        gap: 18px;
+        text-align: center;
+        padding: 12px 0;
+      }
+      .s8-success-check {
+        width: 96px; height: 96px;
+        border-radius: 50%;
+        background: var(--primary);
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 56px; color: #fff; font-weight: 700;
+        box-shadow: 0 12px 32px -8px rgba(15,110,86,0.5);
+      }
+      .s8-success-t { font-size: 38px; font-weight: 600; letter-spacing: -0.01em; }
+      .s8-success-d { font-size: 20px; color: var(--fg-soft); max-width: 680px; line-height: 1.4; }
+      .s8-success-tx {
+        display: inline-flex; align-items: center; gap: 8px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 14px;
+        color: var(--primary);
+        text-decoration: underline;
+        text-underline-offset: 4px;
+      }
+
+      /* ═══════════════════ Scene 9 — Private trade ═══════════════════ */
+      .s9 { background: var(--bg); padding: 64px 120px; justify-content: flex-start; gap: 22px; }
+      .s9-eyebrow { align-self: flex-start; }
+      .s9-row {
+        display: grid;
+        grid-template-columns: 1.3fr 1fr;
+        gap: 28px;
+        width: 100%; max-width: 1700px;
+      }
+      .s9-chart {
+        padding: 28px 32px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        display: flex; flex-direction: column; gap: 18px;
+      }
+      .s9-chart-head { display: flex; justify-content: space-between; align-items: baseline; }
+      .s9-ticker { font-size: 56px; font-weight: 700; letter-spacing: -0.02em; }
+      .s9-name { font-size: 15px; color: var(--fg-soft); margin-top: 6px; }
+      .s9-price-block { text-align: right; }
+      .s9-price { font-size: 44px; font-weight: 600; font-family: 'JetBrains Mono', monospace; font-feature-settings: normal; }
+      .s9-pct {
+        display: inline-block;
+        font-size: 16px; font-weight: 500;
+        padding: 4px 10px;
+        background: var(--primary-soft); color: var(--primary);
+        border-radius: 5px;
+        margin-top: 8px;
+      }
+      .s9-chartbox {
+        height: 260px;
+        background: var(--bg);
+        border-radius: 10px;
+        position: relative;
+        overflow: hidden;
+      }
+      .s9-chartline {
+        position: absolute; inset: 24px;
+        background: none;
+      }
+      .s9-side {
+        padding: 28px 32px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+      }
+      .s9-side-eyebrow {
+        font-size: 12px; font-weight: 600;
+        text-transform: uppercase; letter-spacing: 0.22em;
+        color: var(--fg-faint);
+        margin-bottom: 16px;
+      }
+      .s9-form-row { display: flex; gap: 12px; margin-bottom: 14px; }
+      .s9-form-tab {
+        flex: 1;
+        padding: 12px 18px;
+        text-align: center;
+        font-size: 16px; font-weight: 500;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+      }
+      .s9-form-tab.is-buy { background: var(--primary); color: #fff; border-color: var(--primary); }
+      .s9-form-input {
+        padding: 14px 18px;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 22px; font-weight: 500;
+        margin-bottom: 12px;
+        display: flex; justify-content: space-between; align-items: center;
+      }
+      .s9-form-input-k { font-size: 13px; color: var(--fg-faint); text-transform: uppercase; letter-spacing: 0.18em; font-family: 'Inter', sans-serif; font-weight: 500; }
+      .s9-form-cta {
+        padding: 16px;
+        background: var(--primary);
+        color: #fff;
+        border-radius: 10px;
+        text-align: center;
+        font-size: 18px; font-weight: 600;
+        margin-top: 12px;
+      }
+      .s9-book {
+        margin-top: 22px;
+        display: grid; gap: 6px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 14px;
+      }
+      .s9-book-row {
+        display: grid; grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+        padding: 4px 0;
+        align-items: center;
+      }
+      .s9-book-row.is-new {
+        background: var(--primary-soft);
+        border-radius: 4px;
+        padding: 6px 8px;
+        font-weight: 600;
+      }
+      .s9-toast {
+        position: absolute; bottom: 80px; right: 120px;
+        padding: 14px 20px;
+        background: var(--fg);
+        color: #fff;
+        border-radius: 10px;
+        font-size: 15px; font-weight: 500;
+        display: inline-flex; align-items: center; gap: 12px;
+        box-shadow: 0 12px 32px -10px rgba(26,29,33,0.4);
+      }
+      .s9-toast-check {
+        width: 24px; height: 24px;
+        border-radius: 50%;
+        background: var(--primary);
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 14px; font-weight: 700;
+      }
+
+      /* ═══════════════════ Scene 10 — Public trade ═══════════════════ */
+      .s10 { background: var(--bg); padding: 64px 120px; justify-content: flex-start; gap: 22px; }
+      .s10-eyebrow { align-self: flex-start; }
+      /* Reuses s9-* layout but uses accent (purple) instead of primary (green) */
+      .s10-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 28px; width: 100%; max-width: 1700px; }
+      .s10-chart {
+        padding: 28px 32px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--accent);
+        border-radius: 14px;
+        display: flex; flex-direction: column; gap: 18px;
+      }
+      .s10-side {
+        padding: 28px 32px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--accent);
+        border-radius: 14px;
+      }
+      .s10-ticker { font-size: 56px; font-weight: 700; letter-spacing: -0.02em; }
+      .s10-price { font-size: 44px; font-weight: 600; font-family: 'JetBrains Mono', monospace; font-feature-settings: normal; }
+      .s10-pct {
+        display: inline-block;
+        font-size: 16px; font-weight: 500;
+        padding: 4px 10px;
+        background: var(--accent-soft); color: var(--accent);
+        border-radius: 5px;
+        margin-top: 8px;
+      }
+      .s10-form-tab.is-buy { background: var(--accent); color: #fff; border-color: var(--accent); }
+      .s10-form-cta {
+        padding: 16px;
+        background: var(--accent);
+        color: #fff;
+        border-radius: 10px;
+        text-align: center;
+        font-size: 18px; font-weight: 600;
+        margin-top: 12px;
+      }
+      .s10-side-eyebrow {
+        font-size: 12px; font-weight: 600;
+        text-transform: uppercase; letter-spacing: 0.22em;
+        color: var(--accent);
+        margin-bottom: 16px;
+      }
+
+      .s10-flash {
+        position: absolute; inset: 0;
+        background: linear-gradient(135deg, var(--accent) 0%, color-mix(in oklab, var(--accent) 70%, #000) 100%);
+        z-index: 50;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .s10-flash-text {
+        color: #fff;
+        font-size: 96px; font-weight: 700;
+        letter-spacing: -0.03em;
+        text-align: center;
+      }
+      .s10-flash-sub {
+        color: rgba(255,255,255,0.75);
+        font-size: 24px;
+        margin-top: 16px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      /* ═══════════════════ Scene 11 — Portfolio ═══════════════════ */
+      .s11 { background: var(--bg); padding: 80px 100px; gap: 28px; justify-content: center; }
+      .s11-eyebrow { align-self: center; }
+      .s11-h {
+        font-size: 52px; font-weight: 700;
+        letter-spacing: -0.02em;
+        text-align: center;
+        margin-bottom: 8px;
+      }
+      .s11-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        width: 100%; max-width: 1500px;
+      }
+      .s11-stat {
+        padding: 24px 28px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        text-align: center;
+      }
+      .s11-stat-k {
+        font-size: 12px; font-weight: 600;
+        text-transform: uppercase; letter-spacing: 0.22em;
+        color: var(--fg-faint);
+        margin-bottom: 8px;
+      }
+      .s11-stat-v {
+        font-size: 38px; font-weight: 700;
+        font-family: 'JetBrains Mono', monospace;
+        font-feature-settings: normal;
+      }
+      .s11-table {
+        width: 100%; max-width: 1700px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        overflow: hidden;
+      }
+      .s11-table-head, .s11-table-row {
+        display: grid;
+        grid-template-columns: 100px 140px 1fr 1fr 1.2fr;
+        gap: 18px; padding: 18px 28px;
+        align-items: center;
+      }
+      .s11-table-head {
+        font-size: 13px; font-weight: 600;
+        text-transform: uppercase; letter-spacing: 0.16em;
+        color: var(--fg-faint);
+        background: var(--muted);
+      }
+      .s11-table-row { border-top: 1px solid var(--border); font-size: 17px; }
+      .s11-table-uni {
+        display: inline-block;
+        padding: 4px 10px;
+        font-size: 11px; font-weight: 600;
+        letter-spacing: 0.18em; text-transform: uppercase;
+        border-radius: 4px;
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .s11-table-uni--priv { background: var(--primary-soft); color: var(--primary); }
+      .s11-table-uni--pub { background: var(--accent-soft); color: var(--accent); }
+      .s11-table-ticker { font-family: 'JetBrains Mono', monospace; font-weight: 600; font-feature-settings: normal; }
+      .s11-table-num { font-family: 'JetBrains Mono', monospace; text-align: right; font-feature-settings: normal; }
+
+      /* ═══════════════════ Scene 12 — Compliance reports ═══════════════════ */
+      .s12 { background: var(--bg); padding: 70px 120px; gap: 22px; justify-content: flex-start; }
+      .s12-eyebrow { align-self: flex-start; }
+      .s12-banner {
+        display: flex; align-items: center; gap: 14px;
+        padding: 14px 18px;
+        background: rgba(208, 136, 22, 0.10);
+        border: 1px solid rgba(208, 136, 22, 0.30);
+        border-left: 4px solid #d08816;
+        border-radius: 10px;
+        width: 100%; max-width: 1700px;
+      }
+      .s12-banner-tag {
+        padding: 4px 8px;
+        background: #d08816;
+        color: #fff;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        letter-spacing: 0.18em; font-weight: 600;
+        border-radius: 4px;
+      }
+      .s12-banner-text { font-size: 15px; color: #6f4708; }
+      .s12-tabs { display: flex; gap: 8px; padding: 12px; background: var(--muted); border-radius: 14px; align-self: flex-start; }
+      .s12-tab { display: inline-flex; align-items: center; padding: 14px 22px; font-size: 15px; font-weight: 500; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-feature-settings: normal; color: var(--fg-soft); line-height: 1.2; min-height: 48px; }
+      .s12-tab.is-active { background: var(--surface); color: var(--fg); box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+      .s12-cards { width: 100%; max-width: 1700px; display: grid; gap: 12px; }
+      .s12-card {
+        display: grid;
+        grid-template-columns: 90px 1.5fr 1fr 1fr 180px;
+        gap: 24px; align-items: center;
+        padding: 18px 24px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-left: 4px solid var(--primary);
+        border-radius: 10px;
+      }
+      .s12-card--med { border-left-color: #d08816; }
+      .s12-card--high { border-left-color: #c03737; }
+      .s12-card-type {
+        padding: 6px 10px;
+        background: var(--primary-soft); color: var(--primary);
+        border-radius: 5px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 14px; font-weight: 700; letter-spacing: 0.1em;
+        font-feature-settings: normal;
+        text-align: center;
+      }
+      .s12-card-type--aoi { background: var(--accent-soft); color: var(--accent); }
+      .s12-card-type--aop { background: rgba(192,55,55,0.10); color: #c03737; }
+      .s12-card-t { font-size: 18px; font-weight: 600; line-height: 1.2; }
+      .s12-card-ref { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--fg-faint); margin-top: 2px; font-feature-settings: normal; }
+      .s12-card-meta { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--fg-soft); font-feature-settings: normal; }
+      .s12-card-pill {
+        display: inline-flex; align-items: center; gap: 6px;
+        padding: 5px 10px;
+        font-size: 12px;
+        border-radius: 999px;
+        font-family: 'JetBrains Mono', monospace;
+        font-feature-settings: normal;
+      }
+      .s12-card-pill--ok { background: var(--primary-soft); color: var(--primary); }
+      .s12-card-pill--med { background: rgba(208,136,22,0.10); color: #8B5A0A; }
+      .s12-card-pill--high { background: rgba(192,55,55,0.10); color: #c03737; }
+      .s12-card-pill-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+      /* ═══════════════════ Scene 13 — Benefits ═══════════════════ */
+      .s13 { background: var(--bg); padding: 70px 100px; gap: 24px; justify-content: center; }
+      .s13-eyebrow { align-self: center; }
+      .s13-h {
+        font-size: 56px; font-weight: 700;
+        letter-spacing: -0.02em;
+        text-align: center;
+        margin-bottom: 16px;
+      }
+      .s13-h .accent {
+        background: linear-gradient(120deg, var(--primary), var(--accent));
+        -webkit-background-clip: text; background-clip: text;
+        color: transparent;
+      }
+      .s13-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        width: 100%; max-width: 1680px;
+      }
+      .s13-card {
+        padding: 28px 30px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        display: flex; flex-direction: column; gap: 16px;
+        border-top: 4px solid var(--primary);
+      }
+      .s13-card--retail { border-top-color: var(--accent); }
+      .s13-card--reg { border-top-color: var(--fg); }
+      .s13-card-persona {
+        font-size: 13px; font-weight: 600;
+        letter-spacing: 0.22em; text-transform: uppercase;
+        color: var(--fg-faint);
+      }
+      .s13-card-h {
+        font-size: 28px; font-weight: 700;
+        letter-spacing: -0.01em;
+        line-height: 1.15;
+      }
+      .s13-card-h .accent { color: var(--primary); }
+      .s13-card--retail .s13-card-h .accent { color: var(--accent); }
+      .s13-bullets {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex; flex-direction: column; gap: 10px;
+      }
+      .s13-bullets li {
+        display: grid;
+        grid-template-columns: 22px 1fr;
+        gap: 8px;
+        align-items: baseline;
+        font-size: 17px;
+        color: var(--fg-soft);
+        line-height: 1.35;
+      }
+      .s13-bullets li::before {
+        content: "✓";
+        color: var(--primary);
+        font-weight: 700;
+        font-size: 18px;
+        line-height: 1.1;
+      }
+      .s13-card--retail .s13-bullets li::before { color: var(--accent); }
+      .s13-card--reg .s13-bullets li::before { color: var(--fg); }
+
+      /* ═══════════════════ Scene 7 — Closing ═══════════════════ */
+      .s7 { background: var(--bg); }
+      .s7-mark-img {
+        width: 200px; height: 200px;
+        object-fit: contain;
+        margin-bottom: 56px;
+        filter: drop-shadow(0 18px 40px rgba(26,29,33,0.18)) drop-shadow(0 2px 6px rgba(26,29,33,0.10));
+      }
+      .s7-wordmark {
+        font-size: 144px; font-weight: 700;
+        letter-spacing: -0.04em;
+        line-height: 1;
+        margin-bottom: 28px;
+      }
+      .s7-tagline {
+        font-size: 36px; font-weight: 500;
+        color: var(--fg);
+        margin-bottom: 60px;
+      }
+      .s7-chip {
+        display: inline-flex; align-items: center; gap: 12px;
+        padding: 14px 24px;
+        background: var(--surface);
+        border: 1px solid var(--primary-border);
+        border-radius: 999px;
+        font-size: 18px; font-weight: 500;
+        color: var(--primary);
+      }
+      .s7-chip-dot {
+        width: 10px; height: 10px; border-radius: 50%;
+        background: var(--primary);
+        box-shadow: 0 0 0 5px rgba(15,110,86,0.18);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="240" data-width="1920" data-height="1080">
+
+      <!-- ═══════════════════ Scene 1 (0–7s) · COLD OPEN ═══════════════════ -->
+      <div id="s1" class="clip scene s1" data-start="0" data-duration="7" data-track-index="0">
+        <div class="eyebrow s1-eyebrow"><span class="eyebrow-dot"></span> Avalanche LatAm Institucional · 2026</div>
+        <img class="s1-logo-img" src="tessera.png" alt="Tessera" />
+        <div class="s1-wordmark">Tessera</div>
+        <div class="s1-tagline">
+          <span class="word" id="s1-w1">Una</span>
+          <span class="word accent" id="s1-w2">identidad</span>
+          <span class="dot">·</span>
+          <span class="word" id="s1-w3">dos</span>
+          <span class="word" id="s1-w4">mundos.</span>
+        </div>
+      </div>
+
+      <!-- ═══════════════════ Scene 2 (7–15s) · OPPORTUNITY ═══════════════════ -->
+      <div id="s2" class="clip scene s2" data-start="7" data-duration="8" data-track-index="0">
+        <div class="eyebrow s2-eyebrow"><span class="eyebrow-dot"></span> La oportunidad · dos demandas reales</div>
+        <div class="s2-grid">
+          <div class="s2-col s2-col--pub" id="s2-priv">
+            <div class="s2-col-eyebrow">Retail joven · LatAm</div>
+            <div class="s2-big-wrap">
+              <div class="s2-big">8<span style="font-size:84px">×</span></div>
+              <div class="s2-big-unit">crecimiento de cuentas retail · últimos 5 años</div>
+            </div>
+            <p class="s2-body">Generaciones jóvenes con apetito sofisticado, atrapadas detrás de comisiones del 1.5% y T+2. Sin acceso a equity privado.</p>
+            <div class="s2-tag" style="background:var(--accent-soft);color:var(--accent)">Demanda buscando producto</div>
+          </div>
+          <div class="s2-rule"></div>
+          <div class="s2-col s2-col--priv" id="s2-pub">
+            <div class="s2-col-eyebrow">Startups privadas · LatAm</div>
+            <div class="s2-big-wrap">
+              <div class="s2-big">$8B</div>
+              <div class="s2-big-unit">private equity LatAm en ciclos de 10 años</div>
+            </div>
+            <p class="s2-body">Empresas que crecen necesitan capital sin salir a bolsa. Tender offers: cinco family offices, seis meses, $50–200k por deal.</p>
+            <div class="s2-tag">Capital buscando rondas</div>
+          </div>
+        </div>
+        <div class="s2-bottom" id="s2-bottom"><strong>Dos demandas. Una infraestructura.</strong></div>
+      </div>
+
+      <!-- ═══════════════════ Scene 3 (15–25s) · SOLUTION ═══════════════════ -->
+      <div id="s3" class="clip scene s3" data-start="15" data-duration="10" data-track-index="0">
+        <div class="eyebrow s3-eyebrow"><span class="eyebrow-dot"></span> La solución · un solo orderbook</div>
+        <h2 class="s3-h" id="s3-h">Equity privado LatAm + equity público US,<br/><span class="accent">en la misma wallet</span>.</h2>
+        <div class="s3-flow">
+          <div class="s3-node s3-node--priv" id="s3-n1">
+            <div class="s3-node-eyebrow">PRIVADO · LATAM</div>
+            <div class="s3-node-name">Kavak · Bitso · Banco Compartamos · ARK1</div>
+            <div class="s3-node-list">4 tokens</div>
+          </div>
+          <div class="s3-arrow" id="s3-a1">→</div>
+          <div class="s3-node s3-node--core" id="s3-n2">
+            <div class="s3-node-eyebrow">TESSERA</div>
+            <div class="s3-node-name">Un orderbook · una identidad</div>
+            <div class="s3-node-list">ERC-3643 · Avalanche</div>
+          </div>
+          <div class="s3-arrow" id="s3-a2">←</div>
+          <div class="s3-node s3-node--pub" id="s3-n3">
+            <div class="s3-node-eyebrow">PÚBLICO · US</div>
+            <div class="s3-node-name">AAPL · MSFT · NVDA · GOOGL · AMZN · META</div>
+            <div class="s3-node-list">6 tokens (Dinari)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════ Scene 4 (25–37s) · CROSSOVER ═══════════════════ -->
+      <div id="s4" class="clip scene s4" data-start="25" data-duration="12" data-track-index="0">
+        <div class="eyebrow s4-eyebrow"><span class="eyebrow-dot"></span> El cruce · donde nace la liquidez</div>
+        <div class="s4-grid">
+          <div class="s4-card s4-card--left" id="s4-left">
+            <div class="s4-card-persona">Inversionista retail · joven · LatAm</div>
+            <div class="s4-card-step">
+              <div class="s4-card-label">Entró por</div>
+              <div class="s4-card-pills">
+                <span class="s4-pill s4-pill--pub">NVDA</span>
+                <span class="s4-pill s4-pill--pub">AAPL</span>
+              </div>
+            </div>
+            <div class="s4-card-arrow">↓</div>
+            <div class="s4-card-step">
+              <div class="s4-card-label">Descubre, en la misma wallet</div>
+              <div class="s4-card-pills">
+                <span class="s4-pill s4-pill--priv">KVK</span>
+                <span class="s4-pill s4-pill--priv">BTS</span>
+                <span class="s4-pill s4-pill--priv">+$100 ticket</span>
+              </div>
+            </div>
+          </div>
+          <div class="s4-cross" id="s4-cross">
+            <svg class="s4-cross-svg" viewBox="0 0 160 400" preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                <linearGradient id="xg1" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#3C3489"/>
+                  <stop offset="100%" stop-color="#0F6E56"/>
+                </linearGradient>
+                <linearGradient id="xg2" x1="100%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#0F6E56"/>
+                  <stop offset="100%" stop-color="#3C3489"/>
+                </linearGradient>
+              </defs>
+              <path d="M 0 80 Q 80 200 160 320" stroke="url(#xg1)" stroke-width="5" fill="none" stroke-linecap="round" opacity="0.85"/>
+              <path d="M 160 80 Q 80 200 0 320" stroke="url(#xg2)" stroke-width="5" fill="none" stroke-linecap="round" opacity="0.85"/>
+            </svg>
+            <span class="s4-cross-badge">misma wallet</span>
+          </div>
+          <div class="s4-card s4-card--right" id="s4-right">
+            <div class="s4-card-persona">Startup LatAm · necesita capital sin IPO</div>
+            <div class="s4-card-step">
+              <div class="s4-card-label">Antes · tender offer</div>
+              <div class="s4-card-pills">
+                <span class="s4-pill s4-pill--priv">5 family offices</span>
+                <span class="s4-pill s4-pill--priv">6 meses</span>
+              </div>
+            </div>
+            <div class="s4-card-arrow">↓</div>
+            <div class="s4-card-step">
+              <div class="s4-card-label">En Tessera</div>
+              <div class="s4-card-pills">
+                <span class="s4-pill s4-pill--pub">1,000 retail tickets</span>
+                <span class="s4-pill s4-pill--pub">liquidez secundaria</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="s4-quote" id="s4-quote">La liquidez emerge del <span class="accent">cruce</span>.</p>
+      </div>
+
+      <!-- ═══════════════════ Scene 5 (37–47s) · DUAL TRADE ═══════════════════ -->
+      <div id="s5" class="clip scene s5" data-start="37" data-duration="10" data-track-index="0">
+        <div class="eyebrow s5-eyebrow"><span class="eyebrow-dot"></span> Demo · mismo wallet · mismo orderbook</div>
+        <div class="s5-grid">
+          <div class="s5-side s5-side--priv" id="s5-priv">
+            <div class="s5-eyebrow-row">
+              <span class="s5-tab-eyebrow">Tessera Private · LatAm</span>
+              <span class="mono" style="color:var(--fg-faint);font-size:14px">0x8d19…1B17</span>
+            </div>
+            <div class="s5-ticker">KVK</div>
+            <div class="s5-price-row">
+              <span class="s5-price">$17.85</span>
+              <span class="s5-pct">+1.10%</span>
+            </div>
+            <div class="s5-book">
+              <div class="s5-book-row"><span>17.95</span><span>120</span><span class="s5-bar s5-bar--ask" style="width:34%"></span></div>
+              <div class="s5-book-row"><span>17.90</span><span>340</span><span class="s5-bar s5-bar--ask" style="width:78%"></span></div>
+              <div class="s5-book-row"><span>17.85</span><span>—</span><span></span></div>
+              <div class="s5-book-row"><span>17.80</span><span>180</span><span class="s5-bar s5-bar--bid" style="width:46%"></span></div>
+              <div class="s5-book-row"><span>17.75</span><span>420</span><span class="s5-bar s5-bar--bid" style="width:96%"></span></div>
+            </div>
+          </div>
+          <div class="s5-link" id="s5-link">
+            <span class="s5-link-bar"></span>
+            <span class="s5-link-pill">una identidad</span>
+          </div>
+          <div class="s5-side s5-side--pub" id="s5-pub">
+            <div class="s5-eyebrow-row">
+              <span class="s5-tab-eyebrow">Tessera Public · US</span>
+              <span class="mono" style="color:var(--fg-faint);font-size:14px">0x0177…1BA7</span>
+            </div>
+            <div class="s5-ticker">NVDA</div>
+            <div class="s5-price-row">
+              <span class="s5-price">$224.43</span>
+              <span class="s5-pct" style="background:var(--accent-soft);color:var(--accent)">−0.40%</span>
+            </div>
+            <div class="s5-book">
+              <div class="s5-book-row"><span>224.95</span><span>40</span><span class="s5-bar s5-bar--ask" style="width:22%"></span></div>
+              <div class="s5-book-row"><span>224.70</span><span>80</span><span class="s5-bar s5-bar--ask" style="width:48%"></span></div>
+              <div class="s5-book-row"><span>224.43</span><span>—</span><span></span></div>
+              <div class="s5-book-row"><span>224.20</span><span>60</span><span class="s5-bar s5-bar--bid" style="width:38%"></span></div>
+              <div class="s5-book-row"><span>223.90</span><span>110</span><span class="s5-bar s5-bar--bid" style="width:72%"></span></div>
+            </div>
+          </div>
+        </div>
+        <div class="s5-foot">mismo Orderbook · 0x830e…E042 · misma identidad on-chain</div>
+      </div>
+
+      <!-- ═══════════════════ Scene 6 (47–55s) · COMPLIANCE ═══════════════════ -->
+      <div id="s6" class="clip scene s6" data-start="47" data-duration="8" data-track-index="0">
+        <div class="eyebrow s6-eyebrow"><span class="eyebrow-dot"></span> Compliance · enforced por contrato</div>
+        <h2 class="s6-h" id="s6-h"><span class="accent">Bytecode, no PDF.</span> ERC-3643 + reportes auto-generados.</h2>
+        <div class="s6-juris">
+          <div class="s6-jur" id="s6-j1">
+            <div class="s6-jur-code">MX</div>
+            <div class="s6-jur-name">México</div>
+            <div class="s6-jur-reg">LFPIORPI · SAT</div>
+          </div>
+          <div class="s6-jur" id="s6-j2">
+            <div class="s6-jur-code">CO</div>
+            <div class="s6-jur-name">Colombia</div>
+            <div class="s6-jur-reg">Resolución 314 · UIAF</div>
+          </div>
+          <div class="s6-jur" id="s6-j3">
+            <div class="s6-jur-code">SV</div>
+            <div class="s6-jur-name">El Salvador</div>
+            <div class="s6-jur-reg">UIF · Fiscalía</div>
+          </div>
+          <div class="s6-jur" id="s6-j4">
+            <div class="s6-jur-code">GT</div>
+            <div class="s6-jur-name">Guatemala</div>
+            <div class="s6-jur-reg">IVE · SIB</div>
+          </div>
+        </div>
+        <div class="s6-pill" id="s6-pill">
+          <span class="s6-pill-dot"></span>
+          AOR · ROS · RTS — los formatos que los reguladores ya esperan
+        </div>
+      </div>
+
+      <!-- ═══════════════════ Scene 8 (55–90s) · KYC WALKTHROUGH ═══════════════════ -->
+      <div id="s8" class="clip scene s8" data-start="55" data-duration="35" data-track-index="0">
+        <div class="s8-topbar" id="s8-topbar">
+          <div class="s8-topbar-brand">
+            <img class="s8-topbar-logo" src="tessera.png" alt=""/>
+            <span class="s8-topbar-name">Tessera</span>
+          </div>
+          <div class="s8-topbar-nav">
+            <span class="s8-nav-link">Private</span>
+            <span class="s8-nav-link">Public</span>
+            <span class="s8-nav-link is-current">KYC</span>
+          </div>
+          <div class="s8-topbar-right">
+            <span class="s8-kyc-pill s8-kyc-pill--pending" id="s8-kyc-pill">
+              <span class="s8-kyc-dot"></span>KYC pendiente
+            </span>
+            <span class="s8-wallet-btn">
+              <span class="mono">0x9dcC…6acF</span>
+              <span class="s8-wallet-bal">1,000 USDC</span>
+            </span>
+          </div>
+        </div>
+        <div class="s8-stepper" id="s8-stepper">
+          <div class="s8-step is-active" id="s8-st1"><span class="s8-step-n">01</span><span class="s8-step-l">Datos</span></div>
+          <div class="s8-step-rule" id="s8-rule1"></div>
+          <div class="s8-step" id="s8-st2"><span class="s8-step-n">02</span><span class="s8-step-l">Documento</span></div>
+          <div class="s8-step-rule" id="s8-rule2"></div>
+          <div class="s8-step" id="s8-st3"><span class="s8-step-n">03</span><span class="s8-step-l">On-chain</span></div>
+        </div>
+        <div class="s8-panel" id="s8-panel">
+          <div class="s8-panel-eyebrow" id="s8-panel-eb">paso 01 · datos personales</div>
+          <div class="s8-panel-h" id="s8-panel-h">¿Quién eres?</div>
+          <div class="s8-fields" id="s8-fields">
+            <div class="s8-field" id="s8-f1"><span class="s8-field-label">Nombre legal</span><div class="s8-field-input">Juan García</div></div>
+            <div class="s8-field" id="s8-f2"><span class="s8-field-label">País</span><div class="s8-field-input">MX · México</div></div>
+            <div class="s8-field" id="s8-f3"><span class="s8-field-label">Fecha de nacimiento</span><div class="s8-field-input">1992-04-18</div></div>
+            <div class="s8-field" id="s8-f4"><span class="s8-field-label">RFC</span><div class="s8-field-input">GOMM920418H73</div></div>
+            <div class="s8-field s8-field--full" id="s8-f5"><span class="s8-field-label">Email</span><div class="s8-field-input">juan@ejemplo.mx</div></div>
+          </div>
+          <!-- Success state overlays the fields once on-chain step completes -->
+          <div class="s8-success" id="s8-success" style="opacity:0">
+            <div class="s8-success-check">✓</div>
+            <div class="s8-success-t">Identidad atestada on-chain</div>
+            <div class="s8-success-d">Tu address ya tiene permiso para operar en Tessera Private y Tessera Public.</div>
+            <div class="s8-success-tx">ver tx en Snowtrace ↗</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════ Scene 9 (90–130s) · PRIVATE TRADE ═══════════════════ -->
+      <div id="s9" class="clip scene s9" data-start="90" data-duration="40" data-track-index="0">
+        <div class="eyebrow s9-eyebrow"><span class="eyebrow-dot"></span> Tessera Private · trade en Avalanche Fuji</div>
+        <div class="s9-row">
+          <div class="s9-chart">
+            <div class="s9-chart-head">
+              <div>
+                <div class="s9-ticker">KVK</div>
+                <div class="s9-name">Kavak · LatAm marketplace de autos usados</div>
+              </div>
+              <div class="s9-price-block">
+                <div class="s9-price">$17.85</div>
+                <div class="s9-pct">+1.10% · 24h</div>
+              </div>
+            </div>
+            <div class="s9-chartbox">
+              <svg class="s9-chartline" viewBox="0 0 800 220" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="s9-fill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="rgba(15,110,86,0.18)"/>
+                    <stop offset="100%" stop-color="rgba(15,110,86,0)"/>
+                  </linearGradient>
+                </defs>
+                <path d="M 0 160 L 60 150 L 120 158 L 180 138 L 240 142 L 300 120 L 360 110 L 420 122 L 480 96 L 540 100 L 600 78 L 660 84 L 720 64 L 800 56 L 800 220 L 0 220 Z" fill="url(#s9-fill)"/>
+                <path d="M 0 160 L 60 150 L 120 158 L 180 138 L 240 142 L 300 120 L 360 110 L 420 122 L 480 96 L 540 100 L 600 78 L 660 84 L 720 64 L 800 56" stroke="#0F6E56" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="s9-side" id="s9-side">
+            <div class="s9-side-eyebrow">Place limit order</div>
+            <div class="s9-form-row">
+              <div class="s9-form-tab is-buy">Comprar</div>
+              <div class="s9-form-tab">Vender</div>
+            </div>
+            <div class="s9-form-input"><span class="s9-form-input-k">Cantidad</span><span>50 KVK</span></div>
+            <div class="s9-form-input"><span class="s9-form-input-k">Precio</span><span>$17.85</span></div>
+            <div class="s9-form-input"><span class="s9-form-input-k">Total</span><span>892.50 USDC</span></div>
+            <div class="s9-form-cta" id="s9-cta">Firmar y enviar a Fuji</div>
+            <div class="s9-book" id="s9-book">
+              <div class="s9-book-row"><span>17.95</span><span>120</span><span style="color:#c03737">ASK</span></div>
+              <div class="s9-book-row"><span>17.90</span><span>340</span><span style="color:#c03737">ASK</span></div>
+              <div class="s9-book-row is-new" id="s9-newrow"><span>17.85</span><span>50</span><span style="color:var(--primary)">TU ORDEN</span></div>
+              <div class="s9-book-row"><span>17.80</span><span>180</span><span style="color:var(--primary)">BID</span></div>
+              <div class="s9-book-row"><span>17.75</span><span>420</span><span style="color:var(--primary)">BID</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="s9-toast" id="s9-toast" style="opacity:0">
+          <span class="s9-toast-check">✓</span>
+          orden 50 KVK @ $17.85 · enviada al orderbook on-chain
+        </div>
+      </div>
+
+      <!-- ═══════════════════ Scene 10 (130–170s) · PUBLIC TRADE ═══════════════════ -->
+      <div id="s10" class="clip scene s10" data-start="130" data-duration="40" data-track-index="0">
+        <!-- Universe-switch flash overlay -->
+        <div class="s10-flash" id="s10-flash">
+          <div style="text-align:center">
+            <div class="s10-flash-text">Tessera Public</div>
+            <div class="s10-flash-sub">Misma wallet · misma identidad · otro universo</div>
+          </div>
+        </div>
+        <div class="eyebrow s10-eyebrow"><span class="eyebrow-dot"></span> Tessera Public · powered by Dinari</div>
+        <div class="s10-grid">
+          <div class="s10-chart">
+            <div class="s9-chart-head">
+              <div>
+                <div class="s10-ticker">NVDA</div>
+                <div class="s9-name">NVIDIA Corporation · precio live de Dinari sandbox</div>
+              </div>
+              <div class="s9-price-block">
+                <div class="s10-price">$224.43</div>
+                <div class="s10-pct">−0.40% · 24h</div>
+              </div>
+            </div>
+            <div class="s9-chartbox">
+              <svg class="s9-chartline" viewBox="0 0 800 220" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="s10-fill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="rgba(60,52,137,0.18)"/>
+                    <stop offset="100%" stop-color="rgba(60,52,137,0)"/>
+                  </linearGradient>
+                </defs>
+                <path d="M 0 60 L 60 50 L 120 70 L 180 64 L 240 84 L 300 76 L 360 96 L 420 90 L 480 108 L 540 100 L 600 124 L 660 116 L 720 138 L 800 130 L 800 220 L 0 220 Z" fill="url(#s10-fill)"/>
+                <path d="M 0 60 L 60 50 L 120 70 L 180 64 L 240 84 L 300 76 L 360 96 L 420 90 L 480 108 L 540 100 L 600 124 L 660 116 L 720 138 L 800 130" stroke="#3C3489" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+          <div class="s10-side">
+            <div class="s10-side-eyebrow">Place limit order</div>
+            <div class="s9-form-row">
+              <div class="s10-form-tab is-buy">Comprar</div>
+              <div class="s9-form-tab">Vender</div>
+            </div>
+            <div class="s9-form-input"><span class="s9-form-input-k">Cantidad</span><span>10 NVDA</span></div>
+            <div class="s9-form-input"><span class="s9-form-input-k">Precio</span><span>$224.43</span></div>
+            <div class="s9-form-input"><span class="s9-form-input-k">Total</span><span>2,244.30 USDC</span></div>
+            <div class="s10-form-cta" id="s10-cta">Firmar y enviar a Fuji</div>
+            <div class="s9-book" id="s10-book">
+              <div class="s9-book-row"><span>224.95</span><span>40</span><span style="color:#c03737">ASK</span></div>
+              <div class="s9-book-row"><span>224.70</span><span>80</span><span style="color:#c03737">ASK</span></div>
+              <div class="s9-book-row is-new" id="s10-newrow" style="background:var(--accent-soft)"><span>224.43</span><span>10</span><span style="color:var(--accent)">TU ORDEN</span></div>
+              <div class="s9-book-row"><span>224.20</span><span>60</span><span style="color:var(--accent)">BID</span></div>
+              <div class="s9-book-row"><span>223.90</span><span>110</span><span style="color:var(--accent)">BID</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════ Scene 11 (170–200s) · PORTFOLIO ═══════════════════ -->
+      <div id="s11" class="clip scene s11" data-start="170" data-duration="30" data-track-index="0">
+        <div class="eyebrow s11-eyebrow"><span class="eyebrow-dot"></span> Portfolio · una sola cuenta, dos mercados</div>
+        <h2 class="s11-h" id="s11-h">Mis holdings · misma wallet</h2>
+        <div class="s11-stats">
+          <div class="s11-stat" id="s11-stat1">
+            <div class="s11-stat-k">USDC balance</div>
+            <div class="s11-stat-v">948,184</div>
+          </div>
+          <div class="s11-stat" id="s11-stat2">
+            <div class="s11-stat-k">Total portfolio (USDC)</div>
+            <div class="s11-stat-v">951,131</div>
+          </div>
+          <div class="s11-stat" id="s11-stat3">
+            <div class="s11-stat-k">Posiciones</div>
+            <div class="s11-stat-v">2</div>
+          </div>
+        </div>
+        <div class="s11-table" id="s11-table" data-layout-allow-overflow>
+          <div class="s11-table-head">
+            <div>Universo</div>
+            <div>Ticker</div>
+            <div style="text-align:right">Cantidad</div>
+            <div style="text-align:right">Precio</div>
+            <div style="text-align:right">Valor (USDC)</div>
+          </div>
+          <div class="s11-table-row" id="s11-row1">
+            <div><span class="s11-table-uni s11-table-uni--priv">PRIV</span></div>
+            <div class="s11-table-ticker">KVK · Kavak</div>
+            <div class="s11-table-num">50</div>
+            <div class="s11-table-num">$17.85</div>
+            <div class="s11-table-num">892.50</div>
+          </div>
+          <div class="s11-table-row" id="s11-row2">
+            <div><span class="s11-table-uni s11-table-uni--pub">PUB</span></div>
+            <div class="s11-table-ticker">NVDA · NVIDIA</div>
+            <div class="s11-table-num">10</div>
+            <div class="s11-table-num">$224.43</div>
+            <div class="s11-table-num">2,244.30</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════ Scene 12 (200–225s) · COMPLIANCE ADMIN ═══════════════════ -->
+      <div id="s12" class="clip scene s12" data-start="200" data-duration="15" data-track-index="0">
+        <div class="eyebrow s12-eyebrow"><span class="eyebrow-dot"></span> /admin/reports · Wavy Node auto-generados</div>
+        <div class="s12-banner" id="s12-banner">
+          <span class="s12-banner-tag">DEMO</span>
+          <span class="s12-banner-text"><strong>Datos sintéticos para demostración.</strong> La integración Wavy Node está cableada extremo a extremo — reemplazará automáticamente estos reportes cuando llegue la API key.</span>
+        </div>
+        <div class="s12-tabs" id="s12-tabs">
+          <div class="s12-tab is-active">MX · México</div>
+          <div class="s12-tab">CO · Colombia</div>
+          <div class="s12-tab">SV · El Salvador</div>
+          <div class="s12-tab">GT · Guatemala</div>
+        </div>
+        <div class="s12-cards">
+          <div class="s12-card" id="s12-c1">
+            <div class="s12-card-type">AOR</div>
+            <div>
+              <div class="s12-card-t">Aviso de Operación Relevante</div>
+              <div class="s12-card-ref">SAT-AOR-2026-04829</div>
+            </div>
+            <div class="s12-card-meta">user_4a2e91c · 3 ops · 84,500 USDC</div>
+            <div class="s12-card-meta">enviado · 2026-05-19</div>
+            <div class="s12-card-pill s12-card-pill--ok"><span class="s12-card-pill-dot"></span>low · 18/100</div>
+          </div>
+          <div class="s12-card s12-card--med" id="s12-c2">
+            <div class="s12-card-type s12-card-type--aoi">AOI</div>
+            <div>
+              <div class="s12-card-t">Aviso de Operación Inusual</div>
+              <div class="s12-card-ref">SAT-AOI-2026-04861</div>
+            </div>
+            <div class="s12-card-meta">user_91dfa02 · 7 ops · 142,300 USDC</div>
+            <div class="s12-card-meta">en revisión · pendiente</div>
+            <div class="s12-card-pill s12-card-pill--med"><span class="s12-card-pill-dot"></span>medium · 64/100</div>
+          </div>
+          <div class="s12-card s12-card--high" id="s12-c3">
+            <div class="s12-card-type s12-card-type--aop">AOP</div>
+            <div>
+              <div class="s12-card-t">Aviso de Operación Preocupante</div>
+              <div class="s12-card-ref">SAT-AOP-2026-04601</div>
+            </div>
+            <div class="s12-card-meta">user_d7f2a14 · 12 ops · 287,400 USDC</div>
+            <div class="s12-card-meta">enviado · 2026-05-03</div>
+            <div class="s12-card-pill s12-card-pill--high"><span class="s12-card-pill-dot"></span>high · 78/100</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════ Scene 13 (215–225s) · BENEFITS ═══════════════════ -->
+      <div id="s13" class="clip scene s13" data-start="215" data-duration="10" data-track-index="0">
+        <div class="eyebrow s13-eyebrow"><span class="eyebrow-dot"></span> Beneficios concretos · para cada lado del mercado</div>
+        <h2 class="s13-h">Tessera resuelve <span class="accent">tres problemas</span> a la vez.</h2>
+        <div class="s13-grid">
+          <div class="s13-card s13-card--issuer" id="s13-c1">
+            <div class="s13-card-persona">Para startups · emisores</div>
+            <div class="s13-card-h">Capital sin <span class="accent">IPO</span>.</div>
+            <ul class="s13-bullets">
+              <li>Sin perder control accionario</li>
+              <li>Sin bancos de inversión ni 2 años de roadshow</li>
+              <li>Liquidez secundaria desde el día uno</li>
+            </ul>
+          </div>
+          <div class="s13-card s13-card--retail" id="s13-c2">
+            <div class="s13-card-persona">Para retail · usuarios jóvenes</div>
+            <div class="s13-card-h">Acceso a <span class="accent">equity privado</span>.</div>
+            <ul class="s13-bullets">
+              <li>Tickets pequeños — desde $100 USDC</li>
+              <li>Sin comisión de broker, sin T+2</li>
+              <li>Una KYC sirve a ambos universos</li>
+            </ul>
+          </div>
+          <div class="s13-card s13-card--reg" id="s13-c3">
+            <div class="s13-card-persona">Para reguladores · supervisores</div>
+            <div class="s13-card-h">Audit trail <span class="accent">completo</span>.</div>
+            <ul class="s13-bullets">
+              <li>Reportes AOR/ROS/RTS auto-generados</li>
+              <li>Compliance enforced en el bytecode</li>
+              <li>4 jurisdicciones — MX, CO, SV, GT</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════ Scene 7 (225–240s) · CLOSING ═══════════════════ -->
+      <div id="s7" class="clip scene s7" data-start="225" data-duration="15" data-track-index="0">
+        <img class="s7-mark-img" src="tessera.png" alt="Tessera" id="s7-mark"/>
+        <div class="s7-wordmark" id="s7-wordmark">Tessera</div>
+        <div class="s7-tagline" id="s7-tagline">La bolsa privada de Latinoamérica.</div>
+        <div class="s7-chip" id="s7-chip">
+          <span class="s7-chip-dot"></span>
+          Top 3 · Hackathon Avalanche LatAm Institucional
+        </div>
+      </div>
+
+      <!-- ═══════════════════ Narration audio ═══════════════════ -->
+      <audio id="narration" class="clip" data-start="0" data-duration="198" data-track-index="1" src="narration.wav" data-volume="1"></audio>
+
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      /* ── Scene 1 · cold open (0–7) ────────────────────────────────────── */
+      tl.from("#s1 .s1-eyebrow", { y: -20, opacity: 0, duration: 0.6, ease: "power3.out" }, 0.3);
+      tl.from("#s1 .s1-logo-img", { scale: 0.7, opacity: 0, duration: 0.8, ease: "back.out(1.6)" }, 0.5);
+      tl.from("#s1 .s1-wordmark", { y: 40, opacity: 0, duration: 0.7, ease: "expo.out" }, 1.0);
+      tl.from("#s1 .s1-tagline .word, #s1 .s1-tagline .dot", { y: 24, opacity: 0, duration: 0.45, ease: "power3.out", stagger: 0.08 }, 1.4);
+
+      /* ── Scene 2 · problem (7–15) ─────────────────────────────────────── */
+      tl.from("#s2 .s2-eyebrow", { y: -16, opacity: 0, duration: 0.5, ease: "power3.out" }, 7.2);
+      tl.from("#s2-priv", { x: -80, opacity: 0, duration: 0.7, ease: "power3.out" }, 7.5);
+      tl.from("#s2-pub", { x: 80, opacity: 0, duration: 0.7, ease: "power3.out" }, 7.7);
+      tl.from("#s2 .s2-rule", { scaleY: 0, opacity: 0, duration: 0.6, ease: "expo.out", transformOrigin: "top center" }, 7.9);
+      tl.from("#s2-priv .s2-big", { y: 30, opacity: 0, scale: 0.92, duration: 0.6, ease: "back.out(1.4)" }, 8.4);
+      tl.from("#s2-pub .s2-big", { y: 30, opacity: 0, scale: 0.92, duration: 0.6, ease: "back.out(1.4)" }, 8.6);
+      tl.from("#s2-priv .s2-tag", { y: 16, opacity: 0, duration: 0.4, ease: "power2.out" }, 11.0);
+      tl.from("#s2-pub .s2-tag", { y: 16, opacity: 0, duration: 0.4, ease: "power2.out" }, 11.2);
+      tl.from("#s2-bottom", { y: 16, opacity: 0, duration: 0.5, ease: "power3.out" }, 12.5);
+
+      /* ── Scene 3 · solution (15–25) ───────────────────────────────────── */
+      tl.from("#s3 .s3-eyebrow", { y: -16, opacity: 0, duration: 0.5, ease: "power3.out" }, 15.2);
+      tl.from("#s3-h", { y: 24, opacity: 0, duration: 0.6, ease: "power3.out" }, 15.6);
+      tl.from("#s3-n1", { x: -60, opacity: 0, duration: 0.6, ease: "back.out(1.3)" }, 16.5);
+      tl.from("#s3-n3", { x: 60, opacity: 0, duration: 0.6, ease: "back.out(1.3)" }, 16.7);
+      tl.from("#s3-a1", { scale: 0, opacity: 0, duration: 0.4, ease: "back.out(2)" }, 17.5);
+      tl.from("#s3-a2", { scale: 0, opacity: 0, duration: 0.4, ease: "back.out(2)" }, 17.6);
+      tl.from("#s3-n2", { scale: 0.85, opacity: 0, duration: 0.55, ease: "back.out(1.5)" }, 18.0);
+      // Pulse the core node — the killer point of the scene
+      tl.to("#s3-n2", { boxShadow: "0 12px 40px rgba(60,52,137,0.30)", duration: 0.6, ease: "power2.inOut", yoyo: true, repeat: 3 }, 20);
+
+      /* ── Scene 4 · CROSSOVER (25–37) ──────────────────────────────────── */
+      tl.from("#s4 .s4-eyebrow", { y: -16, opacity: 0, duration: 0.5, ease: "power3.out" }, 25.2);
+      tl.from("#s4-left", { x: -50, opacity: 0, duration: 0.7, ease: "power3.out" }, 25.5);
+      tl.from("#s4-right", { x: 50, opacity: 0, duration: 0.7, ease: "power3.out" }, 25.7);
+      tl.from("#s4-cross .s4-cross-svg path", { drawSVG: "0%", opacity: 0, duration: 0.8, ease: "power2.inOut", stagger: 0.15 }, 26.5);
+      // Fallback for browsers without drawSVG plugin — just fade the cross in
+      tl.from("#s4-cross", { opacity: 0, scale: 0.7, duration: 0.6, ease: "back.out(1.4)" }, 26.5);
+      tl.from("#s4-left .s4-card-step:first-of-type", { y: 20, opacity: 0, duration: 0.45, ease: "power3.out" }, 27);
+      tl.from("#s4-right .s4-card-step:first-of-type", { y: 20, opacity: 0, duration: 0.45, ease: "power3.out" }, 27.3);
+      tl.from("#s4-left .s4-card-arrow", { y: -16, opacity: 0, duration: 0.4, ease: "power2.out" }, 28.8);
+      tl.from("#s4-right .s4-card-arrow", { y: -16, opacity: 0, duration: 0.4, ease: "power2.out" }, 29.0);
+      tl.from("#s4-left .s4-card-step:last-of-type", { y: 20, opacity: 0, duration: 0.5, ease: "back.out(1.4)" }, 29.5);
+      tl.from("#s4-right .s4-card-step:last-of-type", { y: 20, opacity: 0, duration: 0.5, ease: "back.out(1.4)" }, 29.8);
+      tl.from("#s4-quote", { y: 20, opacity: 0, duration: 0.7, ease: "power3.out" }, 33);
+
+      /* ── Scene 5 · dual trade (37–47) ─────────────────────────────────── */
+      tl.from("#s5 .s5-eyebrow", { y: -16, opacity: 0, duration: 0.5, ease: "power3.out" }, 37.2);
+      tl.from("#s5-priv", { x: -80, opacity: 0, duration: 0.7, ease: "power3.out" }, 37.5);
+      tl.from("#s5-pub", { x: 80, opacity: 0, duration: 0.7, ease: "power3.out" }, 38.0);
+      tl.from("#s5-priv .s5-ticker", { scale: 0.92, opacity: 0, duration: 0.5, ease: "back.out(1.4)" }, 38.2);
+      tl.from("#s5-pub .s5-ticker", { scale: 0.92, opacity: 0, duration: 0.5, ease: "back.out(1.4)" }, 38.7);
+      tl.from("#s5-link", { opacity: 0, scale: 0.7, duration: 0.5, ease: "back.out(1.6)" }, 39.5);
+      tl.from("#s5-priv .s5-book-row", { x: -20, opacity: 0, duration: 0.3, ease: "power2.out", stagger: 0.06 }, 40.5);
+      tl.from("#s5-pub .s5-book-row", { x: 20, opacity: 0, duration: 0.3, ease: "power2.out", stagger: 0.06 }, 41.2);
+      tl.from("#s5 .s5-foot", { y: 20, opacity: 0, duration: 0.5, ease: "power3.out" }, 43.5);
+
+      /* ── Scene 6 · compliance (47–55) ─────────────────────────────────── */
+      tl.from("#s6 .s6-eyebrow", { y: -16, opacity: 0, duration: 0.5, ease: "power3.out" }, 47.2);
+      tl.from("#s6-h", { y: 24, opacity: 0, duration: 0.6, ease: "power3.out" }, 47.6);
+      tl.from("#s6-j1", { y: 30, opacity: 0, scale: 0.9, duration: 0.5, ease: "back.out(1.4)" }, 48.5);
+      tl.from("#s6-j2", { y: 30, opacity: 0, scale: 0.9, duration: 0.5, ease: "back.out(1.4)" }, 48.7);
+      tl.from("#s6-j3", { y: 30, opacity: 0, scale: 0.9, duration: 0.5, ease: "back.out(1.4)" }, 48.9);
+      tl.from("#s6-j4", { y: 30, opacity: 0, scale: 0.9, duration: 0.5, ease: "back.out(1.4)" }, 49.1);
+      tl.from("#s6-pill", { y: 20, opacity: 0, duration: 0.6, ease: "power3.out" }, 51);
+
+      /* ── Scene 8 · KYC walkthrough (55–90) ────────────────────────────── */
+      tl.from("#s8-topbar", { y: -30, opacity: 0, duration: 0.55, ease: "power3.out" }, 55.3);
+      tl.from("#s8-stepper > *", { y: 16, opacity: 0, duration: 0.4, ease: "power3.out", stagger: 0.06 }, 55.8);
+      tl.from("#s8-panel", { y: 28, opacity: 0, duration: 0.55, ease: "power3.out" }, 56.4);
+      tl.from("#s8-panel-eb", { x: -10, opacity: 0, duration: 0.35, ease: "power2.out" }, 56.9);
+      tl.from("#s8-panel-h", { y: 14, opacity: 0, duration: 0.4, ease: "power3.out" }, 57.2);
+      // Fields type in sequence as if a user were filling them
+      tl.from("#s8-fields > .s8-field", { y: 12, opacity: 0, duration: 0.35, ease: "power2.out", stagger: 0.45 }, 57.8);
+      // Step transitions — phase 1 → phase 2 (~t=66, 11s into the scene)
+      tl.set("#s8-st1", { className: "s8-step is-done" }, 66);
+      tl.set("#s8-st2", { className: "s8-step is-active" }, 66);
+      tl.set("#s8-rule1", { className: "s8-step-rule is-filled" }, 66);
+      tl.set("#s8-panel-eb", { textContent: "paso 02 · documento" }, 66);
+      tl.set("#s8-panel-h", { textContent: "Documento oficial" }, 66);
+      // Phase 2 → phase 3 (~t=72)
+      tl.set("#s8-st2", { className: "s8-step is-done" }, 72);
+      tl.set("#s8-st3", { className: "s8-step is-active" }, 72);
+      tl.set("#s8-rule2", { className: "s8-step-rule is-filled" }, 72);
+      tl.set("#s8-panel-eb", { textContent: "paso 03 · firma on-chain" }, 72);
+      tl.set("#s8-panel-h", { textContent: "Firma con tu wallet" }, 72);
+      // Phase 3 done → success (~t=80, transition to success state at t=82)
+      tl.set("#s8-st3", { className: "s8-step is-done" }, 80);
+      tl.to("#s8-fields", { opacity: 0, scale: 0.96, duration: 0.5, ease: "power2.in" }, 81);
+      tl.set("#s8-fields", { display: "none" }, 81.6);
+      tl.set("#s8-panel-eb", { textContent: "listo · 2026-05-19" }, 81.6);
+      tl.set("#s8-panel-h", { textContent: "Identidad atestada" }, 81.6);
+      tl.fromTo("#s8-success", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 81.8);
+      tl.from("#s8-success-check", { scale: 0, rotate: -90, duration: 0.55, ease: "back.out(2)" }, 82);
+      // KYC pill in the topbar flips to verified
+      tl.set("#s8-kyc-pill", { className: "s8-kyc-pill s8-kyc-pill--verified" }, 82.2);
+      tl.fromTo("#s8-kyc-pill", { scale: 0.85 }, { scale: 1, duration: 0.4, ease: "back.out(1.7)" }, 82.2);
+      // KYC pill text — keep the dot child but swap label by replacing the text node carefully
+      tl.set("#s8-kyc-pill", { innerHTML: '<span class="s8-kyc-dot"></span>KYC verificado' }, 82.2);
+
+      /* ── Scene 9 · Private trade — KVK (90–130) ───────────────────────── */
+      tl.from("#s9 .s9-eyebrow", { y: -16, opacity: 0, duration: 0.45, ease: "power3.out" }, 90.3);
+      tl.from("#s9 .s9-chart", { x: -40, opacity: 0, duration: 0.6, ease: "power3.out" }, 90.6);
+      tl.from("#s9-side", { x: 40, opacity: 0, duration: 0.6, ease: "power3.out" }, 90.9);
+      tl.from("#s9 .s9-ticker", { scale: 0.92, opacity: 0, duration: 0.45, ease: "back.out(1.5)" }, 91.4);
+      tl.from("#s9 .s9-price", { y: 14, opacity: 0, duration: 0.4, ease: "power2.out" }, 91.7);
+      tl.from("#s9 .s9-chartbox path", { drawSVG: 0, opacity: 0, duration: 1.0, ease: "power2.inOut" }, 92);
+      // Order form fields appear sequentially as if being filled
+      tl.from("#s9-side .s9-form-row", { y: 16, opacity: 0, duration: 0.4, ease: "power3.out" }, 93);
+      tl.from("#s9-side .s9-form-input:nth-of-type(1)", { y: 16, opacity: 0, duration: 0.35, ease: "power2.out" }, 94.5);
+      tl.from("#s9-side .s9-form-input:nth-of-type(2)", { y: 16, opacity: 0, duration: 0.35, ease: "power2.out" }, 96.5);
+      tl.from("#s9-side .s9-form-input:nth-of-type(3)", { y: 16, opacity: 0, duration: 0.35, ease: "power2.out" }, 98.5);
+      tl.from("#s9-cta", { y: 16, opacity: 0, duration: 0.45, ease: "back.out(1.5)" }, 100.5);
+      // CTA pulse — implies the click
+      tl.to("#s9-cta", { scale: 0.96, duration: 0.18, ease: "power2.in" }, 102.5);
+      tl.to("#s9-cta", { scale: 1, duration: 0.25, ease: "back.out(1.6)" }, 102.7);
+      // Orderbook appears with the new order highlighted
+      tl.from("#s9-book .s9-book-row:not(.is-new)", { x: 12, opacity: 0, duration: 0.3, ease: "power2.out", stagger: 0.06 }, 104);
+      tl.fromTo("#s9-newrow", { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.5)" }, 105.5);
+      tl.to("#s9-newrow", { boxShadow: "0 0 0 4px rgba(15,110,86,0.18)", duration: 0.4, ease: "power2.inOut", yoyo: true, repeat: 3 }, 106);
+      // Toast — order confirmed
+      tl.fromTo("#s9-toast", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.5, ease: "back.out(1.6)" }, 107);
+      tl.to("#s9-toast", { opacity: 0, y: -10, duration: 0.5, ease: "power2.in" }, 114);
+
+      /* ── Scene 10 · Public trade — NVDA + flash transition (130–170) ──── */
+      // Flash overlay covers the scene
+      tl.fromTo("#s10-flash", { opacity: 1, scale: 1 }, { opacity: 1, scale: 1, duration: 0.01 }, 130);
+      tl.from("#s10-flash .s10-flash-text", { y: 40, opacity: 0, duration: 0.55, ease: "power3.out" }, 130.2);
+      tl.from("#s10-flash .s10-flash-sub", { y: 20, opacity: 0, duration: 0.4, ease: "power3.out" }, 130.6);
+      tl.to("#s10-flash", { opacity: 0, duration: 0.6, ease: "power2.inOut" }, 132.3);
+      tl.set("#s10-flash", { display: "none" }, 132.9);
+      // Then the trade view animates in similar to scene 9
+      tl.from("#s10 .s10-eyebrow", { y: -16, opacity: 0, duration: 0.45, ease: "power3.out" }, 132.6);
+      tl.from("#s10 .s10-chart", { x: -40, opacity: 0, duration: 0.6, ease: "power3.out" }, 132.9);
+      tl.from("#s10 .s10-side", { x: 40, opacity: 0, duration: 0.6, ease: "power3.out" }, 133.2);
+      tl.from("#s10 .s10-ticker", { scale: 0.92, opacity: 0, duration: 0.45, ease: "back.out(1.5)" }, 133.7);
+      tl.from("#s10 .s10-price", { y: 14, opacity: 0, duration: 0.4, ease: "power2.out" }, 134);
+      tl.from("#s10 .s9-chartbox path", { opacity: 0, duration: 1.0, ease: "power2.inOut" }, 134.5);
+      // Form fields
+      tl.from("#s10 .s9-form-row", { y: 16, opacity: 0, duration: 0.4, ease: "power3.out" }, 136);
+      tl.from("#s10 .s9-form-input:nth-of-type(1)", { y: 16, opacity: 0, duration: 0.35, ease: "power2.out" }, 138);
+      tl.from("#s10 .s9-form-input:nth-of-type(2)", { y: 16, opacity: 0, duration: 0.35, ease: "power2.out" }, 140);
+      tl.from("#s10 .s9-form-input:nth-of-type(3)", { y: 16, opacity: 0, duration: 0.35, ease: "power2.out" }, 142);
+      tl.from("#s10-cta", { y: 16, opacity: 0, duration: 0.45, ease: "back.out(1.5)" }, 144);
+      tl.to("#s10-cta", { scale: 0.96, duration: 0.18, ease: "power2.in" }, 146);
+      tl.to("#s10-cta", { scale: 1, duration: 0.25, ease: "back.out(1.6)" }, 146.2);
+      tl.from("#s10-book .s9-book-row:not(.is-new)", { x: 12, opacity: 0, duration: 0.3, ease: "power2.out", stagger: 0.06 }, 148);
+      tl.fromTo("#s10-newrow", { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.5)" }, 150);
+      tl.to("#s10-newrow", { boxShadow: "0 0 0 4px rgba(60,52,137,0.20)", duration: 0.4, ease: "power2.inOut", yoyo: true, repeat: 3 }, 150.6);
+
+      /* ── Scene 11 · Portfolio (170–200) ───────────────────────────────── */
+      tl.from("#s11 .s11-eyebrow", { y: -16, opacity: 0, duration: 0.45, ease: "power3.out" }, 170.3);
+      tl.from("#s11-h", { y: 24, opacity: 0, duration: 0.55, ease: "power3.out" }, 170.7);
+      tl.from("#s11-stat1", { y: 24, opacity: 0, duration: 0.5, ease: "back.out(1.4)" }, 171.5);
+      tl.from("#s11-stat2", { y: 24, opacity: 0, duration: 0.5, ease: "back.out(1.4)" }, 171.7);
+      tl.from("#s11-stat3", { y: 24, opacity: 0, duration: 0.5, ease: "back.out(1.4)" }, 171.9);
+      tl.from("#s11-table .s11-table-head", { y: 16, opacity: 0, duration: 0.4, ease: "power3.out" }, 173);
+      tl.from("#s11-row1", { x: -20, opacity: 0, duration: 0.5, ease: "power3.out" }, 173.5);
+      tl.from("#s11-row2", { x: -20, opacity: 0, duration: 0.5, ease: "power3.out" }, 174);
+      // Highlight both rows briefly to emphasize "one wallet, two universes"
+      tl.to("#s11-row1", { backgroundColor: "rgba(15,110,86,0.06)", duration: 0.5, ease: "power2.inOut", yoyo: true, repeat: 1 }, 178);
+      tl.to("#s11-row2", { backgroundColor: "rgba(60,52,137,0.06)", duration: 0.5, ease: "power2.inOut", yoyo: true, repeat: 1 }, 178.5);
+
+      /* ── Scene 12 · Compliance admin (200–225) ────────────────────────── */
+      tl.from("#s12 .s12-eyebrow", { y: -16, opacity: 0, duration: 0.45, ease: "power3.out" }, 200.3);
+      tl.from("#s12-banner", { y: 16, opacity: 0, duration: 0.55, ease: "power3.out" }, 200.8);
+      tl.from("#s12-tabs > .s12-tab", { y: 12, opacity: 0, duration: 0.35, ease: "power3.out", stagger: 0.06 }, 201.5);
+      tl.from("#s12-c1", { x: -30, opacity: 0, duration: 0.5, ease: "power3.out" }, 202.5);
+      tl.from("#s12-c2", { x: -30, opacity: 0, duration: 0.5, ease: "power3.out" }, 203);
+      tl.from("#s12-c3", { x: -30, opacity: 0, duration: 0.5, ease: "power3.out" }, 203.5);
+      // Cycle the active tab across countries during the hold (compressed
+      // for the shorter 15s scene window so all 4 jurisdictions get screen
+      // time before s13 takes over).
+      tl.set("#s12-tabs > .s12-tab:nth-child(1)", { className: "s12-tab" }, 207);
+      tl.set("#s12-tabs > .s12-tab:nth-child(2)", { className: "s12-tab is-active" }, 207);
+      tl.set("#s12-tabs > .s12-tab:nth-child(2)", { className: "s12-tab" }, 210);
+      tl.set("#s12-tabs > .s12-tab:nth-child(3)", { className: "s12-tab is-active" }, 210);
+      tl.set("#s12-tabs > .s12-tab:nth-child(3)", { className: "s12-tab" }, 213);
+      tl.set("#s12-tabs > .s12-tab:nth-child(4)", { className: "s12-tab is-active" }, 213);
+
+      /* ── Scene 13 · Benefits (215–225) ────────────────────────────────── */
+      tl.from("#s13 .s13-eyebrow", { y: -16, opacity: 0, duration: 0.45, ease: "power3.out" }, 215.3);
+      tl.from("#s13 .s13-h", { y: 22, opacity: 0, duration: 0.55, ease: "power3.out" }, 215.7);
+      tl.from("#s13-c1", { y: 30, opacity: 0, duration: 0.55, ease: "back.out(1.4)" }, 216.3);
+      tl.from("#s13-c2", { y: 30, opacity: 0, duration: 0.55, ease: "back.out(1.4)" }, 216.55);
+      tl.from("#s13-c3", { y: 30, opacity: 0, duration: 0.55, ease: "back.out(1.4)" }, 216.8);
+      tl.from("#s13-c1 .s13-bullets li", { x: -12, opacity: 0, duration: 0.32, ease: "power2.out", stagger: 0.10 }, 217.4);
+      tl.from("#s13-c2 .s13-bullets li", { x: -12, opacity: 0, duration: 0.32, ease: "power2.out", stagger: 0.10 }, 217.7);
+      tl.from("#s13-c3 .s13-bullets li", { x: -12, opacity: 0, duration: 0.32, ease: "power2.out", stagger: 0.10 }, 218.0);
+
+      /* ── Scene 7 · closing (225–240) ──────────────────────────────────── */
+      tl.from("#s7-mark", { scale: 0.7, opacity: 0, duration: 0.7, ease: "back.out(1.6)" }, 225.4);
+      tl.from("#s7-wordmark", { y: 24, opacity: 0, duration: 0.6, ease: "expo.out" }, 226.0);
+      tl.from("#s7-tagline", { y: 16, opacity: 0, duration: 0.5, ease: "power3.out" }, 226.6);
+      tl.from("#s7-chip", { y: 12, opacity: 0, duration: 0.5, ease: "power3.out" }, 227.2);
+      // Long hold + soft fade at the very end
+      tl.to("#s7-tagline", { opacity: 0.75, duration: 1.0, ease: "power2.inOut" }, 236);
+      tl.to(["#s7-mark", "#s7-wordmark", "#s7-chip"], { opacity: 0.9, duration: 1.2, ease: "power2.inOut" }, 237);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

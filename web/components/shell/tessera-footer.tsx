@@ -20,9 +20,8 @@ export function TesseraFooter() {
           <span className="foot-tag">· Avalanche LatAm Institucional 2026</span>
         </div>
         <div className="foot-links">
-          <a href="/admin/reports">
-            Compliance
-          </a>
+          <a href="/compliance">Marco regulatorio</a>
+          <a href="/admin/reports">Reportes</a>
           <a href={orderbookHref} target="_blank" rel="noopener noreferrer">
             Snowtrace<span className="link-arrow">↗</span>
           </a>

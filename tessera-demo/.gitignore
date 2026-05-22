@@ -1,0 +1,17 @@
+# HyperFrames render workdirs (ephemeral; created during `npx hyperframes render`)
+work-*/
+renders/
+
+# HyperFrames preview-server caches (regenerated on every preview)
+.thumbnails/
+.waveform-cache/
+
+# Node — only if/when we install local deps
+node_modules/
+
+# Hyperframes cache (would normally be in ~/.cache anyway, but defensive)
+.hyperframes-cache/
+
+# Editor swap files
+*.swp
+.DS_Store

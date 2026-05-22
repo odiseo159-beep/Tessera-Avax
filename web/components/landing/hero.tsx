@@ -209,6 +209,10 @@ function HeroBg({ bg }: { bg: "video" | "minimal" }) {
         <video
           className="hero-bg-video"
           src="/hero-bg.mp4"
+          // Poster paints the first frame instantly so the user sees
+          // motion-ready visuals before the MP4 buffers. Without it
+          // there's a ~200-500ms black window on slow connections.
+          poster="/hero-poster.jpg"
           autoPlay
           muted
           loop
