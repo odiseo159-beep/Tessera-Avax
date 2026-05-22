@@ -298,7 +298,8 @@
       }
       .s6-phase--wide { grid-template-columns: 3fr 2fr; }
       /* Phases B/C/D sit in absolute position so they can overlay */
-      .s6-phase--abs { position: absolute; top: 108px; left: 118px; right: 118px; }
+      /* width:auto lets left+right determine width (avoids width:100% → 1920px override) */
+      .s6-phase--abs { position: absolute; top: 108px; left: 118px; right: 118px; width: auto; }
       .s6-panel {
         background: var(--surface); border: 1.5px solid var(--border); border-radius: 14px;
         padding: 26px 26px 30px; display: flex; flex-direction: column; gap: 16px;
@@ -441,6 +442,10 @@
         font-size: 16px; font-weight: 500; color: var(--fg-soft); background: var(--surface);
         font-family: 'JetBrains Mono', monospace; font-feature-settings: normal;
       }
+
+      /* ── Logo ── */
+      .s1-logo { height: 86px; width: auto; margin-bottom: 18px; }
+      .s9-logo { height: 108px; width: auto; margin-bottom: 22px; }
     </style>
   </head>
   <body>
@@ -472,6 +477,7 @@
             <span class="pill"><span class="pdot pdot-g"></span>Hackathon LatAm Institucional 2026</span>
             <span class="pill"><span class="pdot pdot-p"></span>Avalanche Fuji · ERC-3643</span>
           </div>
+          <img id="s1-logo" src="tessera.png" class="s1-logo" alt="Tessera">
           <div id="s1-wm" class="s1-wordmark">TESSERA</div>
           <div id="s1-sub" class="s1-sub">Mercado secundario de equity · On-chain · LatAm</div>
           <div id="s1-tagrow" class="s1-tagrow">
@@ -875,6 +881,7 @@
       ══════════════════════════════════════════ -->
       <div id="s9" class="scene s9" style="opacity:0">
         <div class="s9-inner">
+          <img id="s9-logo" src="tessera.png" class="s9-logo" alt="Tessera">
           <div id="s9-wm" class="s9-wm">TESSERA</div>
           <div id="s9-tl" class="s9-tl">
             Una identidad<span class="sep">·</span>Diez activos<span class="sep">·</span>Cuatro jurisdicciones<span class="sep">·</span>Cero re-KYC
@@ -894,6 +901,7 @@
       const tl = gsap.timeline({ paused: true });
 
       /* ─── S1 — Hero entrances (0-12s) ─── */
+      tl.from("#s1-logo",        { opacity: 0, scale: 0.88, duration: 0.65, ease: "power3.out" }, 0.1);
       tl.from("#s1-pills .pill", { y: -18, opacity: 0, duration: 0.5, stagger: 0.15, ease: "power2.out" }, 0.2);
       tl.from("#s1-wm",  { y: 60, opacity: 0, scale: 0.92, duration: 0.9, ease: "power3.out" }, 0.7);
       tl.from("#s1-sub", { y: 20, opacity: 0, duration: 0.6, ease: "power2.out" }, 1.4);
@@ -1011,6 +1019,7 @@
       tl.to("#s9", { opacity: 1, duration: 0.7, ease: "power1.out" }, 289.5);
 
       /* ─── S9 — Cierre entrances + final fade (290-310s) ─── */
+      tl.from("#s9-logo",  { opacity: 0, scale: 0.88, duration: 0.75, ease: "power3.out" }, 290.0);
       tl.from("#s9-wm",    { y: 32, opacity: 0, scale: 0.94, duration: 0.8, ease: "power3.out" }, 290.1);
       tl.from("#s9-tl",    { y: 22, opacity: 0, duration: 0.7, ease: "power2.out" }, 290.9);
       tl.from("#s9-sub",   { opacity: 0, duration: 0.6, ease: "power1.out" }, 291.8);
