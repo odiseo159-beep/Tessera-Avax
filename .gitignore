@@ -49,3 +49,9 @@ coverage/
 # Internal video production — kept locally, not for public repo
 tessera-demo/
 tessera-pitch/
+
+# Internal pitch and design docs — not for public repo
+PITCH.md
+PITCH_LLW.md
+PROMPT_DESIGN.md
+PROMPT_DESIGN_PAGES.md
