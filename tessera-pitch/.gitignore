@@ -1,8 +1,0 @@
-work-*/
-renders/
-.thumbnails/
-.waveform-cache/
-node_modules/
-.hyperframes-cache/
-*.swp
-.DS_Store
