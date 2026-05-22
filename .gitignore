@@ -45,3 +45,7 @@ coverage/
 *.scratch*
 .scratch-*
 .claude/worktrees/
+
+# Internal video production — kept locally, not for public repo
+tessera-demo/
+tessera-pitch/
