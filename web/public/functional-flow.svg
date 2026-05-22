@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1640 1080" font-family="-apple-system, 'Inter', BlinkMacSystemFont, 'Segoe UI', sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1A1D21"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0F6E56"/>
+    </marker>
+    <marker id="arrowAmber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#8B5A0A"/>
+    </marker>
+    <filter id="cardShadow" x="-5%" y="-5%" width="110%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#1A1D21" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1640" height="1080" fill="#F1EFE8"/>
+
+  <!-- Title -->
+  <text x="60" y="56" fill="#5C6066" font-size="11" letter-spacing="3" font-weight="600">TESSERA · FUNCTIONAL FLOW</text>
+  <text x="60" y="92" fill="#1A1D21" font-size="32" font-weight="600" letter-spacing="-0.5">Cómo se conecta todo, end-to-end.</text>
+  <line x1="60" y1="108" x2="220" y2="108" stroke="#0F6E56" stroke-width="2"/>
+
+  <!-- Legend -->
+  <g transform="translate(1080, 50)">
+    <rect x="0" y="0" width="500" height="74" rx="10" fill="#FAF8F0" stroke="#D3D1C7" stroke-width="0.5"/>
+    <text x="16" y="22" fill="#5C6066" font-size="10" letter-spacing="2" font-weight="600">LEYENDA · ESTADO POR COMPONENTE</text>
+    <g transform="translate(16, 36)">
+      <rect x="0" y="0" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#0F6E56" stroke-width="1.2"/>
+      <text x="22" y="11" fill="#1A1D21" font-size="11">Implementado · live en Fuji</text>
+    </g>
+    <g transform="translate(190, 36)">
+      <rect x="0" y="0" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#8B5A0A" stroke-width="1.2" stroke-dasharray="3 2"/>
+      <text x="22" y="11" fill="#1A1D21" font-size="11">Mockeado / sandbox</text>
+    </g>
+    <g transform="translate(346, 36)">
+      <rect x="0" y="0" width="14" height="14" rx="3" fill="#FFFFFF" stroke="#9CA0A8" stroke-width="1" stroke-dasharray="2 3"/>
+      <text x="22" y="11" fill="#1A1D21" font-size="11">Esperando key / pendiente</text>
+    </g>
+    <g transform="translate(16, 58)">
+      <text x="0" y="0" fill="#5C6066" font-size="10">●  Verde = Tessera on-chain · Morado = server-side · Amber = partner externo</text>
+    </g>
+  </g>
+
+  <!-- ── Column headers ─────────────────────────────────────────────────── -->
+  <text x="140" y="160" fill="#0F6E56" font-size="12" font-weight="700" letter-spacing="2.5">USER · BROWSER</text>
+  <text x="500" y="160" fill="#0F6E56" font-size="12" font-weight="700" letter-spacing="2.5">FRONTEND · NEXT.JS</text>
+  <text x="900" y="160" fill="#3C3489" font-size="12" font-weight="700" letter-spacing="2.5">SERVER · API ROUTES</text>
+  <text x="1340" y="160" fill="#8B5A0A" font-size="12" font-weight="700" letter-spacing="2.5">STATE · ON-CHAIN + EXTERNAL</text>
+
+  <line x1="60" y1="174" x2="1580" y2="174" stroke="#D3D1C7" stroke-width="0.5"/>
+
+  <!-- ══════════════════════ Flow 1: Wallet connect (y≈200-280) ══════════════════════ -->
+  <g transform="translate(0, 200)">
+    <text x="60" y="0" fill="#5C6066" font-size="10" letter-spacing="2" font-weight="600">01 · CONECTAR WALLET</text>
+
+    <!-- User -->
+    <rect x="60" y="14" width="240" height="56" rx="8" fill="#FFFFFF" stroke="#0F6E56" stroke-width="1.2" filter="url(#cardShadow)"/>
+    <text x="78" y="38" fill="#1A1D21" font-size="14" font-weight="600">Click "Conectar wallet"</text>
+    <text x="78" y="58" fill="#5C6066" font-size="11">Core · MetaMask · WalletConnect</text>
+
+    <!-- arrow → frontend -->
+    <line x1="300" y1="42" x2="404" y2="42" stroke="#1A1D21" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+    <!-- Frontend -->
+    <rect x="410" y="14" width="270" height="56" rx="8" fill="#FFFFFF" stroke="#0F6E56" stroke-width="1.2" filter="url(#cardShadow)"/>
+    <text x="428" y="38" fill="#1A1D21" font-size="14" font-weight="600">RainbowKit + wagmi v2</text>
+    <text x="428" y="58" fill="#5C6066" font-size="11" font-family="ui-monospace, monospace">useAccount() · useConnect()</text>
+
+    <!-- arrow → on-chain (read chainId, balance) -->
+    <line x1="680" y1="42" x2="1180" y2="42" stroke="#0F6E56" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arrowGreen)"/>
+    <text x="850" y="34" fill="#0F6E56" font-size="11" font-style="italic">read balance / chainId</text>
+
+    <!-- On-chain: Avalanche Fuji -->
+    <rect x="1180" y="14" width="390" height="56" rx="8" fill="#FFFFFF" stroke="#0F6E56" stroke-width="1.2" filter="url(#cardShadow)"/>
+    <text x="1196" y="38" fill="#1A1D21" font-size="14" font-weight="600">Avalanche Fuji RPC</text>
+    <text x="1196" y="58" fill="#5C6066" font-size="11" font-family="ui-monospace, monospace">api.avax-test.network/ext/bc/C/rpc · chainId 43113</text>
+  </g>
+
+  <!-- ══════════════════════ Flow 2: KYC verify (y≈300-440) ══════════════════════ -->
+  <g transform="translate(0, 300)">
+    <text x="60" y="0" fill="#5C6066" font-size="10" letter-spacing="2" font-weight="600">02 · VERIFICAR KYC</text>
+
+    <!-- User -->
+    <rect x="60" y="14" width="240" height="116" rx="8" fill="#FFFFFF" stroke="#0F6E56" stroke-width="1.2" filter="url(#cardShadow)"/>
+    <text x="78" y="38" fill="#1A1D21" font-size="14" font-weight="600">Llena form /kyc</text>
+    <text x="78" y="58" fill="#5C6066" font-size="11">nombre · país · RFC · email</text>
+    <text x="78" y="78" fill="#5C6066" font-size="11">documento oficial</text>
+    <text x="78" y="98" fill="#5C6066" font-size="11">firma tx con su wallet</text>
+
+    <line x1="300" y1="72" x2="404" y2="72" stroke="#1A1D21" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+    <!-- Frontend -->
+    <rect x="410" y="14" width="270" height="116" rx="8" fill="#FFFFFF" stroke="#0F6E56" stroke-width="1.2" filter="url(#cardShadow)"/>
+    <text x="428" y="38" fill="#1A1D21" font-size="14" font-weight="600">KycPage stepper</text>
+    <text x="428" y="58" fill="#5C6066" font-size="11" font-family="ui-monospace, monospace">/kyc</text>
+    <text x="428" y="80" fill="#5C6066" font-size="11">POST /api/kyc/verify</text>
+    <text x="428" y="100" fill="#5C6066" font-size="11" font-family="ui-monospace, monospace">{ wallet, country }</text>
+
+    <line x1="680" y1="72" x2="794" y2="72" stroke="#1A1D21" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+    <!-- Server: KYC verify route -->
+    <rect x="800" y="14" width="350" height="116" rx="8" fill="#FFFFFF" stroke="#3C3489" stroke-width="1.2" filter="url(#cardShadow)"/>
+    <text x="818" y="38" fill="#3C3489" font-size="14" font-weight="600">/api/kyc/verify</text>
+    <text x="818" y="58" fill="#5C6066" font-size="11">issuer wallet firma claim EIP-712</text>
+    <text x="818" y="78" fill="#5C6066" font-size="11" font-family="ui-monospace, monospace">KYC_ISSUER_PRIVATE_KEY (server-only)</text>
+    <text x="818" y="98" fill="#5C6066" font-size="11">+ register en Wavy Node (idempotente)</text>
+    <text x="818" y="118" fill="#8B5A0A" font-size="10" font-style="italic">mock issuer: deployer firma</text>
+
+    <!-- arrow → IdentityRegistry on-chain -->
+    <line x1="1150" y1="44" x2="1180" y2="44" stroke="#0F6E56" stroke-width="1.2" marker-end="url(#arrowGreen)"/>
+
+    <!-- IdentityRegistry -->
+    <rect x="1180" y="14" width="390" height="48" rx="8" fill="#FFFFFF" stroke="#0F6E56" stroke-width="1.2" filter="url(#cardShadow)"/>
+    <text x="1196" y="34" fill="#1A1D21" font-size="14" font-weight="600">IdentityRegistry · ERC-3643</text>
+    <text x="1196" y="52" fill="#5C6066" font-size="11" font-family="ui-monospace, monospace">addIdentity(addr, country)  ·  isVerified(addr)</text>
+
+    <!-- arrow → Wavy Node (dashed pending) -->
+    <line x1="1150" y1="100" x2="1180" y2="100" stroke="#8B5A0A" stroke-width="1.2" stroke-dasharray="3 3" marker-end="url(#arrowAmber)"/>
+
+    <!-- Wavy Node -->
+    <rect x="1180" y="72" width="390" height="58" rx="8" fill="#FFFFFF" stroke="#8B5A0A" stroke-width="1" stroke-dasharray="3 3" filter="url(#cardShadow)"/>
+    <text x="1196" y="92" fill="#1A1D21" font-size="14" font-weight="600">Wavy Node · partner externo</text>
+    <text x="1196" y="110" fill="#5C6066" font-size="11" font-family="ui-monospace, monospace">POST /v1/projects/{id}/addresses</text>
+    <text x="1196" y="126" fill="#8B5A0A" font-size="10" font-style="italic">esperando WAVY_API_KEY</text>
+  </g>
+
+  <!-- ══════════════════════ Flow 3: Place order (y≈470-650) ══════════════════════ -->
+  <g transform="translate(0, 470)">
+    <text x="60" y="0" fill="#5C6066" font-size="10" letter-spacing="2" font-weight="600">03 · COLOCAR ORDEN · PRIVATE O PUBLIC</text>
+
+    <!-- User -->
+    <rect x="60" y="14" width="240" height="130" rx="8" fill="#FFFFFF" stroke="#0F6E56" stroke-width="1.2" filter="url(#cardShadow)"/>
+    <text x="78" y="38" fill="#1A1D21" font-size="14" font-weight="600">Click "Comprar 50 KVK"</text>
+    <text x="78" y="58" fill="#5C6066" font-size="11">elige cantidad, precio</text>
+    <text x="78" y="78" fill="#5C6066" font-size="11">firma tx en su wallet</text>
+    <text x="78" y="108" fill="#5C6066" font-size="11" font-style="italic">Mismo flow para</text>
+    <text x="78" y="124" fill="#5C6066" font-size="11" font-style="italic">Private (KVK) o Public (NVDA)</text>
+
+    <line x1="300" y1="78" x2="404" y2="78" stroke="#1A1D21" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+    <!-- Frontend: TradePage -->
+    <rect x="410" y="14" width="270" height="130" rx="8" fill="#FFFFFF" stroke="#0F6E56" stroke-width="1.2" filter="url(#cardShadow)"/>
+    <text x="428" y="38" fill="#1A1D21" font-size="14" font-weight="600">TradePage</text>
+    <text x="428" y="58" fill="#5C6066" font-size="11" font-family="ui-monospace, monospace">/private/trade/[token]</text>
+    <text x="428" y="74" fill="#5C6066" font-size="11" font-family="ui-monospace, monospace">/public/trade/[symbol]</text>
+    <text x="428" y="96" fill="#5C6066" font-size="11">usePlaceOrder()</text>
+    <text x="428" y="114" fill="#5C6066" font-size="11">wagmi writeContract</text>
+    <text x="428" y="134" fill="#5C6066" font-size="10" font-style="italic">read live price (Public): Dinari →</text>
+
+    <!-- Dinari side arrow for Public -->
+    <line x1="680" y1="132" x2="794" y2="132" stroke="#8B5A0A" stroke-width="1.2" stroke-dasharray="2 2" marker-end="url(#arrowAmber)"/>
+
+    <!-- Server: Dinari proxy -->
+    <rect x="800" y="116" width="350" height="40" rx="8" fill="#FFFFFF" stroke="#8B5A0A" stroke-width="1.2" stroke-dasharray="3 2" filter="url(#cardShadow)"/>
+    <text x="818" y="135" fill="#3C3489" font-size="13" font-weight="600">/api/dinari/stocks/[id]/price</text>
+    <text x="818" y="150" fill="#5C6066" font-size="10" font-style="italic">proxy server-only · sandbox key</text>
+
+    <!-- arrow → Dinari external -->
+    <line x1="1150" y1="136" x2="1180" y2="136" stroke="#8B5A0A" stroke-width="1.2" marker-end="url(#arrowAmber)"/>
+    <rect x="1180" y="116" width="390" height="40" rx="8" fill="#FFFFFF" stroke="#8B5A0A" stroke-width="1.2" stroke-dasharray="3 2" filter="url(#cardShadow)"/>
+    <text x="1196" y="135" fill="#1A1D21" font-size="13" font-weight="600">Dinari sandbox</text>
+    <text x="1196" y="150" fill="#5C6066" font-size="10" font-family="ui-monospace, monospace" font-style="italic">api-enterprise.sandbox.dinari.com</text>
+
+    <!-- Main order path → Orderbook -->
+    <line x1="680" y1="68" x2="1180" y2="68" stroke="#0F6E56" stroke-width="1.5" marker-end="url(#arrowGreen)"/>
+    <text x="800" y="60" fill="#0F6E56" font-size="11" font-style="italic">placeOrder(token, isBuy, amount, price)</text>
+
+    <!-- Orderbook -->
+    <rect x="1180" y="14" width="390" height="58" rx="8" fill="#FFFFFF" stroke="#0F6E56" stroke-width="1.2" filter="url(#cardShadow)"/>
+    <text x="1196" y="34" fill="#1A1D21" font-size="14" font-weight="600">Orderbook · shared contract</text>
+    <text x="1196" y="52" fill="#5C6066" font-size="11" font-family="ui-monospace, monospace">placeOrder · fillOrder · cancelOrder</text>
+    <text x="1196" y="68" fill="#5C6066" font-size="11">0.3% fee · escrow pull-style</text>
+
+    <!-- Orderbook → SecurityToken._update -->
+    <line x1="1375" y1="72" x2="1375" y2="92" stroke="#1A1D21" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+    <rect x="1180" y="92" width="390" height="50" rx="8" fill="#FFFFFF" stroke="#0F6E56" stroke-width="1.2" filter="url(#cardShadow)"/>
+    <text x="1196" y="112" fill="#1A1D21" font-size="14" font-weight="600">SecurityToken._update()</text>
+    <text x="1196" y="130" fill="#5C6066" font-size="11" font-family="ui-monospace, monospace">IdentityRegistry.isVerified(to) · REVERT si no</text>
+  </g>
+
+  <!-- ══════════════════════ Flow 4: Portfolio (y≈670-740) ══════════════════════ -->
+  <g transform="translate(0, 670)">
+    <text x="60" y="0" fill="#5C6066" font-size="10" letter-spacing="2" font-weight="600">04 · PORTFOLIO</text>
+
+    <rect x="60" y="14" width="240" height="56" rx="8" fill="#FFFFFF" stroke="#0F6E56" stroke-width="1.2" filter="url(#cardShadow)"/>
+    <text x="78" y="38" fill="#1A1D21" font-size="14" font-weight="600">Abre /portfolio</text>
+    <text x="78" y="58" fill="#5C6066" font-size="11">una sola vista, dos universos</text>
+
+    <line x1="300" y1="42" x2="404" y2="42" stroke="#1A1D21" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+    <rect x="410" y="14" width="270" height="56" rx="8" fill="#FFFFFF" stroke="#0F6E56" stroke-width="1.2" filter="url(#cardShadow)"/>
+    <text x="428" y="38" fill="#1A1D21" font-size="14" font-weight="600">useUserBalances</text>
+    <text x="428" y="58" fill="#5C6066" font-size="11" font-family="ui-monospace, monospace">multicall a 10 SecurityTokens + USDC</text>
+
+    <line x1="680" y1="42" x2="1180" y2="42" stroke="#0F6E56" stroke-width="1.2" marker-end="url(#arrowGreen)"/>
+    <text x="850" y="34" fill="#0F6E56" font-size="11" font-style="italic">balanceOf(user)</text>
+
+    <rect x="1180" y="14" width="390" height="56" rx="8" fill="#FFFFFF" stroke="#0F6E56" stroke-width="1.2" filter="url(#cardShadow)"/>
+    <text x="1196" y="38" fill="#1A1D21" font-size="14" font-weight="600">10 × SecurityToken + MockUSDC</text>
+    <text x="1196" y="58" fill="#5C6066" font-size="11" font-family="ui-monospace, monospace">4 priv (KVK BTS CLP ARK1) + 6 pub (AAPL...META)</text>
+  </g>
+
+  <!-- ══════════════════════ Flow 5: Compliance reports (y≈770-870) ══════════════════════ -->
+  <g transform="translate(0, 770)">
+    <text x="60" y="0" fill="#5C6066" font-size="10" letter-spacing="2" font-weight="600">05 · REPORTES REGULATORIOS · /ADMIN/REPORTS</text>
+
+    <rect x="60" y="14" width="240" height="86" rx="8" fill="#FFFFFF" stroke="#0F6E56" stroke-width="1.2" filter="url(#cardShadow)"/>
+    <text x="78" y="38" fill="#1A1D21" font-size="14" font-weight="600">Abre /admin/reports</text>
+    <text x="78" y="58" fill="#5C6066" font-size="11">selector país: MX · CO · SV · GT</text>
+    <text x="78" y="78" fill="#5C6066" font-size="11">selector periodo (YYYY-MM)</text>
+
+    <line x1="300" y1="56" x2="404" y2="56" stroke="#1A1D21" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+    <rect x="410" y="14" width="270" height="86" rx="8" fill="#FFFFFF" stroke="#0F6E56" stroke-width="1.2" filter="url(#cardShadow)"/>
+    <text x="428" y="38" fill="#1A1D21" font-size="14" font-weight="600">ComplianceReportsPage</text>
+    <text x="428" y="58" fill="#5C6066" font-size="11">server component</text>
+    <text x="428" y="80" fill="#5C6066" font-size="11">3 modos: ok / demo / not_configured</text>
+
+    <line x1="680" y1="56" x2="794" y2="56" stroke="#1A1D21" stroke-width="1.2" marker-end="url(#arrow)"/>
+
+    <rect x="800" y="14" width="350" height="86" rx="8" fill="#FFFFFF" stroke="#3C3489" stroke-width="1.2" filter="url(#cardShadow)"/>
+    <text x="818" y="38" fill="#3C3489" font-size="14" font-weight="600">/api/compliance/reports</text>
+    <text x="818" y="58" fill="#5C6066" font-size="11">si WAVY_API_KEY → llama Wavy ↗</text>
+    <text x="818" y="78" fill="#5C6066" font-size="11">si DEMO_MODE → wavy-demo-data.ts</text>
+    <text x="818" y="100" fill="#8B5A0A" font-size="10" font-style="italic">en modo demo · 11 reportes mock</text>
+
+    <line x1="1150" y1="56" x2="1180" y2="56" stroke="#8B5A0A" stroke-width="1.2" stroke-dasharray="3 3" marker-end="url(#arrowAmber)"/>
+
+    <rect x="1180" y="14" width="390" height="86" rx="8" fill="#FFFFFF" stroke="#8B5A0A" stroke-width="1" stroke-dasharray="3 3" filter="url(#cardShadow)"/>
+    <text x="1196" y="38" fill="#1A1D21" font-size="14" font-weight="600">Wavy Node · /v1/reports</text>
+    <text x="1196" y="58" fill="#5C6066" font-size="11" font-family="ui-monospace, monospace">api.wavynode.com/v1/reports</text>
+    <text x="1196" y="74" fill="#5C6066" font-size="11">AOR · ROS · RTS · 4 jurisdicciones</text>
+    <text x="1196" y="94" fill="#8B5A0A" font-size="10" font-style="italic">esperando WAVY_API_KEY</text>
+  </g>
+
+  <!-- ══════════════════════ Bottom band: continuous monitoring (y≈920-1000) ══════════════════════ -->
+  <g transform="translate(0, 920)">
+    <text x="60" y="0" fill="#5C6066" font-size="10" letter-spacing="2" font-weight="600">CONTINUO · CADA WALLET ATESTADA</text>
+
+    <rect x="60" y="14" width="1510" height="74" rx="10" fill="rgba(60,52,137,0.04)" stroke="#3C3489" stroke-width="0.5" stroke-dasharray="4 3"/>
+    <text x="78" y="38" fill="#3C3489" font-size="14" font-weight="600">Wavy Node · risk score real-time</text>
+    <text x="78" y="58" fill="#5C6066" font-size="11">Cada wallet atestada queda en monitoreo continuo. El score (0-100) se actualiza en tiempo real. Si excede el umbral, el agente del IdentityRegistry puede llamar removeIdentity(addr) y la wallet pierde permiso de transferir en el bloque siguiente.</text>
+    <text x="78" y="80" fill="#8B5A0A" font-size="10" font-style="italic">→ El badge "Riesgo · X" del header consume /api/risk/scan; con WAVY_API_KEY mostrará el score live; sin key, muestra "pendiente" (estado honesto).</text>
+  </g>
+
+  <!-- Footer -->
+  <text x="60" y="1056" fill="#5C6066" font-size="10" font-family="ui-monospace, monospace">Tessera · Hackathon Avalanche LatAm Institucional 2026 · Top 3</text>
+  <text x="1580" y="1056" fill="#5C6066" font-size="10" font-family="ui-monospace, monospace" text-anchor="end">SecurityToken · IdentityRegistry · Orderbook · MockUSDC en Avalanche Fuji (chainId 43113)</text>
+</svg>
