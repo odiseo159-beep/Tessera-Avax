@@ -55,7 +55,7 @@ export function ChooseMarket({ tilt, showConnector, onEnter }: ChooseMarketProps
       : "0x830e…E042";
 
   return (
-    <section className="choose" ref={wrapRef} data-hovered={hovered ?? "none"}>
+    <section id="choose" className="choose" ref={wrapRef} data-hovered={hovered ?? "none"}>
       <header className="choose-head">
         <div className="eyebrow">
           <span className="eyebrow-dot" />
